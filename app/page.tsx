@@ -1,65 +1,127 @@
 import Image from "next/image";
+import HomeDogsList from "@/modules/home/components/dogsList";
+import HomeShelterList from "@/modules/home/components/sheltersList";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="min-h-screen bg-zinc-50 font-sans">
+      <main className="flex justify-center md:my-10 my-3 relative p-1 md:p-3">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+          src="/dog1.jpg"
+          className="rounded-2xl brightness-75"
+          width={800}
+          height={500}
+          alt="Perro portada"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+        {/* <img src="/dog1.jpg" /> */}
+        <div className="absolute top-10 md:top-32 lg:top-48 text-center md:px-3">
+          <h1 className="text-5xl font-black text-white">
+            Encuentra a tu compañero ideal
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-white md:my-5">
+            Adopta un perro en Gustavo A. Madero y cambia una vida.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          <div className="flex gap-3 justify-center md:mt-10">
+            <button className="btn btn-primary">Explorar perros</button>
+            <button className="btn btn-secondary text-black">
+              Cómo funciona
+            </button>
+          </div>
         </div>
       </main>
+      <div className="lg:mx-10 mx-5">
+        <HomeDogsList />
+      </div>
+      <div className="lg:mx-10 mx-5">
+        <HomeShelterList />
+      </div>
+      <section className="lg:mx-10 mx-5">
+        <h3 className="text-xl font-bold my-5 md:my-9">Cómo funciona?</h3>
+        <h2 className="text-3xl font-black">En 3 simples pasos</h2>
+        <div className="my-5 grid grid-cols-3 gap-2 mx-auto max-w-5xl">
+          <div className="border-2 rounded-xl p-3 border-gray-200">
+            <span className="material-symbols-outlined">search</span>
+            <p className="font-bold">Explora</p>
+            <p className="text-amber-700">
+              Descubre perros en refugios de Gustavo A. Madero
+            </p>
+          </div>
+          <div className="border-2 rounded-xl p-3 border-gray-200">
+            <span className="material-symbols-outlined">home</span>
+            <p className="font-bold">Encuesta</p>
+            <p className="text-amber-700">
+              Rellena el formulario de estilo de vida
+            </p>
+          </div>
+          <div className="border-2 rounded-xl p-3 border-gray-200">
+            <span className="material-symbols-outlined">favorite</span>
+            <p className="font-bold">Adopta</p>
+            <p className="text-amber-700">
+              Llena la solicitud y lleva a tu nuevo amigo a casa
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="lg:mx-10 mx-5 my-5 md:my-10">
+        <h2 className="text-2xl font-black">Historias de éxito</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 my-5">
+          <div>
+            <Image
+              src={"/adoptionStory1.jpg"}
+              width={500}
+              className="my-2 w-max"
+              height={800}
+              alt="Caso de éxito"
+            />
+            <p className="font-bold text-lg">La historia de Sofía y Max</p>
+            <p className="text-amber-700">
+              Max encontró un hogar lleno de amor con Sofía.
+            </p>
+          </div>
+          <div>
+            <Image
+              src={"/adoptionStory1.jpg"}
+              width={500}
+              className="my-2 w-max"
+              height={800}
+              alt="Caso de éxito"
+            />
+            <p className="font-bold text-lg">La historia de Carlos y Bella</p>
+            <p className="text-amber-700">
+              Bella se adaptó rapidamente a su nueva familia.
+            </p>
+          </div>
+          <div>
+            <Image
+              src={"/adoptionStory1.jpg"}
+              width={500}
+              className="my-2 w-max"
+              height={800}
+              alt="Caso de éxito"
+            />
+            <p className="font-bold text-lg">La historia de Ana y Rocky</p>
+            <p className="text-amber-700">
+              Rocky ahora disfruta de largas caminatas con Ana.
+            </p>
+          </div>
+        </div>
+      </section>
+      <footer className="text-amber-700 text-lg flex flex-col gap-5">
+        <div className="flex justify-center lg:gap-x-80 md:gap-x-40 gap-3">
+          <a>Producto</a>
+          <a>Legal</a>
+          <a>Contacto</a>
+        </div>
+        <div className="flex justify-center gap-3">
+          <span className="material-symbols-outlined">copyright</span>
+          <span className="material-symbols-outlined">copyright</span>
+          <span className="material-symbols-outlined">copyright</span>
+        </div>
+        <div className="flex gap-1 justify-center">
+          <span className="material-symbols-outlined">copyright</span>
+          <p>2026 aDOGme. Todos los derechos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 }
