@@ -1,5 +1,5 @@
 import { ShelterCard } from "../domain/ShelterCard";
-import { HomeSheltersListRepository } from "../infrastructure/IHomeSheltersList";
+import { HomeSheltersListRepository } from "../domain/IHomeSheltersList";
 
 export const getSheltersList = async (
   repository: HomeSheltersListRepository,

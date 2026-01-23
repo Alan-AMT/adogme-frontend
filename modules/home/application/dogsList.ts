@@ -1,5 +1,5 @@
 import { DogCard } from "../domain/DogCard";
-import { HomeDogsListRepository } from "../infrastructure/IHomeDogsList";
+import { HomeDogsListRepository } from "../domain/IHomeDogsList";
 
 export const getHomeDogsList = async (
   repository: HomeDogsListRepository,

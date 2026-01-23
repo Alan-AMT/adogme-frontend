@@ -1,5 +1,5 @@
 import { ShelterCard } from "../domain/ShelterCard";
-import { HomeSheltersListRepository } from "./IHomeSheltersList";
+import { HomeSheltersListRepository } from "../domain/IHomeSheltersList";
 
 export class MockHomeSheltersListRepository implements HomeSheltersListRepository {
   public async getHomeSheltersList(): Promise<ShelterCard[]> {

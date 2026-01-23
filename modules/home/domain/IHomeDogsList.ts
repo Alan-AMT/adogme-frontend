@@ -1,4 +1,4 @@
-import { DogCard } from "../domain/DogCard";
+import { DogCard } from "./DogCard";
 
 export interface HomeDogsListRepository {
   getMainDogs: () => Promise<DogCard[]>;

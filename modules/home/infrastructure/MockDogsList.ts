@@ -1,5 +1,5 @@
 import { DogCard } from "../domain/DogCard";
-import { HomeDogsListRepository } from "./IHomeDogsList";
+import { HomeDogsListRepository } from "../domain/IHomeDogsList";
 
 export class MockHomedogsListRepository implements HomeDogsListRepository {
   // El repository ya retorna el objeto, el tipo de datos
