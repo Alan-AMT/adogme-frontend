@@ -18,7 +18,7 @@ const HomeShelterList = async () => {
               Ver perros
             </button>
           </div>
-          <div className="">
+          <div className="justify-items-end">
             <Image
               src={shelter.imageUrl}
               width={300}

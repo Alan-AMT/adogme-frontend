@@ -64,12 +64,12 @@ export default function Home() {
       </section>
       <section className="lg:mx-10 mx-5 my-5 md:my-10">
         <h2 className="text-2xl font-black">Historias de éxito</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 my-5">
+        <div className="grid justify-items-center grid-cols-2 md:grid-cols-3 gap-3 my-5">
           <div>
             <Image
               src={"/adoptionStory1.jpg"}
               width={500}
-              className="my-2 w-max"
+              className="my-2 w-max mx-auto"
               height={800}
               alt="Caso de éxito"
             />
@@ -82,7 +82,7 @@ export default function Home() {
             <Image
               src={"/adoptionStory1.jpg"}
               width={500}
-              className="my-2 w-max"
+              className="my-2 w-max mx-auto"
               height={800}
               alt="Caso de éxito"
             />
@@ -95,7 +95,7 @@ export default function Home() {
             <Image
               src={"/adoptionStory1.jpg"}
               width={500}
-              className="my-2 w-max"
+              className="my-2 w-max mx-auto"
               height={800}
               alt="Caso de éxito"
             />
@@ -106,8 +106,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <footer className="text-amber-700 text-lg flex flex-col gap-5">
-        <div className="flex justify-center lg:gap-x-80 md:gap-x-40 gap-3">
+      <footer className="text-amber-700 text-lg flex flex-col gap-5 my-5">
+        <div className="flex justify-center lg:gap-x-52 md:gap-x-40 gap-3">
           <a>Producto</a>
           <a>Legal</a>
           <a>Contacto</a>
