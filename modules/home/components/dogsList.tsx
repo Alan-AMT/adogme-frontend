@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getHomeDogsList } from "../application/dogsList";
 import { MockHomedogsListRepository } from "../infrastructure/MockDogsList";
+import Link from "next/link";
 
 const HomeDogsList = async () => {
   //Can use try catch or let nextJs erros.tsx be shown to client
@@ -26,7 +27,9 @@ const HomeDogsList = async () => {
         ))}
       </div>
       <div className="my-10 flex justify-center">
-        <button className="btn btn-primary">Ver detalles</button>
+        <Link href="./perros">
+          <button className="btn btn-primary">Ver detalles</button>
+        </Link>
       </div>
     </section>
   );
