@@ -1,6 +1,7 @@
 import Image from "next/image";
 import HomeDogsList from "@/modules/home/components/dogsList";
 import HomeShelterList from "@/modules/home/components/sheltersList";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -21,8 +22,10 @@ export default function Home() {
           <p className="text-white md:my-5">
             Adopta un perro en Gustavo A. Madero y cambia una vida.
           </p>
-          <div className="flex gap-3 justify-center md:mt-10">
-            <button className="btn btn-primary">Explorar perros</button>
+          <div className="flex gap-3 justify-center md:mt-10 mt-5">
+            <Link href="./perros">
+              <button className="btn btn-primary">Explorar perros</button>
+            </Link>
             <button className="btn btn-secondary text-black">
               Cómo funciona
             </button>
