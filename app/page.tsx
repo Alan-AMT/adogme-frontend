@@ -38,7 +38,7 @@ export default function Home() {
       <div className="lg:mx-10 mx-5">
         <HomeShelterList />
       </div>
-      <section className="lg:mx-10 mx-5">
+      <section className="lg:mx-10 mx-5" id="proceso">
         <h3 className="text-xl font-bold my-5 md:my-9">Cómo funciona?</h3>
         <h2 className="text-3xl font-black">En 3 simples pasos</h2>
         <div className="my-5 grid grid-cols-3 gap-2 mx-auto max-w-5xl">

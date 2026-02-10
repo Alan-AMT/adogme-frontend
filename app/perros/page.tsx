@@ -1,15 +1,22 @@
-import Filters from "@/modules/perros/components/filters";
+// "use client";
 import DogsList from "@/modules/perros/components/dogsList";
+import { getDogsList } from "@/modules/perros/application/dogsList";
+import { MockDogsList } from "@/modules/perros/infrastructure/MockDogsList";
+import { DogFilters } from "@/modules/perros/domain/dogFilters";
+import DogsListCSR from "@/modules/perros/components/dogsListCSR";
+// import { useState } from "react";
 
-export default function Perros() {
+export default async function Perros() {
+  const filters: DogFilters = {
+    queryText: null,
+    puppy: null,
+    sex: null,
+    size: null,
+  };
+  const dogs = await getDogsList(new MockDogsList(), filters);
   return (
-    <div className="flex gap-5 lg:mx-10 mx-5">
-      <div className="pt-5 flex-1 hidden md:block">
-        <Filters />
-      </div>
-      <div className="pt-5 flex-4">
-        <DogsList />
-      </div>
+    <div className="lg:mx-10 mx-5">
+      <DogsListCSR initialDogs={dogs} />
     </div>
   );
 }
