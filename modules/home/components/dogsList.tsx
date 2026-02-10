@@ -13,17 +13,19 @@ const HomeDogsList = async () => {
       </h2>
       <div className="grid xl:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2 justify-center">
         {dogs.map((dog) => (
-          <div key={dog.id}>
-            <Image
-              src={dog.imageUrl}
-              className="rounded-2xl brightness-90 w-12/12"
-              width={300}
-              height={100}
-              alt="Perro"
-            />
-            <h3 className="font-bold text-xl mt-3">{dog.name}</h3>
-            <p className="text-amber-700">{dog.description}</p>
-          </div>
+          <Link href={"/perros/34"} key={dog.id}>
+            <div>
+              <Image
+                src={dog.imageUrl}
+                className="rounded-2xl brightness-90 w-12/12"
+                width={300}
+                height={100}
+                alt="Perro"
+              />
+              <h3 className="font-bold text-xl mt-3">{dog.name}</h3>
+              <p className="text-amber-700">{dog.description}</p>
+            </div>
+          </Link>
         ))}
       </div>
       <div className="my-10 flex justify-center">

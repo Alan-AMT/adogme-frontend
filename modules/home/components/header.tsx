@@ -1,12 +1,16 @@
+import Link from "next/link";
+
 const AdogmeHeader = () => {
   return (
     <header className="flex sticky top-0 z-30 bg-white justify-between items-center px-5 py-3 border-y-2 border-gray-200">
       <div>
-        <h3 className="font-black text-xl">aDOGme</h3>
+        <Link href={"/"}>
+          <h3 className="font-black text-xl">aDOGme</h3>
+        </Link>
       </div>
       <div className="hidden md:flex justify-between items-center gap-5">
-        <a>Catálogo</a>
-        <a>Proceso</a>
+        <Link href={"/perros"}>Catálogo</Link>
+        <Link href={"/#proceso"}>Proceso</Link>
         <a>Refugios</a>
         <a>Acerca</a>
         <button className="btn btn-primary">Entrar</button>
