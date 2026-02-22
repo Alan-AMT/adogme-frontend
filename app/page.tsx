@@ -13,6 +13,7 @@ export default function Home() {
           width={800}
           height={500}
           alt="Perro portada"
+          loading="eager"
         />
         {/* <img src="/dog1.jpg" /> */}
         <div className="absolute top-10 md:top-32 lg:top-48 text-center md:px-3">
