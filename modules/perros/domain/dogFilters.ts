@@ -1,17 +1,12 @@
+import { DogEnergyLevel, DogSex, DogSize, DogStatus } from "./dog";
+
 export type DogFilters = {
   queryText: string | null;
-  size: dogSize | null;
-  sex: dogSex | null;
-  puppy: boolean | null;
+  tamano: DogSize | null;
+  sexo: DogSex | null;
+  cachorro: boolean | null;
+  nivelEnergia: DogEnergyLevel | null;
+  estado: DogStatus | null;
+  raza: string | null;
+  refugioId: number | null;
 };
-
-enum dogSize {
-  small,
-  mid,
-  big,
-}
-
-enum dogSex {
-  female,
-  male,
-}

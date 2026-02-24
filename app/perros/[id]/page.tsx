@@ -1,112 +1,185 @@
+import { Dog } from "@/modules/perros/domain/dog";
+import { MockDogsList } from "@/modules/perros/infrastructure/MockDogsList";
+import "@/modules/perros/styles/dogProfile.css";
 import Image from "next/image";
 import Link from "next/link";
-import ShelterBanner from "@/modules/perro/components/shelterBanner";
+import { notFound } from "next/navigation";
 
-export default function PerrosId() {
+/* ── Helpers ── */
+function edadLabel(meses: number) {
+  if (meses < 12) return `${meses} ${meses === 1 ? "mes" : "meses"}`;
+  const anos = Math.floor(meses / 12);
+  return `${anos} ${anos === 1 ? "año" : "años"}`;
+}
+
+const ESTADO_STYLES: Record<string, string> = {
+  disponible: "dp-badge--green",
+  en_proceso: "dp-badge--amber",
+  adoptado:   "dp-badge--gray",
+};
+
+const ESTADO_LABELS: Record<string, string> = {
+  disponible: "Disponible",
+  en_proceso: "En proceso",
+  adoptado:   "Adoptado",
+};
+
+/* ── Info Row con Material Symbols (igual que home) ── */
+function InfoRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="p-3 md:p-5">
-      <div className="md:flex gap-6 lg:gap-10">
-        <div className="md:flex-2/5">
-          <div className="font-semibold">
-            <span className="text-amber-700 hover:opacity-65">
-              <Link href="/">Inicio</Link>
-            </span>
-            <span className="text-amber-700"> / </span>
-            <span className="text-amber-700 hover:opacity-65">
-              <Link href="/perros">Buscar perros</Link>
-            </span>
-            <span> / </span>
-            <span>Buddy</span>
+    <div className="dp-info-row">
+      <span className="material-symbols-outlined dp-info-row__icon">{icon}</span>
+      <span className="dp-info-row__label">{label}</span>
+      <span className="dp-info-row__value">{value}</span>
+    </div>
+  );
+}
+
+/* ── Tag ── */
+function Tag({ text }: { text: string }) {
+  return <span className="dp-tag">{text}</span>;
+}
+
+/* ── Page ── */
+export default async function PerroProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id: idParam } = await params;
+  const id = parseInt(idParam);
+  const repo = new MockDogsList();
+
+  const all = await repo.getDogs({
+    queryText: null, tamano: null, sexo: null,
+    cachorro: null, nivelEnergia: null, estado: null,
+    raza: null, refugioId: null,
+  });
+
+  const dog: Dog | undefined = all.find((d) => d.id === id);
+  if (!dog) notFound();
+
+  const {
+    nombre, raza, edad, sexo, tamano, nivelEnergia,
+    salud, estado, descripcion, fechaRegistro,
+    imageUrl, shelterName, refugioId,
+  } = dog;
+
+  const tags: string[] = [
+    sexo === "macho" ? "Macho" : "Hembra",
+    tamano.charAt(0).toUpperCase() + tamano.slice(1),
+    edad < 12 ? "Cachorro" : "Adulto",
+    salud.toLowerCase().includes("esteril") ? "Esterilizado" : "",
+    salud.toLowerCase().includes("vacun")   ? "Vacunado"     : "",
+  ].filter(Boolean);
+
+  const sexoIcon   = sexo === "macho" ? "male" : "female";
+  const energiaIcon: Record<string, string> = { baja: "psychiatry", media: "bolt", alta: "local_fire_department" };
+
+  return (
+    <div className="dp-page">
+      {/* Breadcrumb */}
+      <nav className="dp-breadcrumb">
+        <Link href="/"       className="dp-breadcrumb__link">Inicio</Link>
+        <span className="dp-breadcrumb__sep">/</span>
+        <Link href="/perros" className="dp-breadcrumb__link">Buscar perros</Link>
+        <span className="dp-breadcrumb__sep">/</span>
+        <span className="dp-breadcrumb__current">{nombre}</span>
+      </nav>
+
+      <div className="dp-layout">
+        {/* ── Aside izquierdo ── */}
+        <aside className="dp-aside">
+          <div className="dp-photo-frame">
+            <div className="dp-photo-panel">
+              <div className="dp-photo-inner">
+                <Image
+                  src={imageUrl}
+                  alt={`Foto de ${nombre}`}
+                  fill
+                  className="dp-photo-img"
+                  sizes="(max-width: 768px) 100vw, 420px"
+                  priority
+                />
+              </div>
+            </div>
           </div>
-          <div className="flex justify-center items-center">
-            <Image
-              src={"/adoptionStory1.jpg"}
-              width={300}
-              className="w-full h-full rounded-xl"
-              height={1000}
-              alt="Fotografía perfil perro"
-            />
+
+          {/* Refugio card */}
+          <div className="dp-shelter-card">
+            <div className="dp-shelter-card__header">
+              <span className="dp-shelter-card__icon"><span className="material-symbols-outlined" style={{ fontSize: 22, lineHeight: 1 }}>home</span></span>
+              <div>
+                <p className="dp-shelter-card__name">{shelterName}</p>
+                <p className="dp-shelter-card__sub">Refugio · GAM, CDMX</p>
+              </div>
+            </div>
+            <Link href={`/refugios/${refugioId}`} className="dp-shelter-card__btn">
+              Ver perfil del refugio
+            </Link>
           </div>
-        </div>
-        <div className="md:flex-3/5">
-          <h1 className="text-4xl font-black mb-3">Buddy</h1>
-          <p className="text-amber-700">Raza/mezcla - 2 años - Macho</p>
-          <div className="my-5">
-            <p className="text-xl font-bold">85%</p>
-            <p className="text-amber-700">Basado en tu perfil...</p>
-            <input
-              className="btn btn-success rounded-3xl font-bold mt-3 md:mt-5 text-white"
-              type="checkbox"
-              name="frameworks"
-              aria-label="Adoptar a Buddy"
-            />
+
+          {/* Acciones secundarias */}
+          <div className="dp-secondary-actions">
+            <button className="dp-action-btn">
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>share</span>
+              Compartir
+            </button>
+            <button className="dp-action-btn dp-action-btn--danger">
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>flag</span>
+              Reportar
+            </button>
           </div>
-          <div className="gap-3 md:my-7 my-3">
-            <input
-              className="btn rounded-3xl font-bold my-2 mr-2"
-              readOnly={true}
-              checked={false}
-              type="checkbox"
-              name="frameworks"
-              aria-label="Juguetón"
-            />
-            <input
-              className="btn rounded-3xl font-bold my-2 mr-2"
-              readOnly={true}
-              checked={false}
-              type="checkbox"
-              name="frameworks"
-              aria-label="Esterilizado"
-            />
-            <input
-              className="btn rounded-3xl font-bold my-2 mr-2"
-              readOnly={true}
-              checked={false}
-              type="checkbox"
-              name="frameworks"
-              aria-label="Bueno con niños"
-            />
-            <input
-              className="btn rounded-3xl font-bold my-2 mr-2"
-              readOnly={true}
-              checked={false}
-              type="checkbox"
-              name="frameworks"
-              aria-label="Energía alta"
-            />
+        </aside>
+
+        {/* ── Contenido derecho ── */}
+        <section className="dp-content">
+          <div className="dp-content__header">
+            <div>
+              <span className={`dp-badge ${ESTADO_STYLES[estado] ?? "dp-badge--gray"}`}>
+                {ESTADO_LABELS[estado] ?? estado}
+              </span>
+              <h1 className="dp-name">{nombre}</h1>
+              <p className="dp-subtitle">
+                {raza} · {edadLabel(edad)} · {sexo.charAt(0).toUpperCase() + sexo.slice(1)}
+              </p>
+            </div>
+
+            {estado === "disponible" && (
+              <button className="dp-adopt-btn">
+                Adoptar a {nombre}&nbsp;🐾
+              </button>
+            )}
           </div>
-          <h2 className="text-2xl font-bold">Sobre mí</h2>
-          <p className="my-2">
-            Buddy es un golden retriever de 2 años, lleno de energía y amor para
-            dar. Es juguetón, bueno con niõs y está esterilizado. Busca un hogar
-            donde pueda correr, jugar y ser parte de la familia
-          </p>
-          <div className="my-3 md:my-5">
-            <ShelterBanner />
+
+          {/* Tags */}
+          <div className="dp-tags">
+            {tags.map((t) => <Tag key={t} text={t} />)}
           </div>
-          <div className="my-3 md:my-5">
-            <ShelterBanner />
+
+          {/* Info grid */}
+          <div className="dp-info-card">
+            <h2 className="dp-section-title">Información</h2>
+            <div className="dp-info-grid">
+              <InfoRow icon="cake"             label="Edad"             value={edadLabel(edad)} />
+              <InfoRow icon="straighten"       label="Tamaño"           value={tamano.charAt(0).toUpperCase() + tamano.slice(1)} />
+              <InfoRow icon={sexoIcon}         label="Sexo"             value={sexo.charAt(0).toUpperCase() + sexo.slice(1)} />
+              <InfoRow icon={energiaIcon[nivelEnergia] ?? "bolt"} label="Energía" value={nivelEnergia.charAt(0).toUpperCase() + nivelEnergia.slice(1)} />
+              <InfoRow icon="medical_services" label="Salud"            value={salud} />
+              <InfoRow icon="calendar_month"   label="En refugio desde" value={new Date(fechaRegistro).toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" })} />
+              <InfoRow icon="location_on"      label="Refugio"          value={shelterName} />
+            </div>
           </div>
-          <p className="text-amber-700">Estado: Disponible</p>
-        </div>
-      </div>
-      <div className="flex justify-between lg:max-w-2/5 md:max-w-2/5 mt-5">
-        <input
-          className="btn rounded-3xl font-bold"
-          type="checkbox"
-          readOnly={true}
-          checked={false}
-          name="frameworks"
-          aria-label="Compartir"
-        />
-        <input
-          className="btn rounded-3xl font-bold"
-          type="checkbox"
-          readOnly={true}
-          checked={false}
-          name="frameworks"
-          aria-label="Reportar"
-        />
+
+          {/* Descripción */}
+          <div className="dp-desc-card">
+            <h2 className="dp-section-title">Sobre {nombre}</h2>
+            <p className="dp-desc-text">{descripcion}</p>
+          </div>
+
+          {/* CTA mobile */}
+          {estado === "disponible" && (
+            <button className="dp-adopt-btn dp-adopt-btn--mobile">
+              Adoptar a {nombre}&nbsp;🐾
+            </button>
+          )}
+        </section>
       </div>
     </div>
   );

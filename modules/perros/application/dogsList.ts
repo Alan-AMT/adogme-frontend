@@ -1,9 +1,9 @@
 import { Dog } from "../domain/dog";
 import { DogFilters } from "../domain/dogFilters";
-import { DogsList } from "../domain/IDogsList";
+import { IDogsList } from "../domain/IDogsList";
 
 export const getDogsList = async (
-  repository: DogsList,
+  repository: IDogsList,
   filters: DogFilters,
 ): Promise<Dog[]> => {
   try {

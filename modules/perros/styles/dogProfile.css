@@ -1,0 +1,416 @@
+/* =====================================================
+   dogProfile.css — Perfil de Perro · aDOGme
+   Ruta: modules/perros/styles/dogProfile.css
+   ===================================================== */
+
+/* ── Page wrapper ── */
+.dp-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+}
+
+/* ── Breadcrumb ── */
+.dp-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.dp-breadcrumb__link {
+  color: #ff6b6b;
+  transition: opacity 150ms ease;
+  text-decoration: none;
+}
+
+.dp-breadcrumb__link:hover {
+  opacity: 0.7;
+}
+
+.dp-breadcrumb__sep {
+  color: #d4d4d8;
+}
+
+.dp-breadcrumb__current {
+  color: #3f3f46;
+}
+
+/* ── Layout ── */
+.dp-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .dp-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+}
+
+/* ── Aside (left column) ── */
+.dp-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .dp-aside {
+    width: 340px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+/* ── Photo Frame (con patrón igual que cards) ── */
+.dp-photo-frame {
+  border-radius: 1.5rem;
+  padding: 12px;
+  background-image: url("/assets/hero/back.jpg");
+  background-repeat: repeat;
+  background-size: 180px auto;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.09);
+}
+
+.dp-photo-panel {
+  background: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dp-photo-inner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.dp-photo-img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ── Shelter card ── */
+.dp-shelter-card {
+  background: #fff;
+  border: 1.5px solid #f0f0f0;
+  border-radius: 1.1rem;
+  padding: 1.1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.dp-shelter-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dp-shelter-card__icon {
+  font-size: 22px !important;
+  background: #fff5f5;
+  border-radius: 0.75rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #ff6b6b;
+}
+
+.dp-shelter-card__name {
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: #18181b;
+}
+
+.dp-shelter-card__sub {
+  font-size: 0.78rem;
+  color: #a1a1aa;
+  font-weight: 500;
+  margin-top: 0.1rem;
+}
+
+.dp-shelter-card__btn {
+  display: block;
+  text-align: center;
+  padding: 0.6rem;
+  border-radius: 999px;
+  border: 1.5px solid #e4e4e7;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #3f3f46;
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+}
+
+.dp-shelter-card__btn:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+  background: #fff5f5;
+}
+
+/* ── Secondary actions ── */
+.dp-secondary-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.dp-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  border-radius: 999px;
+  border: 1.5px solid #e4e4e7;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #3f3f46;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.dp-action-btn:hover {
+  border-color: #a1a1aa;
+  background: #fafafa;
+}
+
+.dp-action-btn--danger:hover {
+  border-color: #fca5a5;
+  color: #ef4444;
+  background: #fff5f5;
+}
+
+/* ── Content (right column) ── */
+.dp-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Content header ── */
+.dp-content__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+@media (min-width: 640px) {
+  .dp-content__header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+/* ── Estado badge ── */
+.dp-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.dp-badge--green {
+  background: #d1fae5;
+  color: #065f46;
+  ring: 1px solid #a7f3d0;
+}
+
+.dp-badge--amber {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dp-badge--gray {
+  background: #f4f4f5;
+  color: #71717a;
+}
+
+/* ── Name & subtitle ── */
+.dp-name {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #18181b;
+  line-height: 1.05;
+}
+
+@media (min-width: 768px) {
+  .dp-name {
+    font-size: 3rem;
+  }
+}
+
+.dp-subtitle {
+  font-size: 1rem;
+  color: #71717a;
+  font-weight: 600;
+  margin-top: 0.35rem;
+}
+
+/* ── Adopt button ── */
+.dp-adopt-btn {
+  padding: 0.85rem 2rem;
+  border-radius: 999px;
+  background: #ff6b6b;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: background 200ms ease, transform 200ms ease;
+  white-space: nowrap;
+  align-self: flex-start;
+  box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35);
+}
+
+.dp-adopt-btn:hover {
+  background: #fa5252;
+  transform: translateY(-1px);
+}
+
+.dp-adopt-btn--mobile {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.05rem;
+}
+
+@media (min-width: 640px) {
+  .dp-adopt-btn--mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .dp-adopt-btn:not(.dp-adopt-btn--mobile) {
+    display: none;
+  }
+}
+
+/* ── Tags ── */
+.dp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dp-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid #e4e4e7;
+  background: #fafafa;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #3f3f46;
+}
+
+/* ── Info card ── */
+.dp-info-card,
+.dp-desc-card {
+  background: #fff;
+  border: 1.5px solid #f0f0f0;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.dp-section-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #18181b;
+  margin-bottom: 1rem;
+}
+
+/* ── Info grid ── */
+.dp-info-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .dp-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dp-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.65rem;
+  background: #fafafa;
+  border: 1px solid #f4f4f5;
+}
+
+/* modules/perros/styles/dogProfile.css */
+
+.dp-info-row__icon {
+  width: 32px;
+  height: 32px;
+  background: #fff5f5;
+  color: #ff6b6b;
+  border-radius: 8px;
+
+  /* ESTO ES LO QUE FALTA: */
+  display: flex;         /* Activa el modo flex */
+  align-items: center;   /* Centrado vertical */
+  justify-content: center; /* Centrado horizontal */
+
+  flex-shrink: 0;
+}
+
+.dp-info-row__icon span {
+  font-size: 18px; /* Ajusta el tamaño si lo ves muy grande o chico */
+  display: block;  /* Evita que se comporte como texto inline */
+  line-height: 1;  /* Resetea la altura de línea */
+}
+
+.dp-info-row__label {
+  color: #a1a1aa;
+  font-weight: 500;
+  flex: 1;
+  font-size: 0.82rem;
+}
+
+.dp-info-row__value {
+  font-weight: 500;
+  color: #3f3f46;
+  font-size: 0.88rem;
+}
+
+/* ── Description ── */
+.dp-desc-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #52525b;
+  font-weight: 400;
+}

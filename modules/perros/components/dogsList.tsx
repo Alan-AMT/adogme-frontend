@@ -6,16 +6,20 @@ interface DogListProps {
 }
 
 export default function DogsList({ dogs }: DogListProps) {
+  if (dogs.length === 0) {
+    return (
+      <div className="cat-empty">
+        <p className="cat-empty__icon">🐾</p>
+        <p className="cat-empty__text">No encontramos perros con esos filtros.</p>
+        <p className="cat-empty__sub">Intenta ajustar tu búsqueda.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div className="cat-grid">
       {dogs.map((dog) => (
-        <DogCard
-          key={dog.name}
-          imageUrl={dog.imageUrl}
-          name={dog.name}
-          shelterName={dog.shelterName}
-          age={dog.age}
-        />
+        <DogCard key={dog.id} {...dog} />
       ))}
     </div>
   );

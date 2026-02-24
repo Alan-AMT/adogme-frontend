@@ -1,6 +1,6 @@
 import { Dog } from "./dog";
 import { DogFilters } from "./dogFilters";
 
-export interface DogsList {
+export interface IDogsList {
   getDogs: (filters: DogFilters) => Promise<Dog[]>;
 }
