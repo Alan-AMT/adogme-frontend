@@ -1,0 +1,263 @@
+/* styles/homeDogs.css */
+
+/* ===== Section wrapper ===== */
+.home-dogs {
+  padding: 2.5rem 0;
+}
+
+/* ===== Header ===== */
+.home-dogs__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.home-dogs__kicker {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #ff6b6b;
+  margin-bottom: 0.25rem;
+}
+
+.home-dogs__title {
+  font-size: 1.875rem;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #18181b;
+}
+
+@media (min-width: 768px) {
+  .home-dogs__title {
+    font-size: 2.25rem;
+  }
+}
+
+.home-dogs__subtitle {
+  margin-top: 0.5rem;
+  color: #71717a;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.home-dogs__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  padding: 0.55rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #3f3f46;
+  transition: background-color 180ms ease, transform 180ms ease;
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.06);
+}
+
+.home-dogs__all:hover {
+  background: #fafafa;
+  transform: translateY(-1px);
+}
+
+/* ===== GRID ===== */
+.home-dogs__grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .home-dogs__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-dogs__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   FRAME STYLE: MARCO CON PATRÓN back.jpg
+   ========================================================= */
+.home-dog-frame {
+  position: relative;
+  border-radius: 1.5rem;
+  padding: 12px; /* Este es el grosor del marco donde se verá el fondo */
+
+  /* RUTA CORRECCION: En Next.js, lo que está en 'public' se accede desde '/' */
+  background-image: url("/assets/hero/back.jpg");
+  background-repeat: repeat;
+  background-size: 200px auto; /* Ajusta el tamaño del patrón aquí */
+  background-position: center;
+
+  /* Sombra del conjunto */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease;
+  height: 100%;
+}
+
+.home-dog-frame:hover {
+  transform: scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Panel blanco interior que tapa el fondo en el centro */
+.home-dog-panel {
+  background: #ffffff;
+  border-radius: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 1024px) {
+  .home-dog-panel {
+    flex-direction: row;
+    min-height: 240px;
+  }
+}
+
+/* ===== Media ===== */
+.home-dog-media {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .home-dog-media {
+    width: 200px;
+    height: auto;
+  }
+}
+
+.home-dog-photo {
+  position: absolute;
+  inset: 12px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #f4f4f5;
+}
+
+.home-dog-photo__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ===== Body ===== */
+.home-dog-body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+}
+
+.home-dog-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1rem;
+}
+
+.home-dog-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #18181b;
+  padding-right: 80px;
+}
+
+.home-dog-breed {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #71717a;
+}
+
+.home-dog-desc {
+  font-size: 0.85rem;
+  color: #52525b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Info list */
+.home-dog-infoList {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f4f4f5;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.home-dog-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.home-dog-info__icon {
+  font-size: 18px;
+  color: #ff6b6b;
+}
+
+.home-dog-info__label {
+  width: 4.5rem;
+  color: #a1a1aa;
+}
+
+.home-dog-info__value {
+  font-weight: 700;
+  color: #18181b;
+}
+
+/* CTA */
+.home-dog-cta {
+  margin-top: 1rem;
+  display: block;
+  text-align: center;
+  background: #ff6b6b;
+  color: white;
+  padding: 0.65rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  transition: background 200ms ease;
+}
+
+.home-dog-cta:hover {
+  background: #fa5252;
+}
+
+/* ===== Skeleton ===== */
+.home-dog-skel__media {
+  height: 200px;
+  background: #f4f4f5;
+}
+
+.home-dog-skel__body {
+  padding: 1.25rem;
+}
+
+.home-dog-skel__line {
+  height: 12px;
+  background: #f4f4f5;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.home-dog-skel__line.is-title { width: 60%; height: 20px; }
+.home-dog-skel__line.is-cta { height: 35px; border-radius: 999px; margin-top: 10px; }

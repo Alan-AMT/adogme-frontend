@@ -3,89 +3,198 @@
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
-  --color-primary: #FF6B6B;
+
+  /* Brand */
+  --color-primary: #FA5252;
   --color-secondary: #F5F0F0;
 
-  /* 
-  --color-base-100: oklch(98% 0.02 240);
-  --color-base-200: oklch(95% 0.03 240);
-  --color-base-300: oklch(92% 0.04 240);
-  --color-base-content: oklch(20% 0.05 240);
-  --color-primary: oklch(55% 0.3 240);
-  --color-primary-content: oklch(98% 0.01 240);
-  --color-secondary: oklch(70% 0.25 200);
-  --color-secondary-content: oklch(98% 0.01 200);
-  --color-accent: oklch(65% 0.25 160);
-  --color-accent-content: oklch(98% 0.01 160);
-  --color-neutral: oklch(50% 0.05 240);
-  --color-neutral-content: oklch(98% 0.01 240);
-  --color-info: oklch(70% 0.2 220);
-  --color-info-content: oklch(98% 0.01 220);
-  --color-success: oklch(65% 0.25 140);
-  --color-success-content: oklch(98% 0.01 140);
-  --color-warning: oklch(80% 0.25 80);
-  --color-warning-content: oklch(20% 0.05 80);
-  --color-error: oklch(65% 0.3 30);
-  --color-error-content: oklch(98% 0.01 30);
-
-  /* border radius
-  --radius-selector: 1rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
-  */
-
-  /* base sizes 
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  */
-
-  /* border size 
-  --border: 1px;
-  */
-
-  /* effects 
-  --depth: 1;
-  --noise: 0;
-  */
-}
-/* .material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
-} */
-
-.icon-filled {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+  /* Si quieres ajustar tonos base del theme, puedes descomentar y tunear luego */
+  /* --color-base-100: #ffffff;
+     --color-base-200: #f6f7fb;
+     --color-base-300: #eef0f6;
+     --color-base-content: #0f172a; */
 }
 
-.icon-thin {
-  font-variation-settings: 'wght' 100;
-}
-
-/*
+/* =========================
+   Base + Tokens
+   ========================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Tokens (útiles para CSS custom y consistencia visual) */
+  --brand: #FA5252;
+  --brand-600: #E03131;
+
+  --bg: #ffffff;
+  --fg: #0f172a;        /* slate-900 */
+  --muted: #475569;     /* slate-600 */
+  --border: #e2e8f0;    /* slate-200 */
+
+  --radius-sm: 0.75rem; /* 12px */
+  --radius-md: 1rem;    /* 16px */
+  --radius-lg: 1.25rem; /* 20px */
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Mejoras de render y scroll */
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Ajustes base */
+body {
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Media / elementos */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+/* Selección de texto */
+::selection {
+  background: rgba(255, 107, 107, 0.25);
+}
+
+/* Focus visible accesible */
+:focus-visible {
+  outline: 2px solid rgba(255, 107, 107, 0.85);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-} */
+/* =========================
+   Tipografía responsiva
+   (sin depender de Tailwind config)
+   ========================= */
+h1, h2, h3, h4 {
+  color: var(--fg);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-weight: 900;
+  line-height: 1.05;
+  font-size: clamp(2rem, 3.6vw, 3.25rem); /* ~32px -> 52px */
+}
+
+h2 {
+  font-weight: 800;
+  line-height: 1.12;
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem); /* 24 -> 36 */
+}
+
+h3 {
+  font-weight: 800;
+  line-height: 1.2;
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem); /* 20 -> 24 */
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+/* =========================
+   Layout helpers (global)
+   ========================= */
+
+/* Contenedor consistente para todas tus pantallas */
+.container-page {
+  width: min(1100px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+/* Padding vertical estándar por sección */
+.section {
+  padding-block: clamp(2rem, 4vw, 4rem);
+}
+
+/* Tarjetas modernas */
+.card-soft {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Separadores sutiles */
+.hr-soft {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+/* =========================
+   Component-like utilities
+   (útiles con DaisyUI)
+   ========================= */
+
+/* Botón brand consistente (si no quieres depender solo de btn-primary) */
+.btn-brand {
+  background: var(--brand);
+  border: 0;
+  color: #fff;
+}
+.btn-brand:hover {
+  background: var(--brand-600);
+}
+
+/* Botón outline suave */
+.btn-outline-soft {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+}
+.btn-outline-soft:hover {
+  background: rgba(15, 23, 42, 0.04);
+}
+
+/* Pills (como tu navbar estilo Sherwin) */
+.pill {
+  border-radius: 9999px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+  background: rgba(15, 23, 42, 0.04);
+  color: var(--fg);
+}
+.pill:hover {
+  background: rgba(15, 23, 42, 0.07);
+}
+
+/* Pills “active” (si quieres marcar ruta actual) */
+.pill-active {
+  background: rgba(255, 107, 107, 0.14);
+  border-color: rgba(255, 107, 107, 0.35);
+}
+
+/* =========================
+   Material Symbols helpers
+   ========================= */
+.icon-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+.icon-thin {
+  font-variation-settings: 'wght' 100;
+}

@@ -1,5 +1,6 @@
-import { ShelterCard } from "../domain/ShelterCard";
+//adogme-frontend\modules\home\application\sheltersList.ts
 import { HomeSheltersListRepository } from "../domain/IHomeSheltersList";
+import { ShelterCard } from "../domain/ShelterCard";
 
 export const getSheltersList = async (
   repository: HomeSheltersListRepository,

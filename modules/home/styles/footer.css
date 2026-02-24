@@ -1,0 +1,146 @@
+/* =========================================
+   FOOTER STYLE - ADOGME
+   ========================================= */
+
+.main-footer {
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(255, 107, 107, 0.12) 0%,
+    rgba(24, 24, 27, 1) 50%
+  );
+  background-color: #18181b;
+  color: #ffffff;
+  padding: 4rem 1.5rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+/* --- LOGO Y MARCA --- */
+.footer-brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+
+/* Ícono (tu asset es 1:1) */
+.footer-logo {
+  width: 44px;
+  height: 44px;
+  display: block;
+  object-fit: contain;
+
+  /* IMPORTANTE: tu ícono ya se ve, no lo inviertas */
+  filter: none;
+  opacity: 1;
+}
+
+/* Texto de marca */
+.footer-brand-text {
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.footer-tagline {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 360px;
+}
+
+/* --- TITULOS Y LINKS --- */
+.footer-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.footer-link {
+  color: #a1a1aa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #ff6b6b;
+}
+
+/* --- COPYRIGHT --- */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #71717a;
+  font-size: 0.85rem;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer-brand-info {
+    grid-column: span 2;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-tagline {
+    max-width: 520px;
+  }
+
+  .footer-logo-link {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-brand-info {
+    grid-column: span 1;
+  }
+
+  .footer-title {
+    margin-bottom: 1rem;
+  }
+}

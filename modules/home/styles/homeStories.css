@@ -1,0 +1,115 @@
+/* ===============================
+   SUCCESS STORIES (Aligned Design)
+================================ */
+
+.home-stories {
+  padding: 0;
+  margin: 0;
+}
+
+.home-stories__header {
+  margin-bottom: 2rem;
+}
+
+/* Kicker rojo igual a Perros y Refugios */
+.home-stories__kicker {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #ff6b6b;
+  margin-bottom: 0.25rem;
+}
+
+.home-stories__title {
+  font-size: 1.875rem;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #18181b;
+}
+
+@media (min-width: 768px) {
+  .home-stories__title {
+    font-size: 2.25rem;
+  }
+}
+
+/* Grid responsivo */
+.home-stories__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card con diseño suave */
+.story-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* AJUSTE DE IMAGEN: 280px de alto para que luzca bien */
+.story-card__image-container {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  background-color: #f4f4f5;
+}
+
+.story-card__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.story-card__content {
+  padding: 1.5rem;
+}
+
+.story-card__dog {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #18181b;
+  margin-bottom: 0.2rem;
+}
+
+.story-card__adopter {
+  font-size: 0.9rem;
+  color: #ff6b6b; /* Mismo rojo para consistencia */
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.home-stories__divider {
+  height: 1px;
+  background: #f1f1f1;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.story-card__text {
+  font-size: 0.9rem;
+  color: #52525b;
+  line-height: 1.6;
+  font-style: italic;
+  position: relative;
+}
+
+/* Responsivo para móvil */
+@media (max-width: 640px) {
+  .story-card__image-container {
+    height: 220px; /* Un poco más pequeña en móvil */
+  }
+
+  .home-stories__grid {
+    grid-template-columns: 1fr;
+  }
+}

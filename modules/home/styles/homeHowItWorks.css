@@ -1,0 +1,84 @@
+/* ===============================
+   HOW IT WORKS (Identical to Dogs/Shelters)
+================================ */
+
+.hiw-section {
+  background: transparent;
+  padding: 0 !important; /* Forzamos a quitar el padding de la clase .section */
+  margin: 0;
+}
+
+.hiw-header {
+  margin-bottom: 2rem; /* Distancia idéntica a .home-dogs__header */
+}
+
+.hiw-eyebrow {
+  /* Color exacto que usan tus secciones de Perros y Refugios */
+  color: #ff6b6b;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.hiw-title {
+  font-size: 1.875rem;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #18181b;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .hiw-title {
+    font-size: 2.25rem; /* Tamaño exacto de .home-dogs__title */
+  }
+}
+
+.hiw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.hiw-card {
+  border: 1px solid #e2e8f0; /* var(--border) */
+  border-radius: 1rem;       /* var(--radius-md) */
+  background: #fff;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+
+.hiw-icon {
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 107, 107, 0.1); /* Rojo claro con opacidad */
+  color: #ff6b6b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.hiw-svg {
+  width: 22px;
+  height: 22px;
+}
+
+.hiw-card-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  color: #18181b;
+}
+
+.hiw-card-desc {
+  font-size: 0.9rem;
+  color: #71717a; /* Mismo que .home-dogs__subtitle */
+  line-height: 1.5;
+}

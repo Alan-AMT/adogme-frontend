@@ -1,0 +1,755 @@
+/* C:\Users\orteg\OneDrive\Escritorio\adogme-frontend\styles\hero.css */
+
+/* =====================
+   HERO BASE
+   ===================== */
+
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffe4e6 0%, #fff7ed 50%, #ffe4e6 100%);
+  z-index: 1;
+}
+
+/* Ajuste responsivo: Permitir que el carrusel se encoja en móviles */
+@media (max-width: 767px) {
+  .hero-section {
+    min-height: auto;
+    height: auto;
+  }
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/hero/back.jpg");
+  background-repeat: repeat;
+  background-size: 240px auto;
+  background-position: top left;
+  opacity: 0.06;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 45%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 650' preserveAspectRatio='none'%3E%3Cpath d='M500 120c-100 20-250 100-220 280 20 120 120 200 220 250Z' fill='%23C92A2A'/%3E%3Cpath d='M500 400v250H250c120-60 200-150 250-250Z' fill='%23F03E3E'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: contain;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+.hero-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 160px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 160' preserveAspectRatio='none'%3E%3Cpath d='M0 0h1440v120C1100 40 850 30 720 80 550 140 250 160 0 100Z' fill='%23F03E3E'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+@media (min-width: 768px) {
+  .hero-section {
+    height: 620px;
+    min-height: 620px;
+  }
+}
+
+.hero-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .hero-container {
+    padding: 0 5rem;
+    text-align: left;
+  }
+}
+
+/* =====================
+   CAROUSEL
+   ===================== */
+
+.hero-carousel {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.hero-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-card {
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 0 4rem;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .hero-card {
+    min-height: 620px;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: 0;
+    gap: 2.5rem;
+  }
+}
+
+/* ✅ MOBILE: compactar vertical */
+@media (max-width: 767px) {
+  .hero-card {
+    min-height: auto;
+    padding: 3.6rem 0 3.1rem; /* antes 6rem 0 5rem */
+    gap: 1.25rem;
+  }
+
+  .hero-desc {
+    margin-top: 0.9rem !important;
+  }
+
+  .hero-ctas {
+    margin-top: 1.25rem;
+  }
+}
+
+.hero-copy {
+  flex: 1;
+  max-width: 560px;
+}
+
+.hero-title {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  color: #0f172a;
+}
+
+.hero-desc {
+  max-width: 34rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .hero-desc {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.hero-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2.25rem;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .hero-ctas {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-ctas {
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+.hero-btn {
+  width: 100%;
+  font-weight: 800;
+  padding: 1rem 2.5rem;
+  border-radius: 1.25rem;
+  font-size: 1.125rem;
+  transition: transform 150ms ease, background-color 150ms ease,
+    box-shadow 150ms ease;
+  min-height: 52px;
+}
+
+@media (min-width: 640px) {
+  .hero-btn {
+    width: auto;
+  }
+}
+
+.hero-btn:active {
+  transform: translateY(1px);
+}
+
+.hero-btn--primary {
+  background: #f03e3e;
+  color: #ffffff;
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.14);
+}
+
+.hero-btn--primary:hover {
+  background: #c92a2a;
+}
+
+.hero-btn--ghost {
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  border: 1px solid #e4e4e7;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
+}
+
+.hero-btn--ghost:hover {
+  background: #ffffff;
+}
+
+.hero-media {
+  flex: 1;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+/* ✅ MOBILE: evitar “aire” arriba/abajo */
+@media (max-width: 767px) {
+  .hero-media {
+    height: auto;
+    min-height: 240px;
+    align-items: center; /* antes flex-end */
+    overflow: visible;
+    margin-top: 0.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-media {
+    height: 100%;
+    justify-content: flex-end;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+}
+
+.hero-media__img {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  z-index: 20;
+  flex-shrink: 0;
+}
+
+/* ✅ MOBILE: imagen principal un poco más chica */
+@media (max-width: 767px) {
+  .hero-media__img {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-media__img {
+    width: 440px;
+    height: 440px;
+  }
+}
+
+/* =====================
+   DOG STAMPS (slide 2)
+   ===================== */
+
+.hero-dog-stamps {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+/* ✅ MOBILE: encimado + menos alto */
+@media (max-width: 767px) {
+  .hero-dog-stamps {
+    min-height: 240px;
+    height: 260px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.35rem 0;
+  }
+
+  .hero-dog-stamps .stamp-card {
+    position: absolute;
+  }
+
+  .hero-dog-stamps .stamp-card:nth-child(1) {
+    z-index: 2;
+    transform: translate(18px, -22px) rotate(6deg) scale(0.9);
+  }
+
+  .hero-dog-stamps .stamp-card:nth-child(2) {
+    z-index: 1;
+    transform: translate(-26px, 24px) rotate(-8deg) scale(0.9);
+  }
+
+  .hero-dog-stamps .stamp-card__info {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-dog-stamps {
+    display: block;
+    padding: 0;
+  }
+}
+
+/* ── Card wrapper ─────────────────────────────────── */
+.stamp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+@media (min-width: 768px) {
+  .stamp-card:nth-child(1) {
+    position: absolute;
+    top: 5%;
+    right: 0;
+  }
+  .stamp-card:nth-child(1) .stamp-card__inner {
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+
+  .stamp-card:nth-child(2) {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+  }
+  .stamp-card:nth-child(2) .stamp-card__inner {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.stamp-card__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* ── Frame box ────────────────────────────────────── */
+.stamp-card__frame {
+  position: relative;
+  width: clamp(160px, 40vw, 280px);
+  aspect-ratio: 1 / 1.1;
+  flex-shrink: 0;
+}
+
+/* ✅ Foto dentro del marco: “hueco” real */
+.stamp-card__photo {
+  position: absolute;
+  top: 3%;
+  left: 9%;
+  right: 9%;
+  bottom: 7%;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.stamp-card__photoImg {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.stamp-card__frameImg {
+  object-fit: fill;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Info card ────────────────────────────────────── */
+.stamp-card__info {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  padding: 0.65rem 0.9rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+  width: min(220px, 90%);
+  flex-shrink: 0;
+  margin-top: -10px;
+  position: relative;
+  z-index: 3;
+}
+
+.stamp-card__name {
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.1;
+  font-size: 1rem;
+}
+
+.stamp-card__meta {
+  margin-top: 0.2rem;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.stamp-card__link {
+  display: inline-block;
+  margin-top: 0.45rem;
+  font-weight: 800;
+  color: #f03e3e;
+  font-size: 0.9rem;
+}
+
+.stamp-card__link:hover {
+  text-decoration: underline;
+}
+
+/* ── Skeleton ─────────────────────────────────────── */
+.stamp-skeleton {
+  width: clamp(140px, 20vw, 260px);
+  height: clamp(220px, 26vw, 380px);
+  border-radius: 1.25rem;
+  background: rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* =====================
+   INDICATORS (bones)
+   ===================== */
+
+.hero-indicators {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 30;
+}
+
+@media (max-width: 767px) {
+  .hero-indicators {
+    bottom: 0.65rem;
+  }
+}
+
+.hero-indicator {
+  width: 30px;
+  height: 16px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.72;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.hero-indicator::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 28'%3E%3Crect x='16' y='11' width='32' height='6' rx='3' fill='%23FFFFFF'/%3E%3Ccircle cx='13' cy='10' r='6' fill='%23FFFFFF'/%3E%3Ccircle cx='13' cy='18' r='6' fill='%23FFFFFF'/%3E%3Ccircle cx='51' cy='10' r='6' fill='%23FFFFFF'/%3E%3Ccircle cx='51' cy='18' r='6' fill='%23FFFFFF'/%3E%3C/svg%3E");
+}
+
+.hero-indicator:hover {
+  opacity: 0.95;
+}
+
+.hero-indicator.is-active {
+  opacity: 1;
+  transform: scale(1.18);
+}
+
+.hero-indicator:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+/* =====================
+   FULL WIDTH PAWS (optional utility)
+   ===================== */
+
+.hero-section--paws {
+  background-image: url("/assets/hero/back.png");
+  background-repeat: repeat;
+  background-size: 260px auto;
+  background-position: top left;
+}
+
+.hero-section--paws::before,
+.hero-section--paws::after {
+  opacity: 0;
+}
+
+.hero-section--paws .hero-wave {
+  opacity: 0;
+}
+
+.hero-section--paws .hero-container::before {
+  content: "";
+  position: absolute;
+  inset: -9999px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+}
+
+.hero-section--paws .hero-carousel {
+  position: relative;
+  z-index: 1;
+}
+
+/* =====================
+   HERO STEPS — slide 3
+   ===================== */
+
+.hero-steps {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: space-evenly;
+  padding: 1rem 0 2rem;
+}
+
+/* ✅ MOBILE: menos alto y menos aire abajo */
+@media (max-width: 639px) {
+  .hero-steps {
+    align-items: center;
+    height: auto;
+    gap: 0.7rem;
+    padding: 0.35rem 0 0.95rem;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .hero-steps {
+    align-items: center;
+    height: auto;
+    gap: 0.9rem;
+    padding: 0.55rem 0 1.15rem;
+    justify-content: center;
+  }
+}
+
+/* ── Card ────────────────────────────────────────── */
+
+.hero-step {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.93);
+  border: 1px solid rgba(229, 231, 235, 0.85);
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.hero-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.13);
+}
+
+@media (max-width: 639px) {
+  .hero-step {
+    width: min(310px, 94%);
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .hero-step {
+    width: min(360px, 82%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-step {
+    width: 320px;
+  }
+  .hero-step--left {
+    align-self: flex-start;
+  }
+  .hero-step--right {
+    align-self: flex-end;
+  }
+}
+
+/* ── Contenido izquierdo ─────────────────────────── */
+
+.hero-step__content {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.05rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ✅ MOBILE: bajar altura total de cada card */
+@media (max-width: 639px) {
+  .hero-step__content {
+    padding: 0.7rem 0.9rem;
+    gap: 0.75rem;
+  }
+}
+
+/* ── Número ──────────────────────────────────────── */
+
+.hero-step__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: #f03e3e;
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 10px rgba(240, 62, 62, 0.35);
+}
+
+/* ✅ MOBILE: número un poco más chico */
+@media (max-width: 639px) {
+  .hero-step__num {
+    width: 2.05rem;
+    height: 2.05rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ── Texto ───────────────────────────────────────── */
+
+.hero-step__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.hero-step__title {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.hero-step__desc {
+  font-weight: 500;
+  color: #64748b;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* ── Imagen derecha ──────────────────────────────── */
+
+.hero-step__img {
+  flex-shrink: 0;
+  width: 90px;
+  overflow: hidden;
+}
+
+/* ✅ MOBILE: menos alto visual de imagen (quita aire arriba/abajo) */
+@media (max-width: 639px) {
+  .hero-step__img {
+    width: 84px;
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-step__img {
+    width: 100px;
+  }
+}
+
+.hero-step__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
