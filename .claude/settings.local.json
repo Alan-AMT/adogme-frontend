@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat \"c:\\\\Users\\\\orteg\\\\OneDrive\\\\Escritorio\\\\adogme-frontend\\\\app\\\\\\(auth\\)\\\\layout.tsx\")",
+      "Bash(printf '// app/\\(auth\\)/layout.tsx\\\\n// Páginas de autenticación: sin Navbar ni Footer\\\\nimport type { ReactNode } from \"\"react\"\"\\\\n\\\\nexport default function AuthGroupLayout\\({ children }: { children: ReactNode }\\) {\\\\n  return <>{children}</>\\\\n}\\\\n')",
+      "Bash(\"c:/Users/orteg/OneDrive/Escritorio/adogme-frontend/app/\\(auth\\)/layout.tsx\")",
+      "Bash(ls \"c:\\\\Users\\\\orteg\\\\OneDrive\\\\Escritorio\\\\adogme-frontend\\\\app\\\\\\(auth\\)\")",
+      "Bash(ls \"c:\\\\Users\\\\orteg\\\\OneDrive\\\\Escritorio\\\\adogme-frontend\\\\app\\\\\\(auth\\)\\\\registro\")",
+      "Bash(wc -l \"c:/Users/orteg/OneDrive/Escritorio/adogme-frontend/app/\\(public\\)/page.tsx\")"
+    ]
+  }
+}

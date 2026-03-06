@@ -1,0 +1,365 @@
+/* =====================================================
+   shelterDashboard.css — Portal Refugio · Dashboard
+   ===================================================== */
+
+/* ── Stats grid ── */
+.sd-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .sd-stats { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .sd-stats { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* ── Body grid (main + sidebar) ── */
+.sd-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .sd-body { grid-template-columns: 1fr 300px; }
+}
+
+/* ── Section card ── */
+.sd-card {
+  background: #fff;
+  border: 1.5px solid #f0f0f0;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.sd-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.sd-card__title {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #18181b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sd-card__title .material-symbols-outlined {
+  font-size: 18px;
+  color: #ff6b6b;
+  font-variation-settings: 'FILL' 1;
+}
+
+.sd-card__link {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ff6b6b;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  transition: opacity 150ms ease;
+}
+
+.sd-card__link:hover { opacity: 0.75; }
+.sd-card__link .material-symbols-outlined { font-size: 14px; }
+
+/* ── Tabla de solicitudes recientes ── */
+.sd-req-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sd-req-table th {
+  padding: 0.55rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #a1a1aa;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #fafafa;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.sd-req-table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #f9fafb;
+  vertical-align: middle;
+}
+
+.sd-req-table tr:last-child td { border-bottom: none; }
+
+.sd-req-table tr:hover td { background: #fafafa; }
+
+/* Dog cell: foto + nombre */
+.sd-req__dog {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sd-req__dog-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 0.6rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #f0f0f0;
+}
+
+.sd-req__dog-name {
+  font-weight: 800;
+  color: #18181b;
+  font-size: 0.82rem;
+}
+
+/* Estado badge */
+.sd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.sd-badge--pending    { background: #fef9c3; color: #854d0e; }
+.sd-badge--in_review  { background: #dbeafe; color: #1e40af; }
+.sd-badge--approved   { background: #dcfce7; color: #166534; }
+.sd-badge--rejected   { background: #fee2e2; color: #991b1b; }
+.sd-badge--cancelled  { background: #f4f4f5; color: #52525b; }
+
+.sd-badge .material-symbols-outlined {
+  font-size: 13px;
+  font-variation-settings: 'FILL' 1;
+}
+
+/* ── Empty state ── */
+.sd-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* ── Sidebar: perfil card ── */
+.sd-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sd-profile__inner {
+  padding: 1.25rem;
+}
+
+.sd-profile__logo-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 2px solid #f0f0f0;
+  margin-bottom: 0.85rem;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sd-profile__name {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #18181b;
+  margin: 0 0 0.2rem;
+}
+
+.sd-profile__city {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 0 0.85rem;
+}
+
+.sd-profile__city .material-symbols-outlined {
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.sd-profile__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #18181b;
+}
+
+.sd-profile__rating .material-symbols-outlined {
+  font-size: 16px;
+  color: #f59e0b;
+  font-variation-settings: 'FILL' 1;
+}
+
+.sd-profile__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  margin: 0.85rem 1.25rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(255,107,107,0.08);
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-decoration: none;
+  border: 1.5px solid rgba(255,107,107,0.18);
+  transition: background 150ms ease;
+}
+
+.sd-profile__btn:hover { background: rgba(255,107,107,0.14); }
+.sd-profile__btn .material-symbols-outlined { font-size: 15px; }
+
+/* ── Quick actions card ── */
+.sd-actions {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sd-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #374151;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sd-action-btn:hover {
+  background: #fafafa;
+  color: #18181b;
+}
+
+.sd-action-btn--primary {
+  background: #ff6b6b;
+  color: #fff;
+}
+
+.sd-action-btn--primary:hover {
+  background: #fa5252;
+  color: #fff;
+}
+
+.sd-action-btn .material-symbols-outlined {
+  font-size: 18px;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* ── Skeleton ── */
+.sd-skel-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .sd-skel-stats { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .sd-skel-stats { grid-template-columns: repeat(6, 1fr); }
+}
+
+.sd-skel-stat {
+  height: 110px;
+  border-radius: 1.2rem;
+  background: linear-gradient(90deg, #f4f4f5 25%, #e5e7eb 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: sd-shimmer 1.4s infinite;
+}
+
+.sd-skel-row {
+  height: 52px;
+  border-radius: 0.6rem;
+  margin: 0.5rem 1rem;
+  background: linear-gradient(90deg, #f4f4f5 25%, #e5e7eb 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: sd-shimmer 1.4s infinite;
+}
+
+.sd-skel-row:nth-child(odd) { animation-delay: 0.15s; }
+
+@keyframes sd-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ── Fecha formateada ── */
+.sd-date {
+  color: #a1a1aa;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ── Stats grid variante 4 columnas ── */
+.sd-stats--4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px)  { .sd-stats--4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .sd-stats--4 { grid-template-columns: repeat(4, 1fr); } }
+
+/* ── Fila de charts (Line + Donut) ── */
+.sd-charts-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .sd-charts-row { grid-template-columns: 1fr 280px; }
+}
+
+/* ── Fila de tablas (2 columnas) ── */
+.sd-tables-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 5rem; /* espacio para el FAB */
+}
+
+@media (min-width: 900px) {
+  .sd-tables-row { grid-template-columns: 1fr 1fr; }
+}

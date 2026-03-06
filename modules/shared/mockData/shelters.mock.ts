@@ -1,0 +1,262 @@
+// modules/shared/mockData/shelters.mock.ts
+// 5 refugios aprobados + 3 pendientes para admin
+// Imágenes en /public/assets/shelters/
+
+import type { Shelter, ShelterListItem } from '../domain/Shelter'
+
+// ─── IDs constantes para referencias cruzadas con dogs.mock.ts ───────────────
+
+export const SHELTER_IDS = {
+  HUELLITAS:     1,
+  PATITAS:       2,
+  AMIGOS:        3,
+  ESPERANZA:     4,
+  SEGUNDA:       5,
+  PENDING_NORTE: 6,
+  PENDING_SUR:   7,
+  PENDING_BAJIO: 8,
+} as const
+
+// ─── 5 Refugios aprobados ─────────────────────────────────────────────────────
+
+export const MOCK_SHELTERS: Shelter[] = [
+  {
+    id: SHELTER_IDS.HUELLITAS,
+    nombre: 'Huellitas MX',
+    ubicacion: 'Gustavo A. Madero, Ciudad de México',
+    descripcion: 'Somos el refugio más grande de la GAM. Rescatamos perros desde 2012. Más de 800 adopciones exitosas. Trabajamos con voluntarios cada fin de semana.',
+    correo: 'contacto@huellitasmx.org',
+    telefono: '55 1234 5678',
+    logo: '/assets/shelters/shelter1-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter1-cover.jpg',
+    fechaRegistro: '2024-01-15',
+    aprobado: true,
+    status: 'approved',
+    slug: 'huellitas-mx',
+    ciudad: 'Gustavo A. Madero',
+    estado: 'Ciudad de México',
+    redesSociales: {
+      instagram: 'https://instagram.com/huellitasmx',
+      facebook: 'https://facebook.com/huellitasmx',
+    },
+    donationConfig: {
+      aceptaDonaciones: true,
+      metaMensual: 15000,
+      descripcionCausa: 'Cada donación cubre alimento, veterinario y cuidados de 10 perros por una semana.',
+      paypalEmail: 'donaciones@huellitasmx.org',
+    },
+    totalPerros: 12,
+    perrosDisponibles: 10,
+    adopcionesRealizadas: 842,
+    calificacion: 4.9,
+  },
+  {
+    id: SHELTER_IDS.PATITAS,
+    nombre: 'Patitas Libres',
+    ubicacion: 'Coyoacán, Ciudad de México',
+    descripcion: 'Refugio familiar con enfoque en rehabilitación de perros con trauma. Equipo de conductistas certificados en Coyoacán. Cada perro tiene un plan de socialización individual.',
+    correo: 'hola@patitaslibres.mx',
+    telefono: '55 9876 5432',
+    logo: '/assets/shelters/shelter2-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter2-cover.jpg',
+    fechaRegistro: '2024-02-20',
+    aprobado: true,
+    status: 'approved',
+    slug: 'patitas-libres',
+    ciudad: 'Coyoacán',
+    estado: 'Ciudad de México',
+    redesSociales: {
+      instagram: 'https://instagram.com/patitaslibres',
+      web: 'https://patitaslibres.mx',
+    },
+    donationConfig: {
+      aceptaDonaciones: true,
+      metaMensual: 10000,
+      descripcionCausa: 'Financiamos sesiones de conductismo para perros rescatados de maltrato.',
+      paypalEmail: 'donaciones@patitaslibres.mx',
+    },
+    totalPerros: 8,
+    perrosDisponibles: 6,
+    adopcionesRealizadas: 413,
+    calificacion: 4.8,
+  },
+  {
+    id: SHELTER_IDS.AMIGOS,
+    nombre: 'Amigos de 4 Patas',
+    ubicacion: 'Iztapalapa, Ciudad de México',
+    descripcion: 'El refugio más activo de Iztapalapa. Especializados en razas medianas y grandes. Proceso de adopción riguroso que garantiza adopciones exitosas y duraderas.',
+    correo: 'adopciones@amigos4patas.com',
+    telefono: '55 5555 1234',
+    logo: '/assets/shelters/shelter3-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter3-cover.jpg',
+    fechaRegistro: '2024-03-10',
+    aprobado: true,
+    status: 'approved',
+    slug: 'amigos-4-patas',
+    ciudad: 'Iztapalapa',
+    estado: 'Ciudad de México',
+    redesSociales: {
+      facebook: 'https://facebook.com/amigos4patasMTY',
+      instagram: 'https://instagram.com/amigos4patas',
+    },
+    donationConfig: {
+      aceptaDonaciones: true,
+      metaMensual: 8000,
+      descripcionCausa: 'Construimos nuevas instalaciones para tener más espacio y mejores condiciones.',
+      stripeAccountId: 'acct_test_amigos4patas',
+    },
+    totalPerros: 15,
+    perrosDisponibles: 13,
+    adopcionesRealizadas: 621,
+    calificacion: 4.7,
+  },
+  {
+    id: SHELTER_IDS.ESPERANZA,
+    nombre: 'Refugio Esperanza',
+    ubicacion: 'Tlalpan, Ciudad de México',
+    descripcion: 'Nació en 2018 como proyecto comunitario en la colonia Pedregal de San Nicolás. Hoy somos autosustentables gracias a nuestra red de 200 voluntarios activos en Tlalpan.',
+    correo: 'info@refugioesperanza.org',
+    telefono: '55 3344 5566',
+    logo: '/assets/shelters/shelter4-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter4-cover.jpg',
+    fechaRegistro: '2024-04-05',
+    aprobado: true,
+    status: 'approved',
+    slug: 'refugio-esperanza',
+    ciudad: 'Tlalpan',
+    estado: 'Ciudad de México',
+    redesSociales: {
+      instagram: 'https://instagram.com/refugioesperanza_pue',
+      facebook: 'https://facebook.com/refugioesperanza',
+      twitter: 'https://twitter.com/refesperanza',
+    },
+    donationConfig: {
+      aceptaDonaciones: true,
+      metaMensual: 6000,
+      descripcionCausa: 'Ayuda a pagar veterinario, vacunas y esterilizaciones de nuestra comunidad.',
+      paypalEmail: 'dona@refugioesperanza.org',
+    },
+    totalPerros: 11,
+    perrosDisponibles: 8,
+    adopcionesRealizadas: 295,
+    calificacion: 4.6,
+  },
+  {
+    id: SHELTER_IDS.SEGUNDA,
+    nombre: 'Segunda Oportunidad',
+    ubicacion: 'Benito Juárez, Ciudad de México',
+    descripcion: 'Rescatamos perros callejeros de la colonia Del Valle y sus alrededores. Colaboramos con otras organizaciones de la CDMX para garantizar adopciones responsables.',
+    correo: 'contacto@segundaoportunidad.org',
+    telefono: '55 4321 9876',
+    logo: '/assets/shelters/shelter5-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter5-cover.jpg',
+    fechaRegistro: '2024-05-18',
+    aprobado: true,
+    status: 'approved',
+    slug: 'segunda-oportunidad',
+    ciudad: 'Benito Juárez',
+    estado: 'Ciudad de México',
+    redesSociales: {
+      instagram: 'https://instagram.com/segundaoportunidadtj',
+      facebook: 'https://facebook.com/segundaoportunidadtij',
+      web: 'https://segundaoportunidad.org',
+    },
+    donationConfig: {
+      aceptaDonaciones: true,
+      metaMensual: 12000,
+      descripcionCausa: 'Financiamos transporte, documentación y trámites de adopción internacional.',
+      stripeAccountId: 'acct_test_segunda',
+    },
+    totalPerros: 18,
+    perrosDisponibles: 14,
+    adopcionesRealizadas: 507,
+    calificacion: 4.8,
+  },
+]
+
+// ─── 3 Refugios pendientes (para panel admin) ────────────────────────────────
+
+export const MOCK_PENDING_SHELTERS: Shelter[] = [
+  {
+    id: SHELTER_IDS.PENDING_NORTE,
+    nombre: 'Patitas del Norte',
+    ubicacion: 'Azcapotzalco, Ciudad de México',
+    descripcion: 'Nuevo refugio en Azcapotzalco. Operamos desde hace 6 meses de forma informal y ahora queremos formalizarnos en la plataforma.',
+    correo: 'patitasnorte@gmail.com',
+    telefono: '55 4455 6677',
+    logo: '/assets/shelters/shelter1-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter1-cover.jpg',
+    fechaRegistro: '2025-01-05',
+    aprobado: false,
+    status: 'pending',
+    slug: 'patitas-del-norte',
+    ciudad: 'Azcapotzalco',
+    estado: 'Ciudad de México',
+    redesSociales: { facebook: 'https://facebook.com/patitasnorte' },
+    donationConfig: { aceptaDonaciones: false },
+    totalPerros: 0,
+    perrosDisponibles: 0,
+    adopcionesRealizadas: 0,
+  },
+  {
+    id: SHELTER_IDS.PENDING_SUR,
+    nombre: 'Rescate Xochimilco',
+    ubicacion: 'Xochimilco, Ciudad de México',
+    descripcion: 'Refugio familiar en Xochimilco con enfoque en rescate callejero. Queremos conectar con familias adoptantes de toda la CDMX.',
+    correo: 'rescate@xochimilco.mx',
+    telefono: '55 8877 6655',
+    logo: '/assets/shelters/shelter2-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter2-cover.jpg',
+    fechaRegistro: '2025-01-12',
+    aprobado: false,
+    status: 'pending',
+    slug: 'rescate-xochimilco',
+    ciudad: 'Xochimilco',
+    estado: 'Ciudad de México',
+    redesSociales: { instagram: 'https://instagram.com/solyarenamex' },
+    donationConfig: { aceptaDonaciones: false },
+    totalPerros: 0,
+    perrosDisponibles: 0,
+    adopcionesRealizadas: 0,
+  },
+  {
+    id: SHELTER_IDS.PENDING_BAJIO,
+    nombre: 'Rescate Centro',
+    ubicacion: 'Cuauhtémoc, Ciudad de México',
+    descripcion: 'Operamos en el Centro Histórico de la CDMX desde hace 2 años. Rescatamos perros de las calles del centro y sus colonias aledañas. Necesitamos plataforma para crecer.',
+    correo: 'rescatecentro@outlook.com',
+    telefono: '55 7788 9900',
+    logo: '/assets/shelters/shelter3-logo.jpg',
+    imagenPortada: '/assets/shelters/shelter3-cover.jpg',
+    fechaRegistro: '2025-01-20',
+    aprobado: false,
+    status: 'pending',
+    slug: 'rescate-centro',
+    ciudad: 'Cuauhtémoc',
+    estado: 'Ciudad de México',
+    redesSociales: {},
+    donationConfig: { aceptaDonaciones: false },
+    totalPerros: 0,
+    perrosDisponibles: 0,
+    adopcionesRealizadas: 0,
+  },
+]
+
+export const ALL_MOCK_SHELTERS = [...MOCK_SHELTERS, ...MOCK_PENDING_SHELTERS]
+
+// ─── Helper functions ─────────────────────────────────────────────────────────
+
+export const getShelterById = (id: number): Shelter | undefined =>
+  ALL_MOCK_SHELTERS.find(s => s.id === id)
+
+export const getShelterBySlug = (slug: string): Shelter | undefined =>
+  ALL_MOCK_SHELTERS.find(s => s.slug === slug)
+
+export const getShelterListItem = (s: Shelter): ShelterListItem => ({
+  id: s.id, nombre: s.nombre, slug: s.slug, ciudad: s.ciudad,
+  estado: s.estado, logo: s.logo, imagenPortada: s.imagenPortada,
+  status: s.status, perrosDisponibles: s.perrosDisponibles,
+  adopcionesRealizadas: s.adopcionesRealizadas, calificacion: s.calificacion,
+})
+
+export const MOCK_SHELTERS_LIST: ShelterListItem[] = MOCK_SHELTERS.map(getShelterListItem)

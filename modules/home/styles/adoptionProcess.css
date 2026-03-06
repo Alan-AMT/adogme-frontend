@@ -1,0 +1,254 @@
+/* =====================================================
+   adoptionProcess.css — Página Proceso de Adopción
+   modules/home/styles/adoptionProcess.css
+   Paleta y variables: app/globals.css
+   ===================================================== */
+
+.ap-page {
+  max-width: 860px;
+  margin-inline: auto;
+  padding: 3rem 1.25rem 4rem;
+}
+
+/* ── Hero ── */
+.ap-hero {
+  margin-bottom: 3.5rem;
+  text-align: center;
+}
+
+.ap-kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-500, #ff6b6b);
+  margin-bottom: 0.25rem;
+}
+
+.ap-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--fg, #18181b);
+  margin: 0 0 0.75rem;
+}
+
+.ap-subtitle {
+  color: var(--fg-muted, #71717a);
+  font-size: 1rem;
+  font-weight: 500;
+  max-width: 520px;
+  margin-inline: auto;
+  line-height: 1.6;
+}
+
+/* ── Timeline ── */
+.ap-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ap-step {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* ── Indicator: circle + vertical line ── */
+.ap-step__indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+}
+
+.ap-step__circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  font-weight: 900;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 4px var(--brand-50, #fff1f1);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.ap-step__line {
+  flex: 1;
+  width: 2px;
+  background: var(--border-dark, #e4e4e7);
+  margin-block: 0.5rem;
+  min-height: 1.5rem;
+}
+
+.ap-step:last-child .ap-step__line {
+  display: none;
+}
+
+/* ── Content card ── */
+.ap-step__content {
+  flex: 1;
+  background: #fff;
+  border: 1px solid var(--border-dark, #e4e4e7);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(15, 23, 42, 0.04));
+}
+
+/* Icon + duration header row */
+.ap-step__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.ap-step__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--brand-50, #fff1f1);
+  color: var(--brand-500, #ff6b6b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ap-step__duration {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--fg-disabled, #a1a1aa);
+  background: var(--bg-muted, #f4f4f5);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.ap-step__title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.15rem;
+}
+
+.ap-step__subtitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand-500, #ff6b6b);
+  margin-bottom: 0.75rem;
+}
+
+.ap-step__desc {
+  font-size: 0.88rem;
+  color: var(--fg-muted, #52525b);
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+/* Tips list */
+.ap-step__tips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border-top: 1px solid var(--border, #f0f0f0);
+  padding-top: 0.85rem;
+}
+
+.ap-step__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--fg-subtle, #71717a);
+  line-height: 1.45;
+}
+
+.ap-step__tip-icon {
+  font-size: 14px !important;
+  color: var(--brand-500, #ff6b6b);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── CTA bottom ── */
+.ap-cta {
+  margin-top: 3rem;
+  text-align: center;
+  background: var(--brand-50, #fff1f1);
+  border-radius: 1.5rem;
+  padding: 2.5rem 1.5rem;
+}
+
+.ap-cta__title {
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.ap-cta__desc {
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.ap-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  border-radius: var(--radius-full, 999px);
+  padding: 0.75rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: var(--shadow-brand, 0 8px 24px rgba(255, 107, 107, 0.3));
+  transition: background 150ms ease, transform 180ms ease;
+}
+
+.ap-cta__btn:hover {
+  background: var(--brand-600, #fa5252);
+  transform: translateY(-1px);
+}
+
+/* ── Skeleton ── */
+.ap-skel-step {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ap-skel-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #ededee 25%, #e4e4e6 50%, #ededee 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+}
+
+.ap-skel-card {
+  flex: 1;
+  height: 160px;
+  border-radius: 1.25rem;
+  background: linear-gradient(90deg, #ededee 25%, #e4e4e6 50%, #ededee 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+}
