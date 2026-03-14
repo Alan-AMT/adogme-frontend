@@ -38,12 +38,6 @@ export default function SuccessStoriesList() {
             Perros que encontraron su hogar para siempre
           </p>
         </div>
-        <Link href="/historias" className="home-stories__all">
-          Ver todas
-          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-            arrow_forward
-          </span>
-        </Link>
       </div>
 
       {/* Cards */}

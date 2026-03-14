@@ -72,7 +72,9 @@ export function Step7Commitment({ answers, onChange }: StepProps) {
     <div className="qz-step">
 
       <div className="qz-step__head">
-        <p className="qz-step__emoji">💛</p>
+        <div className="qz-step__icon">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}>handshake</span>
+        </div>
         <h2 className="qz-step__title">Compromisos y presupuesto</h2>
         <p className="qz-step__subtitle">
           El último paso — ¡ya casi terminamos!
@@ -81,7 +83,7 @@ export function Step7Commitment({ answers, onChange }: StepProps) {
 
       {/* Presupuesto mensual — 4 cards en 2×2 */}
       <div>
-        <p className="qz-section__label" style={{ marginBottom: '0.75rem', textTransform: 'uppercase', fontSize: '0.82rem', fontWeight: 900, color: '#3f3f46', letterSpacing: '0.04em' }}>
+        <p className="qz-section__label">
           Presupuesto mensual estimado
         </p>
         <div className="qz-budget-grid">

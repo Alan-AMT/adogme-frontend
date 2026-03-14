@@ -1,12 +1,7 @@
 // app/(shelter)/refugio/mensajes/page.tsx
-// Archivo 195 — Mensajes del refugio con adoptantes.
-import type { Metadata } from 'next'
-import ShelterMessagesView from '@/modules/shelter/components/ShelterMessagesView'
-
-export const metadata: Metadata = {
-  title: 'Mensajes | Portal Refugio · aDOGme',
-}
+// El chat fue reemplazado por WhatsApp directo — redirige al dashboard.
+import { redirect } from 'next/navigation'
 
 export default function MensajesPage() {
-  return <ShelterMessagesView />
+  redirect('/refugio/dashboard')
 }

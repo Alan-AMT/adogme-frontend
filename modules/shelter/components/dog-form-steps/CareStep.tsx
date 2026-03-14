@@ -40,8 +40,10 @@ export function CareStep({ formData, update }: Props) {
   return (
     <div className="sv-form-section">
       <div className="sv-form-section__header">
-        <span className="material-symbols-outlined">health_and_safety</span>
-        Cuidados y características
+        <div className="sv-form-section__header-icon">
+          <span className="material-symbols-outlined">health_and_safety</span>
+        </div>
+        <span className="sv-form-section__header-text">Cuidados y características</span>
       </div>
       <div className="sv-form-section__body">
         <p style={{ fontSize: '0.82rem', color: '#71717a', marginBottom: '0.25rem' }}>

@@ -49,21 +49,29 @@ export default function ShelterDogFormView({ dogId }: { dogId?: number }) {
     <div className="sv-form">
 
       {/* ── Header ── */}
-      <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#18181b', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#ff6b6b', fontVariationSettings: "'FILL' 1" }}>
+      <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 56, height: 56, borderRadius: '50%',
+          background: '#fff5f5', border: '2px solid #ffe4e4',
+          marginBottom: '0.75rem',
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#ff6b6b', fontVariationSettings: "'FILL' 1" }}>
             {isEdit ? 'edit' : 'add_circle'}
           </span>
-          {isEdit
-            ? `Editando: ${form.formData.nombre || 'perro'}`
-            : 'Registrar nuevo perro'}
+        </div>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#18181b', margin: 0 }}>
+          {isEdit ? `Editando: ${form.formData.nombre || 'perro'}` : 'Registrar nuevo perro'}
         </h1>
+        <p style={{ fontSize: '0.82rem', color: '#71717a', fontWeight: 500, marginTop: '0.3rem' }}>
+          {isEdit ? 'Actualiza los datos del perro' : 'Completa todos los pasos para publicar al perro'}
+        </p>
         {form.isDraft && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
             fontSize: '0.72rem', fontWeight: 700,
             color: '#854d0e', background: '#fef9c3',
-            padding: '0.2rem 0.65rem', borderRadius: 999,
+            padding: '0.2rem 0.65rem', borderRadius: 999, marginTop: '0.5rem',
           }}>
             <span className="material-symbols-outlined" style={{ fontSize: 13 }}>save</span>
             Borrador guardado

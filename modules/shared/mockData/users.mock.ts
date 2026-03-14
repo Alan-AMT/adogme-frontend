@@ -22,7 +22,7 @@ export const MOCK_ADOPTANTE: Adoptante = {
   role: 'applicant',
   status: 'active',
   avatarUrl: '/assets/avatars/avatar1.png',
-  fechaRegistro: '2024-09-01',
+  fechaRegistro: '2025-12-01',
   direccion: 'Calle Reforma 123, Col. Juárez, CDMX',
 }
 

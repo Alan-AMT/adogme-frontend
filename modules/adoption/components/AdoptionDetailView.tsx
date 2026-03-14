@@ -4,12 +4,11 @@
 
 import Image  from 'next/image'
 import Link   from 'next/link'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Badge, requestStatusBadgeVariant } from '../../shared/components/ui/Badge'
 import { Spinner } from '../../shared/components/ui/Spinner'
 import { useRequestDetail } from '../application/hooks/useMyRequests'
-import { useConversationFor } from '@/modules/messaging/application/hooks/useConversationFor'
-import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
+import { getShelterById } from '@/modules/shared/mockData/shelters.mock'
 import type { RequestStatus } from '../../shared/domain/AdoptionRequest'
 import '../styles/adoptionForm.css'
 
@@ -61,6 +60,13 @@ function formatDate(iso: string, withTime = false): string {
 
 const ACTIVE_STATES: RequestStatus[] = ['pending', 'in_review']
 
+function whatsappUrl(phone: string, shelterName: string, dogName: string): string {
+  const digits = phone.replace(/\D/g, '')
+  const full = digits.length === 10 ? `52${digits}` : digits
+  const text = encodeURIComponent(`Hola, soy adoptante de aDOGme. Envié una solicitud para adoptar a ${dogName} del refugio ${shelterName}.`)
+  return `https://wa.me/${full}?text=${text}`
+}
+
 function dotClass(status: RequestStatus, isCurrent = false): string {
   const base = 'ad-timeline-item__dot'
   if (isCurrent && ACTIVE_STATES.includes(status)) return `${base} ${base}--current`
@@ -86,20 +92,6 @@ function DataRow({ label, value }: { label: string; value: string }) {
 export default function AdoptionDetailView({ requestId }: { requestId: number }) {
   const { request, isLoading, error, cancelling, cancel } = useRequestDetail(requestId)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-
-  // B2 — Conversación con el refugio (obtiene o crea al montar)
-  const user = useAuthStore(s => s.user)
-  const chatContext = useMemo(() => request && user?.id ? {
-    adoptanteId:   user.id,
-    refugioId:     request.refugioId,
-    perroId:       request.perroId,
-    solicitudId:   request.id,
-    perroNombre:   request.perroNombre,
-    perroFoto:     request.perroFoto,
-    refugioNombre: request.refugioNombre,
-  } : null, [request?.id, user?.id])
-
-  const { conversationId } = useConversationFor(chatContext)
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -137,7 +129,10 @@ export default function AdoptionDetailView({ requestId }: { requestId: number })
 
   const { formulario: f, historial } = request
   const canCancel  = ACTIVE_STATES.includes(request.estado)
-  const canChat    = ACTIVE_STATES.includes(request.estado)
+  const shelter    = getShelterById(request.refugioId)
+  const waUrl      = shelter?.telefono
+    ? whatsappUrl(shelter.telefono, request.refugioNombre ?? shelter.nombre, request.perroNombre ?? 'el perro')
+    : null
   const rejectionComment = request.estado === 'rejected'
     ? [...historial].reverse().find(h => h.estadoNuevo === 'rejected' && h.comentario)?.comentario
     : undefined
@@ -210,17 +205,18 @@ export default function AdoptionDetailView({ requestId }: { requestId: number })
             </p>
           </div>
 
-          {/* Chat button — B2: navega a la conversación con el refugio */}
-          {canChat && conversationId && (
-            <Link href={`/chat/${conversationId}`} className="ad-chat-btn">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: 18 }}
-              >
-                chat
-              </span>
-              Chatear con el refugio
-            </Link>
+          {/* WhatsApp — contacto directo con el refugio */}
+          {waUrl && (
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ad-chat-btn"
+              style={{ textDecoration: 'none' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>phone_in_talk</span>
+              Contactar por WhatsApp
+            </a>
           )}
 
           {/* Cancel button */}

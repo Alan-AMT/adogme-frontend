@@ -104,7 +104,7 @@ export function DashboardLayout({
   useEffect(() => { setMobileOpen(false) }, [pathname])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f9fafb]">
+    <div className="flex h-full overflow-hidden bg-[#f9fafb]">
 
       {/* ── Sidebar desktop — oculto en mobile ── */}
       <div className="hidden md:flex h-full flex-shrink-0">

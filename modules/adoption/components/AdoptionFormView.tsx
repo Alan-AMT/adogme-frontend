@@ -120,6 +120,14 @@ export default function AdoptionFormView({ dog }: Props) {
       <div className="af-step-card">
         {/* Step header */}
         <div className="af-step-header">
+          <div className="af-step-header__icon">
+            <span
+              className="material-symbols-outlined"
+              style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}
+            >
+              {ADOPTION_STEPS[currentStep].icon}
+            </span>
+          </div>
           <p className="af-step-header__kicker">Paso {currentStep + 1} de {ADOPTION_STEPS.length}</p>
           <h2 className="af-step-header__title">{ADOPTION_STEPS[currentStep].title}</h2>
           <p className="af-step-header__sub">{ADOPTION_STEPS[currentStep].subtitle}</p>
@@ -175,13 +183,22 @@ export default function AdoptionFormView({ dog }: Props) {
       {submittedRequest && (
         <div className="af-modal-overlay">
           <div className="af-modal">
-            <div className="af-modal__icon">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 36" }}
+            <div className="relative flex items-center justify-center" style={{ width: 80, height: 80, margin: '0 auto 1.5rem' }}>
+              <div
+                className="w-20 h-20 rounded-full"
+                style={{ background: 'radial-gradient(circle, #dcfce7 0%, #f0fdf4 70%)', border: '2px solid #bbf7d0' }}
+              />
+              <div
+                className="absolute w-12 h-12 rounded-full flex items-center justify-center"
+                style={{ background: '#16a34a' }}
               >
-                check_circle
-              </span>
+                <span
+                  className="material-symbols-outlined text-white"
+                  style={{ fontSize: 26, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 26" }}
+                >
+                  task_alt
+                </span>
+              </div>
             </div>
 
             <h2 className="af-modal__title">¡Solicitud enviada!</h2>

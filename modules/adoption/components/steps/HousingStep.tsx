@@ -2,10 +2,10 @@
 // Paso 1 — Información de vivienda
 'use client'
 
-import type { AdoptionFormData, HousingInfo, HousingType } from '../../../../shared/domain/AdoptionRequest'
-import { Select }     from '../../../../shared/components/ui/Select'
-import { Input }      from '../../../../shared/components/ui/Input'
-import { FileUpload } from '../../../../shared/components/ui/FileUpload'
+import type { AdoptionFormData, HousingInfo, HousingType } from '@/modules/shared/domain/AdoptionRequest'
+import { Select }     from '@/modules/shared/components/ui/Select'
+import { Input }      from '@/modules/shared/components/ui/Input'
+import { FileUpload } from '@/modules/shared/components/ui/FileUpload'
 
 interface Props {
   data:        Partial<AdoptionFormData>
@@ -55,7 +55,7 @@ function YesNo({
         >
           <span
             className="material-symbols-outlined"
-            style={{ fontSize: 16, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}
+            style={{ fontSize: 16, fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 16" }}
           >
             check_circle
           </span>
@@ -68,7 +68,7 @@ function YesNo({
         >
           <span
             className="material-symbols-outlined"
-            style={{ fontSize: 16, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}
+            style={{ fontSize: 16, fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 16" }}
           >
             cancel
           </span>
@@ -183,7 +183,7 @@ export default function HousingStep({ data, errors, updateField }: Props) {
           Fotos de tu hogar
           <span className="text-[#9ca3af] font-[500] text-[12px] ml-1">(opcional)</span>
         </p>
-        <p className="text-[13px] text-[#71717a] font-[500] mb-4 leading-relaxed">
+        <p className="af-section-hint">
           Adjuntar fotos puede agilizar la revisión de tu solicitud — el refugio
           verá el espacio donde vivirá el perro.
         </p>

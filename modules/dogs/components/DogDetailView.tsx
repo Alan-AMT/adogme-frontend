@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Dog } from "../../shared/domain/Dog";
 import DogShareReport from "./DogShareReport";
 import AdoptButton from "./AdoptButton";
+import FavoriteButton from "./FavoriteButton";
 import "../styles/dogProfile.css";
 
 /* ── Helpers ── */
@@ -145,9 +146,12 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
                 {edadLabel(dog.edad)}
               </p>
             </div>
-            {dog.estado === "disponible" && (
-              <AdoptButton dogId={dog.id} dogNombre={dog.nombre} />
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
+              <FavoriteButton dogId={dog.id} dogNombre={dog.nombre} />
+              {dog.estado === "disponible" && (
+                <AdoptButton dogId={dog.id} dogNombre={dog.nombre} />
+              )}
+            </div>
           </div>
 
           {/* Personality tags */}

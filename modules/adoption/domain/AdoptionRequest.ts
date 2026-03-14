@@ -43,15 +43,16 @@ export interface StepConfig {
   label:    string    // etiqueta para el Stepper
   title:    string    // título del paso
   subtitle: string    // descripción breve
+  icon:     string    // Material Symbol name
 }
 
 export const ADOPTION_STEPS: StepConfig[] = [
-  { id: 0, label: 'Datos',        title: 'Tus datos personales',  subtitle: 'Verifica que tu información esté actualizada' },
-  { id: 1, label: 'Vivienda',     title: 'Tu hogar',              subtitle: 'Cuéntanos sobre el espacio donde vivirá el perro' },
-  { id: 2, label: 'Rutina',       title: 'Tu estilo de vida',     subtitle: 'Necesitamos entender tu día a día' },
-  { id: 3, label: 'Experiencia',  title: 'Experiencia con perros',subtitle: '¿Has tenido mascotas antes?' },
-  { id: 4, label: 'Compromisos',  title: 'Tus compromisos',       subtitle: 'Lee y acepta las condiciones de adopción' },
-  { id: 5, label: 'Resumen',      title: 'Revisa tu solicitud',   subtitle: 'Confirma los datos antes de enviar' },
+  { id: 0, label: 'Datos',        title: 'Tus datos personales',       subtitle: 'Verifica que tu información esté actualizada',         icon: 'person'         },
+  { id: 1, label: 'Vivienda',     title: 'Tu hogar',                   subtitle: 'Cuéntanos sobre el espacio donde vivirá el perro',     icon: 'home'           },
+  { id: 2, label: 'Rutina',       title: '¿Cómo es tu estilo de vida?',subtitle: 'Selecciona la opción que mejor te describe',           icon: 'directions_run' },
+  { id: 3, label: 'Experiencia',  title: 'Experiencia con perros',     subtitle: '¿Has tenido mascotas antes?',                          icon: 'pets'           },
+  { id: 4, label: 'Compromisos',  title: 'Tus compromisos',            subtitle: 'Lee y acepta las condiciones de adopción',             icon: 'handshake'      },
+  { id: 5, label: 'Resumen',      title: 'Revisa tu solicitud',        subtitle: 'Confirma los datos antes de enviar',                   icon: 'fact_check'     },
 ]
 
 // ─── Transiciones de estado permitidas ────────────────────────────────────────

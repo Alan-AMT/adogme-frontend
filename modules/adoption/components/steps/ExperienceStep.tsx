@@ -2,8 +2,8 @@
 // Paso 3 — Experiencia previa con mascotas y motivación
 'use client'
 
-import type { AdoptionFormData } from '../../../../shared/domain/AdoptionRequest'
-import { Textarea } from '../../../../shared/components/ui/Textarea'
+import type { AdoptionFormData } from '@/modules/shared/domain/AdoptionRequest'
+import { Textarea } from '@/modules/shared/components/ui/Textarea'
 
 interface Props {
   data:        Partial<AdoptionFormData>

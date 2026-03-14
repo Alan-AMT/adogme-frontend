@@ -1,8 +1,12 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+  images: {
+    domains: [
+      'images.unsplash.com',  // mock data con fotos reales
+      'res.cloudinary.com',   // cuando conectes el backend
+    ],
+  },
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  output: "standalone",
-};
-
-export default nextConfig;
+module.exports = nextConfig

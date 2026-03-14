@@ -30,6 +30,26 @@
   box-shadow: 0 10px 32px rgba(255, 107, 107, 0.5);
 }
 
+/* Pulso cuando hay mensajes no leídos */
+.cb-bubble__btn--pulse {
+  animation: cb-pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+@keyframes cb-pulse-ring {
+  0% {
+    box-shadow: 0 6px 24px rgba(255, 107, 107, 0.45),
+                0 0 0 0 rgba(255, 107, 107, 0.4);
+  }
+  70% {
+    box-shadow: 0 6px 24px rgba(255, 107, 107, 0.45),
+                0 0 0 14px rgba(255, 107, 107, 0);
+  }
+  100% {
+    box-shadow: 0 6px 24px rgba(255, 107, 107, 0.45),
+                0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
 .cb-bubble__btn .material-symbols-outlined {
   font-size: 24px;
   color: #fff;
@@ -265,7 +285,7 @@
 }
 
 .cb-msg__bubble {
-  max-width: 75%;
+  max-width: 95%;
   padding: 0.65rem 0.9rem;
   border-radius: 1rem;
   font-size: 0.875rem;
@@ -421,5 +441,34 @@
 
 .cb-send-btn .material-symbols-outlined {
   font-size: 18px;
+  color: #fff;
+}
+
+/* ── Links dentro del mensaje del bot ── */
+.cb-msg__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.cb-msg__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1.5px solid #ff6b6b;
+  color: #ff6b6b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: #fff5f5;
+  transition: background 150ms ease, color 150ms ease;
+  align-self: flex-start;
+}
+
+.cb-msg__link:hover {
+  background: #ff6b6b;
   color: #fff;
 }

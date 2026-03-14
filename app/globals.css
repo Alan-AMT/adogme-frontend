@@ -198,3 +198,67 @@ p {
 .icon-thin {
   font-variation-settings: 'wght' 100;
 }
+
+/* =========================
+   Topbar links — animated underline
+   ========================= */
+.topbar-link {
+  position: relative;
+  text-decoration: none;
+}
+.topbar-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+.topbar-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+.topbar-link-black::after  { background: #111827; }
+.topbar-link-red::after    { background: #ff6b6b; }
+
+/* =========================
+   QuickFilterChips — infinite marquee
+   ========================= */
+@keyframes chips-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
+}
+
+.chips-track-wrapper {
+  overflow: hidden;
+  /* fade edges */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+.chips-track {
+  display: flex;
+  gap: 0.5rem;           /* gap-2 */
+  width: max-content;
+  animation: chips-scroll 34s linear infinite;
+}
+
+.chips-track:hover {
+  animation-play-state: paused;
+}

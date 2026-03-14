@@ -7,6 +7,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAdminShelters } from '../application/hooks/useAdminShelters';
+import '@/modules/shelter/styles/shelterDashboard.css';
+import '@/modules/shelter/styles/shelterViews.css';
 import '../styles/admin.css';
 
 type TabKey = 'pending' | 'approved' | 'suspended';
@@ -20,10 +22,10 @@ function formatDate(iso: string): string {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  pending: { label: 'Pendiente', className: 'ad-badge ad-badge--pending' },
-  approved: { label: 'Aprobado', className: 'ad-badge ad-badge--approved' },
-  rejected: { label: 'Rechazado', className: 'ad-badge ad-badge--rejected' },
-  suspended: { label: 'Suspendido', className: 'ad-badge ad-badge--suspended' },
+  pending: { label: 'Pendiente', className: 'sd-badge sd-badge--pending' },
+  approved: { label: 'Aprobado', className: 'sd-badge sd-badge--approved' },
+  rejected: { label: 'Rechazado', className: 'sd-badge sd-badge--rejected' },
+  suspended: { label: 'Suspendido', className: 'sd-badge sd-badge--suspended' },
 };
 
 export default function AdminSheltersView() {
@@ -70,9 +72,9 @@ export default function AdminSheltersView() {
 
   if (isLoading) {
     return (
-      <div className="ad-card">
+      <div className="sd-card">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="ad-skel-row" />
+          <div key={i} className="sd-skel-row" />
         ))}
       </div>
     );
@@ -202,12 +204,12 @@ export default function AdminSheltersView() {
 
       {/* Tab: Pendientes */}
       {activeTab === 'pending' && (
-        <div className="ad-card">
-          <div className="ad-card__header">
-            <span className="ad-card__title">Refugios pendientes de aprobación</span>
+        <div className="sd-card">
+          <div className="sd-card__header">
+            <span className="sd-card__title">Refugios pendientes de aprobación</span>
           </div>
           {pendingShelters.length === 0 ? (
-            <div className="ad-empty">
+            <div className="sd-empty">
               <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#a1a1aa', display: 'block', marginBottom: '0.5rem' }}>check_circle</span>
               <p style={{ color: '#71717a', margin: 0 }}>No hay solicitudes pendientes.</p>
             </div>
@@ -308,17 +310,17 @@ export default function AdminSheltersView() {
 
       {/* Tab: Activos */}
       {activeTab === 'approved' && (
-        <div className="ad-card">
-          <div className="ad-card__header">
-            <span className="ad-card__title">Refugios activos</span>
+        <div className="sd-card">
+          <div className="sd-card__header">
+            <span className="sd-card__title">Refugios activos</span>
           </div>
-          <div className="ad-toolbar" style={{ marginBottom: '1rem' }}>
-            <div className="ad-search">
+          <div className="sv-toolbar" style={{ marginBottom: '1rem' }}>
+            <div className="sv-search">
               <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#a1a1aa', position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)' }}>
                 search
               </span>
               <input
-                className="ad-search__input"
+                className="sv-search__input"
                 type="text"
                 placeholder="Buscar por nombre o ciudad..."
                 value={search}
@@ -327,12 +329,12 @@ export default function AdminSheltersView() {
             </div>
           </div>
           {approvedShelters.length === 0 ? (
-            <div className="ad-empty">
+            <div className="sd-empty">
               <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#a1a1aa', display: 'block', marginBottom: '0.5rem' }}>search_off</span>
               <p style={{ color: '#71717a', margin: 0 }}>No se encontraron refugios activos.</p>
             </div>
           ) : (
-            <table className="ad-table">
+            <table className="sv-table">
               <thead>
                 <tr>
                   <th>Refugio</th>
@@ -430,17 +432,17 @@ export default function AdminSheltersView() {
 
       {/* Tab: Suspendidos/Rechazados */}
       {activeTab === 'suspended' && (
-        <div className="ad-card">
-          <div className="ad-card__header">
-            <span className="ad-card__title">Refugios suspendidos y rechazados</span>
+        <div className="sd-card">
+          <div className="sd-card__header">
+            <span className="sd-card__title">Refugios suspendidos y rechazados</span>
           </div>
           {inactiveShelters.length === 0 ? (
-            <div className="ad-empty">
+            <div className="sd-empty">
               <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#a1a1aa', display: 'block', marginBottom: '0.5rem' }}>check_circle</span>
               <p style={{ color: '#71717a', margin: 0 }}>No hay refugios suspendidos ni rechazados.</p>
             </div>
           ) : (
-            <table className="ad-table">
+            <table className="sv-table">
               <thead>
                 <tr>
                   <th>Refugio</th>

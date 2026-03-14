@@ -103,16 +103,31 @@ export default function ShelterPublicView({ slug }: Props) {
       <div className="sp-body">
         {/* Main: description + dogs */}
         <div className="sp-main">
-          <p className="sp-section-kicker">Sobre el refugio</p>
-          <h2 className="sp-section-title">Quiénes somos</h2>
-          <p className="sp-desc">{shelter.descripcion}</p>
+          {/* About card */}
+          <div className="sp-about">
+            <p className="sp-section-kicker">Sobre el refugio</p>
+            <h2 className="sp-section-title">Quiénes somos</h2>
+            <p className="sp-desc">{shelter.descripcion}</p>
+          </div>
 
           {dogs.length > 0 && (
             <>
-              <p className="sp-section-kicker">Perros disponibles</p>
-              <h2 className="sp-section-title">
-                {dogs.length} perro{dogs.length !== 1 ? "s" : ""} esperando un hogar
-              </h2>
+              {/* Dogs section header */}
+              <div className="sp-dogs-header">
+                <div className="sp-dogs-header__left">
+                  <span className="sp-dogs-header__count">
+                    <span className="material-symbols-outlined" style={{ fontSize: 11, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 11" }}>pets</span>
+                    {dogs.length} disponible{dogs.length !== 1 ? "s" : ""}
+                  </span>
+                  <h2 className="sp-section-title">
+                    Perros esperando un hogar
+                  </h2>
+                </div>
+                <Link href="/perros" className="sp-dogs-all-link">
+                  Ver todos
+                  <span className="material-symbols-outlined" style={{ fontSize: 15 }}>arrow_forward</span>
+                </Link>
+              </div>
               <div className="sp-dogs-grid">
                 {dogs.map((dog) => (
                   <Link key={dog.id} href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="sp-dog-card">

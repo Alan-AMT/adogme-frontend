@@ -1,8 +1,9 @@
+// modules/home/domain/AdoptionStory.ts
+
 export interface AdoptionStory {
-  id: number;
-  dogName: string;
-  adopterName: string;
-  storyShort: string;
-  imageUrl: string;
-  date: string;
+  id: number
+  dogName: string
+  adopterName: string
+  storyShort: string
+  imageUrl: string
 }

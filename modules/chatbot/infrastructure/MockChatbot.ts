@@ -28,7 +28,7 @@ const RESPUESTAS: { keywords: string[]; respuesta: string }[] = [
   {
     keywords: ["costo", "precio", "cuánto", "cuanto", "pago", "gratis"],
     respuesta:
-      "La adopción en los refugios asociados a aDOGme tiene un costo de recuperación que varía entre $500 y $1,500 MXN dependiendo del refugio. Este costo cubre vacunas, desparasitación y esterilización del perrito. ¡Es muchísimo menos que comprarlo! 💰",
+      "La adopción en los refugios asociados a aDOGme no tiene ningun costo de recuperación 💰",
   },
   {
     keywords: ["cachorro", "bebé", "pequeño", "chiquito"],

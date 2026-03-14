@@ -9,7 +9,6 @@ import type {
   DogListItem,
   DogSize,
   DogSex,
-  DogStatus,
   EnergyLevel,
 } from "../../shared/domain/Dog";
 import { useDogs } from "../application/hooks/useDogs";
@@ -357,27 +356,6 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
         </div>
       </div>
 
-      {/* Estado */}
-      <div className="cat-filter-group">
-        <p className="cat-filter-group__title">Estado</p>
-        <div className="cat-chip-row">
-          {(
-            [
-              { val: "disponible", label: "Disponible" },
-              { val: "en_proceso", label: "En proceso" },
-              { val: "adoptado", label: "Adoptado" },
-            ] as { val: DogStatus; label: string }[]
-          ).map(({ val, label }) => (
-            <Chip
-              key={val}
-              label={label}
-              active={filters.estado === val}
-              onClick={() => setFilter("estado", val)}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* Compatibilidad */}
       <div className="cat-filter-group">
         <p className="cat-filter-group__title">Compatibilidad</p>
@@ -504,7 +482,7 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
               search
             </span>
             <input
-              type="search"
+              type="text"
               className="cat-search__input"
               placeholder="Busca por nombre, raza o refugio..."
               value={searchText}
@@ -539,12 +517,21 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
                     setShowSuggestions(false);
                   }}
                 >
+                  <div className="cat-suggestion-item__photo">
+                    <Image
+                      src={dog.foto}
+                      alt={dog.nombre}
+                      fill
+                      sizes="38px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
                   <div className="cat-suggestion-item__main">
                     <span className="cat-suggestion-item__name">
                       {dog.nombre}
                     </span>
                     <span className="cat-suggestion-item__raza">
-                      {dog.raza}
+                      {dog.raza} · {edadLabel(dog.edad)}
                     </span>
                   </div>
                   <span className="cat-suggestion-item__shelter">

@@ -60,7 +60,9 @@ export function Step6DogProfile({ answers, onChange }: StepProps) {
     <div className="qz-step">
 
       <div className="qz-step__head">
-        <p className="qz-step__emoji">🐕</p>
+        <div className="qz-step__icon">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}>emoji_nature</span>
+        </div>
         <h2 className="qz-step__title">¿Cómo es el perro ideal para ti?</h2>
         <p className="qz-step__subtitle">
           Define las características que buscas
@@ -69,7 +71,7 @@ export function Step6DogProfile({ answers, onChange }: StepProps) {
 
       {/* Energía — 4 cards 2×2 */}
       <div>
-        <p className="qz-section__label" style={{ marginBottom: '0.75rem', textTransform: 'uppercase', fontSize: '0.82rem', fontWeight: 900, color: '#3f3f46', letterSpacing: '0.04em' }}>
+        <p className="qz-section__label">
           Nivel de energía
         </p>
         <div className="qz-cards-grid">

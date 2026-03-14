@@ -21,8 +21,7 @@ const COLS: FooterCol[] = [
     links: [
       { label: "Perros en adopción", href: "/perros" },
       { label: "Refugios verificados", href: "/refugios" },
-      { label: "Historias de éxito", href: "/historias" },
-      { label: "Cómo funciona", href: "/#proceso" },
+      { label: "Cómo funciona", href: "/proceso-adopcion" },
     ],
   },
   {
@@ -155,8 +154,8 @@ export default function Footer() {
               </span>
             </Link>
 
-            <p className="text-[14px] leading-[1.65] max-w-[320px] text-[#71717a]">
-              Uniendo corazones en la GAM. Dale una segunda oportunidad a quien más lo necesita.
+            <p className="text-[14px] leading-[1.65] max-w-[260px] text-[#71717a]">
+              Uniendo corazones en la GAM. Adopta y cambia dos vidas.
             </p>
 
             {/* Socials — centrados */}
@@ -291,26 +290,6 @@ export default function Footer() {
             </span>
           </div>
 
-          <div className="hidden lg:flex items-center gap-2 order-3">
-            <input
-              type="email"
-              placeholder="tu@correo.com"
-              className="px-3.5 py-1.5 rounded-full text-[12px] font-[600] outline-none w-44
-                         bg-white/5 border border-white/10 text-white placeholder:text-[#71717a]"
-              aria-label="Correo para newsletter"
-            />
-            <button
-              type="button"
-              className="px-3.5 py-1.5 rounded-full text-[12px] font-[900] transition-all duration-150 hover:-translate-y-px"
-              style={{
-                background: "#ff6b6b",
-                color: "#ffffff",
-                boxShadow: "0 4px 12px rgba(255,107,107,0.30)",
-              }}
-            >
-              Suscribirse
-            </button>
-          </div>
         </div>
       </div>
     </footer>

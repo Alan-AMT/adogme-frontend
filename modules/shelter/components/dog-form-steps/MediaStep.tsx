@@ -67,8 +67,10 @@ export function MediaStep({ formData, errors, update, validateMedia, mediaValida
   return (
     <div className="sv-form-section">
       <div className="sv-form-section__header">
-        <span className="material-symbols-outlined">photo_library</span>
-        Fotos del perro
+        <div className="sv-form-section__header-icon">
+          <span className="material-symbols-outlined">photo_library</span>
+        </div>
+        <span className="sv-form-section__header-text">Fotos del perro</span>
       </div>
       <div className="sv-form-section__body">
 

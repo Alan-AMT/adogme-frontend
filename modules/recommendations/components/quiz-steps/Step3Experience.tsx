@@ -35,7 +35,9 @@ export function Step3Experience({ answers, onChange }: StepProps) {
     <div className="qz-step">
 
       <div className="qz-step__head">
-        <p className="qz-step__emoji">🐾</p>
+        <div className="qz-step__icon">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}>pets</span>
+        </div>
         <h2 className="qz-step__title">¿Tienes experiencia con perros?</h2>
         <p className="qz-step__subtitle">
           Tu experiencia nos ayuda a recomendar el compañero ideal para ti

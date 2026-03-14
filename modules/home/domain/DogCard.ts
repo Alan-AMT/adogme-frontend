@@ -1,17 +1,18 @@
-//adogme-frontend\modules\home\components\dogsList.tsx
-export type DogCard = {
-  id: number;
-  refugio_id: number;
-  nombre: string;
-  edad: number;
-  raza: string;
-  tamano: string;
-  nivelEnergia: string;
-  sexo: string;
-  salud: string;
-  estado: string;
-  compatibilidad: number;
-  descripcion: string;
-  fechaRegistro: string;
-  imageUrl: string;
-};
+// modules/home/domain/DogCard.ts
+
+export interface DogCard {
+  id: number
+  nombre: string
+  raza: string
+  descripcion: string
+  edad: number
+  tamano: string
+  nivelEnergia: string
+  salud: string
+  estado: string
+  imageUrl: string
+  // Raw values for client-side filtering in hero
+  tamanoRaw?: string
+  nivelEnergiaRaw?: string
+  edadCat?: string
+}

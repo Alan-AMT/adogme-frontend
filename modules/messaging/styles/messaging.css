@@ -7,7 +7,8 @@
 
 .ms-layout {
   display: flex;
-  height: calc(100dvh - 64px);   /* descontar Navbar aprox 64px */
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: #f4f4f5;
   border-top: 1px solid #e4e4e7;
@@ -434,6 +435,7 @@
 /* Avatar del otro */
 
 .ms-bubble-avatar {
+  position: relative;
   width: 28px;
   height: 28px;
   border-radius: 999px;
@@ -619,7 +621,7 @@
 /* ── Responsive — mobile ──────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
-  .ms-layout { height: calc(100dvh - 56px); }
+  .ms-layout { height: auto; }
 
   .ms-sidebar {
     width: 100%;

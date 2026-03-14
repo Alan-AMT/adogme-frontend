@@ -1,30 +1,30 @@
+// modules/home/components/dogsList.tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-
+import { useHomeDogs } from "../application/hooks/useHomeContent";
 import type { DogCard } from "../domain/DogCard";
-import { MockHomedogsListRepository } from "../infrastructure/MockDogsList";
+import "../styles/homeDogs.css";
 
-/* ── Badge de estado ──────────────────────────────────────────── */
+/* ── Badge de estado ─────────────────────────────────── */
+const ESTADO_STYLES: Record<string, string> = {
+  Disponible:     "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200",
+  "En adopción":  "bg-amber-100 text-amber-700 ring-1 ring-amber-200",
+  "En tratamiento": "bg-sky-100 text-sky-700 ring-1 ring-sky-200",
+  Adoptado:       "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200",
+};
+
 function EstadoBadge({ estado }: { estado: string }) {
-  const map: Record<string, { color: string; label: string }> = {
-    Disponible: { color: "bg-emerald-100 text-emerald-700 ring-emerald-200", label: "Disponible" },
-    "En adopción": { color: "bg-amber-100 text-amber-700 ring-amber-200", label: "En adopción" },
-    "En tratamiento": { color: "bg-sky-100 text-sky-700 ring-sky-200", label: "En tratamiento" },
-    Adoptado: { color: "bg-zinc-100 text-zinc-500 ring-zinc-200", label: "Adoptado" },
-  };
-  const s = map[estado] ?? { color: "bg-zinc-100 text-zinc-500 ring-zinc-200", label: estado };
-
+  const cls = ESTADO_STYLES[estado] ?? "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200";
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${s.color}`}>
-      {s.label}
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${cls}`}>
+      {estado}
     </span>
   );
 }
 
-/* ── Info row ─────────────────────────────────────────────────── */
+/* ── Info row ────────────────────────────────────────── */
 function InfoRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
     <div className="home-dog-info">
@@ -35,53 +35,49 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
   );
 }
 
-/* ── Card Principal ───────────────────────────────────────────── */
-function DogStampCard({ dog }: { dog: DogCard }) {
+/* ── Card ────────────────────────────────────────────── */
+function DogCard({ dog }: { dog: DogCard }) {
   return (
-    <article className="home-dog-frame" aria-label={`Perro ${dog.nombre}`}>
+    <Link href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="home-dog-frame group">
       <div className="home-dog-panel">
-        {/* Imagen del perro */}
+
+        {/* Foto */}
         <div className="home-dog-media">
           <div className="home-dog-photo">
             <Image
               src={dog.imageUrl}
-              alt={dog.nombre}
+              alt={`Fotografía de ${dog.nombre}`}
               fill
-              className="home-dog-photo__img"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 200px"
+              className="home-dog-photo__img group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 480px) 100vw, (max-width: 900px) 50vw, 25vw"
             />
           </div>
         </div>
 
-        {/* Información */}
+        {/* Body */}
         <div className="home-dog-body">
           <div className="home-dog-badge">
             <EstadoBadge estado={dog.estado} />
           </div>
 
-          <div>
-            <h3 className="home-dog-name">{dog.nombre}</h3>
-            <p className="home-dog-breed">{dog.raza}</p>
-            <p className="home-dog-desc">{dog.descripcion}</p>
-          </div>
+          <h3 className="home-dog-name">{dog.nombre}</h3>
+          <p className="home-dog-breed">{dog.raza}</p>
 
           <div className="home-dog-infoList">
-            <InfoRow icon="cake" label="Edad" value={`${dog.edad} año${dog.edad === 1 ? "" : "s"}`} />
-            <InfoRow icon="straighten" label="Tamaño" value={dog.tamano} />
-            <InfoRow icon="bolt" label="Energía" value={dog.nivelEnergia} />
-            <InfoRow icon="medical_services" label="Salud" value={dog.salud} />
+            <InfoRow icon="cake"       label="Edad"    value={`${dog.edad} año${dog.edad === 1 ? "" : "s"}`} />
+            <InfoRow icon="straighten" label="Tamaño"  value={dog.tamano} />
+            <InfoRow icon="bolt"       label="Energía" value={dog.nivelEnergia} />
           </div>
 
-          <Link href={`/perros/${dog.id}`} className="home-dog-cta">
-            Ver perfil
-          </Link>
+          <span className="home-dog-cta">Ver perfil</span>
         </div>
+
       </div>
-    </article>
+    </Link>
   );
 }
 
-/* ── Skeleton de Carga ────────────────────────────────────────── */
+/* ── Skeleton ────────────────────────────────────────── */
 function SkeletonCard() {
   return (
     <div className="home-dog-frame">
@@ -89,8 +85,9 @@ function SkeletonCard() {
         <div className="home-dog-skel__media animate-pulse" />
         <div className="home-dog-skel__body">
           <div className="home-dog-skel__line is-title animate-pulse" />
-          <div className="home-dog-skel__line animate-pulse" style={{ width: "40%" }} />
-          <div className="home-dog-skel__line animate-pulse" style={{ marginTop: "1rem" }} />
+          <div className="home-dog-skel__line animate-pulse" style={{ width: "45%" }} />
+          <div className="home-dog-skel__line animate-pulse" style={{ marginTop: "0.75rem" }} />
+          <div className="home-dog-skel__line animate-pulse" />
           <div className="home-dog-skel__line animate-pulse" />
           <div className="home-dog-skel__line is-cta animate-pulse" />
         </div>
@@ -99,26 +96,11 @@ function SkeletonCard() {
   );
 }
 
-/* ── Exportación Principal ────────────────────────────────────── */
+/* ── Sección principal ───────────────────────────────── */
 export default function HomeDogsList() {
-  const [dogs, setDogs] = useState<DogCard[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const repo = new MockHomedogsListRepository();
-        const all = await repo.getMainDogs();
-        // Solo mostramos los primeros 3 que no estén adoptados
-        const available = all.filter((d) => d.estado !== "Adoptado").slice(0, 3);
-        setDogs(available);
-      } catch (error) {
-        console.error("Error cargando perros:", error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const { dogs: allDogs, loading } = useHomeDogs();
+  // 4 perros disponibles
+  const dogs = allDogs.filter((d) => d.estado !== "Adoptado").slice(0, 4);
 
   return (
     <section className="home-dogs container mx-auto px-5">
@@ -127,7 +109,7 @@ export default function HomeDogsList() {
           <p className="home-dogs__kicker">Adopción</p>
           <h2 className="home-dogs__title">Nuestros perros</h2>
           <p className="home-dogs__subtitle">
-            Conoce a quienes esperan un hogar en Gustavo A. Madero
+            Conoce a quienes esperan un hogar
           </p>
         </div>
 
@@ -141,8 +123,8 @@ export default function HomeDogsList() {
 
       <div className="home-dogs__grid">
         {loading
-          ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-          : dogs.map((dog) => <DogStampCard key={dog.id} dog={dog} />)}
+          ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+          : dogs.map((dog) => <DogCard key={dog.id} dog={dog} />)}
       </div>
     </section>
   );

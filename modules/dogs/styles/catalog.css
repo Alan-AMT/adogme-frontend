@@ -351,10 +351,26 @@
   background: #fff5f5;
 }
 
+.cat-suggestion-item__photo {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f4f4f5;
+}
+
+.cat-suggestion-item__photo img {
+  object-fit: cover;
+}
+
 .cat-suggestion-item__main {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .cat-suggestion-item__name {

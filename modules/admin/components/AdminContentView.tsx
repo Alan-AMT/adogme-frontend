@@ -5,6 +5,8 @@
 import { useState, useRef, useCallback, useEffect, type ChangeEvent } from 'react'
 import { useAdminContent } from '../application/hooks/useAdminContent'
 import type { AdoptionStep, ChatbotFAQ } from '@/modules/shared/mockData/content.mock'
+import '@/modules/shelter/styles/shelterDashboard.css'
+import '@/modules/shelter/styles/shelterViews.css'
 import '../styles/admin.css'
 
 // ─── Types & Constants ────────────────────────────────────────────────────────
@@ -113,9 +115,9 @@ function LoadingSkeleton() {
         <div style={{ height: 32, width: 100, borderRadius: 999, background: '#f4f4f5' }} />
       </div>
       <div style={{ padding: '0.5rem 1.25rem' }}>
-        <div className="ad-skel-row" />
-        <div className="ad-skel-row" />
-        <div className="ad-skel-row" />
+        <div className="sd-skel-row" />
+        <div className="sd-skel-row" />
+        <div className="sd-skel-row" />
       </div>
     </div>
   )
@@ -374,7 +376,7 @@ function ProcesoTab({ localSteps, setLocalSteps, isSaving, saveAdoptionProcess }
         })}
 
         {localSteps.length === 0 && (
-          <div className="ad-empty">
+          <div className="sd-empty">
             <span className="material-symbols-outlined" style={{ fontSize: 32, display: 'block', marginBottom: '0.5rem', color: '#d4d4d8' }}>list_alt</span>
             No hay pasos definidos. Agrega el primero.
           </div>
@@ -458,7 +460,7 @@ function FaqsTab({ localFaqs, setLocalFaqs, isSaving, saveFaqs }: FaqsTabProps) 
 
         {/* Table */}
         <div style={cardStyle}>
-          <table className="ad-table" style={{ width: '100%' }}>
+          <table className="sv-table" style={{ width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: 36 }}>#</th>
@@ -587,7 +589,7 @@ function FaqsTab({ localFaqs, setLocalFaqs, isSaving, saveFaqs }: FaqsTabProps) 
           </table>
 
           {localFaqs.length === 0 && (
-            <div className="ad-empty">No hay FAQs configuradas.</div>
+            <div className="sd-empty">No hay FAQs configuradas.</div>
           )}
         </div>
 

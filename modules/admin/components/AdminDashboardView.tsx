@@ -7,23 +7,13 @@ import Link from 'next/link';
 import { StatsCard } from '@/modules/shared/components/charts/StatsCard';
 import { useAdminDashboard } from '../application/hooks/useAdminDashboard';
 import { useAdminShelters } from '../application/hooks/useAdminShelters';
+import '@/modules/shelter/styles/shelterDashboard.css';
+import '@/modules/shelter/styles/shelterViews.css';
 import '../styles/admin.css';
 
 const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 const ADOPTION_DATA = [32, 38, 45, 41, 52, 58, 61, 55, 48, 63, 57, 47];
 
-const CITY_DATA = [
-  { city: 'Ciudad de México', count: 1 },
-  { city: 'Guadalajara', count: 1 },
-  { city: 'Monterrey', count: 1 },
-  { city: 'Puebla', count: 1 },
-  { city: 'Tijuana', count: 1 },
-  { city: 'Chihuahua', count: 1 },
-  { city: 'Mérida', count: 1 },
-  { city: 'León', count: 1 },
-];
-
-const MAX_CITY = Math.max(...CITY_DATA.map((d) => d.count));
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('es-MX', {
@@ -109,21 +99,21 @@ export default function AdminDashboardView() {
   if (isLoading) {
     return (
       <div>
-        <div className="ad-stats" style={{ marginBottom: '1.5rem' }}>
+        <div className="sd-stats" style={{ marginBottom: '1.5rem' }}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="ad-skel-stat" />
+            <div key={i} className="sd-skel-stat" />
           ))}
         </div>
-        <div className="ad-charts-row" style={{ marginBottom: '1.5rem' }}>
-          <div className="ad-skel-stat" style={{ height: 200 }} />
-          <div className="ad-skel-stat" style={{ height: 200 }} />
+        <div className="sd-charts-row" style={{ marginBottom: '1.5rem' }}>
+          <div className="sd-skel-stat" style={{ height: 200 }} />
+          <div className="sd-skel-stat" style={{ height: 200 }} />
         </div>
-        <div className="ad-card">
-          <div className="ad-card__header">
-            <span className="ad-card__title">Pendientes de aprobación</span>
+        <div className="sd-card">
+          <div className="sd-card__header">
+            <span className="sd-card__title">Pendientes de aprobación</span>
           </div>
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="ad-skel-row" />
+            <div key={i} className="sd-skel-row" />
           ))}
         </div>
       </div>
@@ -139,6 +129,20 @@ export default function AdminDashboardView() {
   }
 
   const pendingShelters = shelters.filter((s) => s.status === 'pending');
+
+  // Agrupar refugios aprobados por alcaldía/ciudad
+  const cityMap = new Map<string, number>()
+  shelters
+    .filter(s => s.status === 'approved')
+    .forEach(s => {
+      const city = s.ciudad || 'Sin ciudad'
+      cityMap.set(city, (cityMap.get(city) ?? 0) + 1)
+    })
+  const cityData = Array.from(cityMap.entries())
+    .map(([city, count]) => ({ city, count }))
+    .sort((a, b) => b.count - a.count)
+  const maxCity = Math.max(...cityData.map(d => d.count), 1)
+
   const polyline = buildPolylinePoints(ADOPTION_DATA);
   const area = buildAreaPoints(ADOPTION_DATA);
   const dots = getDotCoords(ADOPTION_DATA);
@@ -152,7 +156,7 @@ export default function AdminDashboardView() {
   return (
     <>
       {/* KPI cards */}
-      <div className="ad-stats">
+      <div className="sd-stats">
         <StatsCard
           title="Total adopciones"
           value={stats?.adopcionesTotales ?? 0}
@@ -194,11 +198,11 @@ export default function AdminDashboardView() {
       </div>
 
       {/* Charts row */}
-      <div className="ad-charts-row">
+      <div className="sd-charts-row">
         {/* Line chart card */}
-        <div className="ad-card">
-          <div className="ad-card__header">
-            <span className="ad-card__title">Adopciones por mes</span>
+        <div className="sd-card">
+          <div className="sd-card__header">
+            <span className="sd-card__title">Adopciones por mes</span>
           </div>
           <svg
             viewBox="0 0 380 100"
@@ -254,18 +258,22 @@ export default function AdminDashboardView() {
         </div>
 
         {/* Bar chart card */}
-        <div className="ad-card">
-          <div className="ad-card__header">
-            <span className="ad-card__title">Refugios por ciudad</span>
+        <div className="sd-card">
+          <div className="sd-card__header">
+            <span className="sd-card__title">Refugios por ciudad</span>
           </div>
           <div className="ad-bar-chart">
-            {CITY_DATA.map((item) => (
+            {cityData.length === 0 ? (
+              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', textAlign: 'center', padding: '1rem 0' }}>
+                Sin refugios aprobados
+              </p>
+            ) : cityData.map((item) => (
               <div key={item.city} className="ad-bar-row">
                 <span className="ad-bar-row__label">{item.city}</span>
                 <div className="ad-bar-row__track">
                   <div
                     className="ad-bar-row__fill"
-                    style={{ width: `${(item.count / MAX_CITY) * 100}%` }}
+                    style={{ width: `${(item.count / maxCity) * 100}%` }}
                   />
                 </div>
                 <span className="ad-bar-row__count">{item.count}</span>
@@ -276,23 +284,23 @@ export default function AdminDashboardView() {
       </div>
 
       {/* Pending shelters table */}
-      <div className="ad-card">
-        <div className="ad-card__header">
-          <span className="ad-card__title">Pendientes de aprobación</span>
-          <Link href="/admin/refugios?tab=pendientes" className="ad-card__link">
+      <div className="sd-card">
+        <div className="sd-card__header">
+          <span className="sd-card__title">Pendientes de aprobación</span>
+          <Link href="/admin/refugios?tab=pendientes" className="sd-card__link">
             Ver todos
           </Link>
         </div>
 
         {pendingShelters.length === 0 ? (
-          <div className="ad-empty">
+          <div className="sd-empty">
             <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#a1a1aa', display: 'block', marginBottom: '0.5rem' }}>
               check_circle
             </span>
             <p style={{ color: '#71717a', margin: 0 }}>No hay refugios pendientes de aprobación.</p>
           </div>
         ) : (
-          <table className="ad-table">
+          <table className="sv-table">
             <thead>
               <tr>
                 <th>Refugio</th>
@@ -340,7 +348,7 @@ export default function AdminDashboardView() {
                   </td>
                   <td>{formatDate(s.fechaRegistro)}</td>
                   <td>
-                    <span className="ad-badge ad-badge--pending">Pendiente</span>
+                    <span className="sd-badge sd-badge--pending">Pendiente</span>
                   </td>
                   <td>
                     <Link href={`/admin/refugios/${s.id}`} className="ad-action-link">

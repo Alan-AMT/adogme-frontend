@@ -44,8 +44,10 @@ export function MedicalStep({ formData, errors, update }: Props) {
       {/* ── Salud general ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">favorite</span>
-          Salud general
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">favorite</span>
+          </div>
+          <span className="sv-form-section__header-text">Salud general</span>
         </div>
         <div className="sv-form-section__body">
           <div className="sv-field">
@@ -68,8 +70,10 @@ export function MedicalStep({ formData, errors, update }: Props) {
       {/* ── Registro de vacunas ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">vaccines</span>
-          Registro de vacunas
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">vaccines</span>
+          </div>
+          <span className="sv-form-section__header-text">Registro de vacunas</span>
         </div>
         <div className="sv-form-section__body">
 

@@ -39,29 +39,11 @@ export interface Donation {
 
 export interface DonationConfig {
   aceptaDonaciones: boolean
-  metaMensual?: number         // monto objetivo mensual en MXN
-  montoRecomendado?: number    // sugerido al iniciar el flujo
   descripcionCausa?: string    // texto que aparece en la página de donación
-  paypalEmail?: string
-  stripeAccountId?: string
-  cuentaClabeEnmascarada?: string  // "****1234"
+  cuentaClabe?: string         // CLABE interbancaria (18 dígitos)
+  banco?: string               // nombre del banco de la cuenta CLABE
+  titularCuenta?: string       // nombre del titular de la cuenta
+  paypalLink?: string          // URL directa de PayPal.me o pago
+  mercadoPagoLink?: string     // URL de MercadoPago (link de cobro)
 }
 
-// ─── Resumen de donaciones (para el dashboard del refugio) ───────────────────
-
-export interface DonationSummary {
-  totalMes: number
-  totalHistorico: number
-  totalDonaciones: number
-  progresoMeta?: number    // porcentaje 0-100 si hay metaMensual
-  ultimasDonaciones: Donation[]
-}
-
-// ─── Formulario de donación (paso del flujo) ─────────────────────────────────
-
-export interface DonationFormData {
-  monto: number
-  metodoPago: PaymentMethod
-  concepto?: string
-  esAnonima: boolean
-}

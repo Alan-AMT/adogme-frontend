@@ -40,7 +40,7 @@ export default function ChatView({ conversationId }: ChatViewProps) {
 
   // Al seleccionar conversación en la lista
   function handleSelect(id: number) {
-    router.push(`/chat/${id}`)
+    router.push(`/chat/${id}`, { scroll: false })
     setMobileShowChat(true)
     markRead(id)
   }
@@ -48,7 +48,7 @@ export default function ChatView({ conversationId }: ChatViewProps) {
   // Mobile — volver a la lista
   function handleBack() {
     setMobileShowChat(false)
-    router.push(`/chat/${conversationId}`)   // mantiene URL pero muestra lista en mobile
+    router.push(`/chat/${conversationId}`, { scroll: false })   // mantiene URL pero muestra lista en mobile
   }
 
   return (

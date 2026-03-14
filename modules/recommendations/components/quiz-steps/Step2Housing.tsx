@@ -40,7 +40,9 @@ export function Step2Housing({ answers, onChange }: StepProps) {
     <div className="qz-step">
 
       <div className="qz-step__head">
-        <p className="qz-step__emoji">🏠</p>
+        <div className="qz-step__icon">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}>home</span>
+        </div>
         <h2 className="qz-step__title">¿Cómo es tu vivienda?</h2>
         <p className="qz-step__subtitle">
           El espacio es clave para elegir el compañero perfecto

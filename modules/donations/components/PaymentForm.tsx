@@ -115,10 +115,10 @@ export default function PaymentForm({
   externalPaymentUrl,
   shelterName,
 }: PaymentFormProps) {
-  const [cardNumber, setCardNumber] = useState('')
-  const [cardName, setCardName]     = useState('')
-  const [expiry, setExpiry]         = useState('')
-  const [cvv, setCvv]               = useState('')
+  const [cardNumber, setCardNumber] = useState('4111111111111111')
+  const [cardName, setCardName]     = useState('Usuario Prueba')
+  const [expiry, setExpiry]         = useState('1234')
+  const [cvv, setCvv]               = useState('123')
   const [concepto, setConcepto]     = useState('')
   const [esAnonima, setEsAnonima]   = useState(false)
   const [touched, setTouched]       = useState<Record<string, boolean>>({})
@@ -149,12 +149,12 @@ export default function PaymentForm({
   // ── Validation ─────────────────────────────────────────────────────────────
 
   const errors = {
-    cardNumber: cardDigits.length < 16 || !luhnCheck(cardDigits)
+    cardNumber: cardDigits.length < 13
       ? 'Número de tarjeta inválido'
       : '',
     cardName: !cardName.trim() ? 'Ingresa el nombre en la tarjeta' : '',
-    expiry: !validateExpiry(expiry) ? 'Fecha de vencimiento inválida' : '',
-    cvv: cvv.length < (brand === 'amex' ? 4 : 3) ? 'CVV inválido' : '',
+    expiry: expiry.replace(/\D/g, '').length < 4 ? 'Fecha de vencimiento inválida' : '',
+    cvv: cvv.length < 3 ? 'CVV inválido' : '',
   }
 
   const isValid = !Object.values(errors).some(Boolean)
@@ -225,7 +225,7 @@ export default function PaymentForm({
             <input
               type="text"
               inputMode="numeric"
-              autoComplete="cc-number"
+              autoComplete="off"
               placeholder="1234 5678 9012 3456"
               value={formatCardDisplay(cardNumber)}
               onChange={handleCardNumber}
@@ -249,7 +249,7 @@ export default function PaymentForm({
           <label className="dn-field-label">Nombre del titular</label>
           <input
             type="text"
-            autoComplete="cc-name"
+            autoComplete="off"
             placeholder="Como aparece en la tarjeta"
             value={cardName}
             onChange={e => setCardName(e.target.value)}
@@ -268,7 +268,7 @@ export default function PaymentForm({
             <input
               type="text"
               inputMode="numeric"
-              autoComplete="cc-exp"
+              autoComplete="off"
               placeholder="MM/AA"
               value={formatExpiry(expiry)}
               onChange={handleExpiry}
@@ -285,7 +285,7 @@ export default function PaymentForm({
             <input
               type="password"
               inputMode="numeric"
-              autoComplete="cc-csc"
+              autoComplete="off"
               placeholder={brand === 'amex' ? '••••' : '•••'}
               value={cvv}
               onChange={handleCvv}
@@ -337,7 +337,7 @@ export default function PaymentForm({
             </>
           ) : (
             <>
-              🔒 Donar ${monto.toLocaleString('es-MX')} MXN
+              Donar ${monto.toLocaleString('es-MX')} MXN
             </>
           )}
         </button>

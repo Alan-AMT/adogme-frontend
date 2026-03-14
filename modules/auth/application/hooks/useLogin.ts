@@ -25,15 +25,13 @@ import { useState } from 'react'
 
 function getPostLoginUrl(role: string, redirectParam: string | null): string {
   // Si viene de una ruta protegida, respetar el ?redirect= del middleware
-  if (role === 'applicant' && redirectParam) {
+  if (redirectParam) {
     return decodeURIComponent(redirectParam)
   }
-  switch (role) {
-    case 'applicant': return '/mis-solicitudes'
-    case 'shelter':   return '/refugio/dashboard'
-    case 'admin':     return '/admin'
-    default:          return '/'
-  }
+  if (role === 'admin')     return '/admin'
+  if (role === 'shelter')   return '/refugio/dashboard'
+  if (role === 'applicant') return '/mis-solicitudes'
+  return '/'
 }
 
 // ── Tipos del hook ────────────────────────────────────────────────────────────

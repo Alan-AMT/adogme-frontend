@@ -2,9 +2,9 @@
 // Paso 4 — Lista de compromisos + checkboxes de aceptación
 'use client'
 
-import type { AdoptionFormData } from '../../../../shared/domain/AdoptionRequest'
-import { Checkbox } from '../../../../shared/components/ui/Checkbox'
-import { Textarea } from '../../../../shared/components/ui/Textarea'
+import type { AdoptionFormData } from '@/modules/shared/domain/AdoptionRequest'
+import { Checkbox } from '@/modules/shared/components/ui/Checkbox'
+import { Textarea } from '@/modules/shared/components/ui/Textarea'
 
 interface Props {
   data:        Partial<AdoptionFormData>

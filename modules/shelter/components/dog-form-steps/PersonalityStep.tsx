@@ -51,8 +51,10 @@ export function PersonalityStep({ formData, errors, update }: Props) {
       {/* ── Tags de personalidad ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">psychology</span>
-          Personalidad
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">psychology</span>
+          </div>
+          <span className="sv-form-section__header-text">Personalidad</span>
         </div>
         <div className="sv-form-section__body">
           <p style={{ fontSize: '0.8rem', color: '#71717a', marginBottom: '0.25rem' }}>
@@ -111,8 +113,10 @@ export function PersonalityStep({ formData, errors, update }: Props) {
       {/* ── Compatibilidad ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">diversity_1</span>
-          Compatibilidad
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">diversity_1</span>
+          </div>
+          <span className="sv-form-section__header-text">Compatibilidad</span>
         </div>
         <div className="sv-form-section__body">
           <p style={{ fontSize: '0.8rem', color: '#71717a', marginBottom: '0.5rem' }}>

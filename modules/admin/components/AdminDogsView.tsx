@@ -8,6 +8,8 @@ import Link  from 'next/link'
 import { useMemo, useState } from 'react'
 import { useAdminDogs }      from '../application/hooks/useAdminDogs'
 import type { Dog }          from '@/modules/shared/domain/Dog'
+import '@/modules/shelter/styles/shelterDashboard.css'
+import '@/modules/shelter/styles/shelterViews.css'
 import '../styles/admin.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -40,9 +42,9 @@ function hasRabiesVaccine(dog: Dog): boolean {
 
 function Skeleton() {
   return (
-    <div className="ad-card" style={{ marginTop: '1.5rem' }}>
+    <div className="sd-card" style={{ marginTop: '1.5rem' }}>
       {[1, 2, 3, 4, 5].map(i => (
-        <div key={i} className="ad-skel-row" />
+        <div key={i} className="sd-skel-row" />
       ))}
     </div>
   )
@@ -143,7 +145,7 @@ function DogsTable({
 }) {
   if (dogs.length === 0) {
     return (
-      <div className="ad-empty">
+      <div className="sd-empty">
         <span className="material-symbols-outlined" style={{ fontSize: 32, display: 'block', marginBottom: 8 }}>pets</span>
         No hay perros que coincidan con los filtros
       </div>
@@ -152,7 +154,7 @@ function DogsTable({
 
   return (
     <div style={{ overflowX: 'auto' }}>
-      <table className="ad-table">
+      <table className="sv-table">
         <thead>
           <tr>
             <th>Perro</th>
@@ -375,13 +377,13 @@ export default function AdminDogsView() {
   return (
     <>
       {/* ── Toolbar ── */}
-      <div className="ad-toolbar">
+      <div className="sv-toolbar">
         {/* Búsqueda */}
-        <div className="ad-search">
+        <div className="sv-search">
           <span className="material-symbols-outlined">search</span>
           <input
             type="text"
-            className="ad-search__input"
+            className="sv-search__input"
             placeholder="Buscar por nombre, raza o refugio..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -429,7 +431,7 @@ export default function AdminDogsView() {
       </div>
 
       {/* ── Tabla ── */}
-      <div className="ad-card">
+      <div className="sd-card">
         <DogsTable
           dogs={filtered}
           isUpdating={isUpdating}

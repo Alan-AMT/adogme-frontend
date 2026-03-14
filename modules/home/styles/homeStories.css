@@ -1,115 +1,233 @@
-/* ===============================
-   SUCCESS STORIES (Aligned Design)
-================================ */
+/* =====================================================
+   homeStories.css — Sección "Historias Felices" — Home
+   modules/home/styles/homeStories.css
+   Paleta y variables: app/globals.css
+   ===================================================== */
 
+/* ── Section ── */
 .home-stories {
-  padding: 0;
-  margin: 0;
+  padding-block: 2.5rem;
 }
 
+/* ── Header — mismo patrón que homeDogs / homeShelters ── */
 .home-stories__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-bottom: 2rem;
 }
 
-/* Kicker rojo igual a Perros y Refugios */
 .home-stories__kicker {
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: #ff6b6b;
+  color: var(--brand-500, #ff6b6b);
   margin-bottom: 0.25rem;
 }
 
 .home-stories__title {
-  font-size: 1.875rem;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
   line-height: 1.1;
   font-weight: 900;
-  color: #18181b;
+  letter-spacing: -0.02em;
+  color: var(--fg, #18181b);
+  margin: 0;
 }
 
-@media (min-width: 768px) {
-  .home-stories__title {
-    font-size: 2.25rem;
+.home-stories__subtitle {
+  margin-top: 0.4rem;
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* "Ver todos" link — idéntico a .home-dogs__all / .hs-all */
+.home-stories__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: var(--radius-full, 999px);
+  border: 1.5px solid var(--border-dark, #e4e4e7);
+  background: #fff;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--fg-muted, #3f3f46);
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.home-stories__all:hover {
+  border-color: var(--brand-500, #ff6b6b);
+  color: var(--brand-500, #ff6b6b);
+  transform: translateY(-1px);
+}
+
+/* ── Grid — 1 col mobile → 2 cols tablet → 3 cols desktop ── */
+.home-stories__list {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .home-stories__list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Grid responsivo */
-.home-stories__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+@media (min-width: 1024px) {
+  .home-stories__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* Card con diseño suave */
-.story-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+/* =====================================================
+   CARD — Frame pata + panel horizontal
+   Foto izquierda — contenido derecha
+   ===================================================== */
+
+/* Frame con patrón de patas — igual que .home-dog-frame */
+.story-frame {
+  position: relative;
   border-radius: 1.25rem;
+  padding: 10px;
+  background-image: url("/assets/ui/back.jpg");
+  background-repeat: repeat;
+  background-size: 180px auto;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(15, 23, 42, 0.06));
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 280ms ease;
+  text-decoration: none;
+  display: block;
+}
+
+.story-frame:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow: var(--shadow-md, 0 8px 24px rgba(15, 23, 42, 0.12));
+}
+
+/* Panel blanco interior — horizontal */
+.story-panel {
+  background: #fff;
+  border-radius: 0.9rem;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-direction: row;
+  min-height: 170px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-.story-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-}
-
-/* AJUSTE DE IMAGEN: 280px de alto para que luzca bien */
-.story-card__image-container {
+/* ── Foto izquierda ── */
+.story-photo {
   position: relative;
-  width: 100%;
-  height: 360px;
-  background-color: #f4f4f5;
+  flex-shrink: 0;
+  width: 130px;
 }
 
-.story-card__img {
+@media (min-width: 480px) {
+  .story-photo {
+    width: 150px;
+  }
+}
+
+.story-photo__img {
   object-fit: cover;
   object-position: center;
 }
 
-.story-card__content {
-  padding: 1.5rem;
+/* ── Cuerpo derecho ── */
+.story-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 1.4rem;
+  gap: 0.25rem;
 }
 
-.story-card__dog {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #18181b;
-  margin-bottom: 0.2rem;
+/* Comillas decorativas */
+.story-body__quote-mark {
+  font-size: 3.5rem;
+  line-height: 0.8;
+  font-family: Georgia, serif;
+  color: var(--brand-100, #FFE3E3);
+  font-weight: 900;
+  margin-bottom: 0.25rem;
+  display: block;
+  user-select: none;
 }
 
-.story-card__adopter {
-  font-size: 0.9rem;
-  color: #ff6b6b; /* Mismo rojo para consistencia */
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.home-stories__divider {
-  height: 1px;
-  background: #f1f1f1;
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.story-card__text {
-  font-size: 0.9rem;
-  color: #52525b;
+/* Texto de la historia */
+.story-body__text {
+  font-size: 0.88rem;
+  color: var(--fg-muted, #52525b);
   line-height: 1.6;
   font-style: italic;
-  position: relative;
+  margin-bottom: 0.75rem;
 }
 
-/* Responsivo para móvil */
-@media (max-width: 640px) {
-  .story-card__image-container {
-    height: 220px; /* Un poco más pequeña en móvil */
-  }
+/* Nombre del perro */
+.story-body__dog {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
 
-  .home-stories__grid {
-    grid-template-columns: 1fr;
+/* Adoptado por */
+.story-body__adopter {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--brand-500, #ff6b6b);
+}
+
+/* ── Skeleton ── */
+.story-skel-frame {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  display: flex;
+  height: 170px;
+  background: var(--bg-muted, #f4f4f5);
+}
+
+.story-skel-photo {
+  width: 130px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #ededee 25%, #e4e4e6 50%, #ededee 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+}
+
+@media (min-width: 480px) {
+  .story-skel-photo {
+    width: 150px;
   }
 }
+
+.story-skel-body {
+  flex: 1;
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.story-skel-line {
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ededee 25%, #e4e4e6 50%, #ededee 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+}
+
+.story-skel-line.is-wide  { width: 85%; }
+.story-skel-line.is-mid   { width: 65%; }
+.story-skel-line.is-short { width: 40%; height: 10px; }

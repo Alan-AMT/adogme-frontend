@@ -105,7 +105,7 @@ export default function DonationConfirmation({
         {donation.refugioNombre
           ? <strong>{donation.refugioNombre}</strong>
           : 'este refugio'}
-        {' '}a seguir cuidando a sus peludos.
+        {' '}a seguir cuidando a sus perros.
       </p>
 
       {/* ── Receipt ── */}
@@ -174,7 +174,7 @@ export default function DonationConfirmation({
       {/* ── CTAs ── */}
       <div className="dn-conf-actions">
         <Link href={shelterLink} className="dn-conf-primary-btn">
-          🐾 Ver más perros de este refugio
+          Ver más perros de este refugio
         </Link>
         <Link href="/" className="dn-conf-secondary-btn">
           Volver al inicio

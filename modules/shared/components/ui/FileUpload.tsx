@@ -83,7 +83,7 @@ export function FileUpload({
 
   return (
     <div className="flex flex-col gap-3">
-      {label && <p className="text-[13px] font-[900] text-[#1f2937]">{label}</p>}
+      {label && <p className="text-[13px] font-[500] text-[#374151]">{label}</p>}
 
       {/* ── Dropzone ── */}
       {variant === 'dropzone' && canAdd && (

@@ -1,7 +1,7 @@
 // modules/chatbot/components/ChatbotWrapper.tsx
 // Orquestador del chatbot.
-// ⚠️  Solo se renderiza para usuarios con rol 'applicant'.
-//     Visitantes, refugios y admins NO ven el chatbot.
+// Visible para visitantes (sin sesión) y adoptantes ('applicant').
+//     Refugios y admins NO ven el chatbot.
 'use client'
 
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
@@ -19,8 +19,9 @@ export default function ChatbotWrapper() {
 
   const chatbot = useChatbot()
 
-  // ── Guardia de rol — solo adoptantes ────────────────────────────────────────
-  if (user?.role !== 'applicant') return null
+  // ── Guardia de rol — visitantes y adoptantes pueden usar el chatbot ─────────
+  const role = user?.role ?? 'visitor'
+  if (role !== 'applicant' && role !== 'visitor') return null
 
   function handleOpen() {
     openChatbot()

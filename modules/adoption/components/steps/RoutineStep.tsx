@@ -2,8 +2,8 @@
 // Paso 2 — Rutina diaria y estilo de vida
 'use client'
 
-import type { AdoptionFormData } from '../../../../shared/domain/AdoptionRequest'
-import { Textarea } from '../../../../shared/components/ui/Textarea'
+import type { AdoptionFormData } from '@/modules/shared/domain/AdoptionRequest'
+import { Textarea } from '@/modules/shared/components/ui/Textarea'
 
 interface Props {
   data:        Partial<AdoptionFormData>
@@ -12,10 +12,10 @@ interface Props {
 }
 
 const ACTIVITY_OPTIONS = [
-  { value: 'sedentario', label: 'Sedentario', icon: 'weekend',      desc: 'Poca actividad, descanso' },
-  { value: 'moderado',   label: 'Moderado',   icon: 'directions_walk', desc: 'Caminatas ocasionales' },
-  { value: 'activo',     label: 'Activo',     icon: 'directions_run',  desc: 'Ejercicio regular' },
-  { value: 'muy_activo', label: 'Muy activo', icon: 'fitness_center',  desc: 'Deporte frecuente' },
+  { value: 'sedentario', label: 'Sedentario', icon: 'weekend',         desc: 'Prefiero el descanso, salidas cortas' },
+  { value: 'moderado',   label: 'Moderado',   icon: 'directions_walk', desc: 'Caminatas y actividad ocasional' },
+  { value: 'activo',     label: 'Activo',     icon: 'directions_run',  desc: 'Ejercito varias veces por semana' },
+  { value: 'muy_activo', label: 'Muy activo', icon: 'fitness_center',  desc: 'Deporte diario o actividad intensa' },
 ] as const
 
 type ActivityValue = typeof ACTIVITY_OPTIONS[number]['value']

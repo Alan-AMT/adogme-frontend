@@ -3,10 +3,10 @@
 'use client'
 
 import Image from 'next/image'
-import type { AdoptionFormData } from '../../../../shared/domain/AdoptionRequest'
-import { useAuthStore } from '../../../../shared/infrastructure/store/authStore'
-import type { Adoptante } from '../../../../shared/domain/User'
-import type { Dog } from '../../../../shared/domain/Dog'
+import type { AdoptionFormData } from '@/modules/shared/domain/AdoptionRequest'
+import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
+import type { Adoptante } from '@/modules/shared/domain/User'
+import type { Dog } from '@/modules/shared/domain/Dog'
 
 interface Props {
   data:         Partial<AdoptionFormData>

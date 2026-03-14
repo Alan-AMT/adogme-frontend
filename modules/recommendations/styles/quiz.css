@@ -14,10 +14,21 @@
   margin-bottom: 2rem;
 }
 
-.qz-step__emoji {
-  font-size: 2.5rem;
-  line-height: 1;
-  margin-bottom: 0.75rem;
+.qz-step__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff5f5;
+  border: 2px solid #ffe4e4;
+  margin-bottom: 1rem;
+  color: #ff6b6b;
+}
+
+.qz-step__icon .material-symbols-outlined {
+  font-size: 36px;
 }
 
 .qz-step__title {
@@ -41,12 +52,12 @@
 }
 
 .qz-section__label {
-  font-size: 0.82rem;
-  font-weight: 900;
-  color: #3f3f46;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a1a1aa;
   margin-bottom: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 /* ── Cards grid ─────────────────────────────────────── */
@@ -153,6 +164,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  justify-content: center;
 }
 
 .qz-pill {

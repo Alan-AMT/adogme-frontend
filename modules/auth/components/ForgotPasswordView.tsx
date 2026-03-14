@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 'use client'
 
+import '../styles/auth.css'
 import { AuthBrand, AuthCard, AuthLayout } from '@/modules/shared/components/layout/AuthLayout'
 import { Alert } from '@/modules/shared/components/ui/Alert'
 import { Button } from '@/modules/shared/components/ui/Button'
@@ -153,55 +154,69 @@ export default function ForgotPasswordView() {
 
         ) : (
           /* ── Estado: correo enviado ── */
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
 
-            {/* Icono de éxito */}
-            <div className="flex flex-col items-center text-center py-2">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                style={{ background: '#f0fdf4', border: '2px solid #dcfce7' }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{
-                    fontSize: 34,
-                    color: '#16a34a',
-                    fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 34",
-                  }}
+            {/* Icono + mensaje principal */}
+            <div className="flex flex-col items-center text-center gap-3 pt-1">
+              {/* Icono con anillo decorativo */}
+              <div className="relative flex items-center justify-center">
+                <div
+                  className="w-20 h-20 rounded-full"
+                  style={{ background: 'radial-gradient(circle, #dcfce7 0%, #f0fdf4 70%)', border: '2px solid #bbf7d0' }}
+                />
+                <div
+                  className="absolute w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ background: '#16a34a' }}
                 >
-                  mark_email_read
-                </span>
+                  <span
+                    className="material-symbols-outlined text-white"
+                    style={{ fontSize: 26, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 26" }}
+                  >
+                    mark_email_read
+                  </span>
+                </div>
               </div>
 
-              <p className="text-[14px] font-[700] text-[#374151] leading-relaxed">
-                Si el correo{' '}
-                <strong className="text-[#111827]">{email}</strong>{' '}
-                está registrado, recibirás un enlace en unos minutos.
-              </p>
-              <p className="text-[12px] text-[#9ca3af] mt-1.5">
-                Revisa también tu carpeta de spam.
-              </p>
+              <div className="flex flex-col gap-1">
+                <p className="text-[15px] font-[800] text-[#111827]">¡Revisa tu correo!</p>
+                <p className="text-[13px] text-[#6b7280] leading-relaxed">
+                  Enviamos el enlace a
+                </p>
+                {/* Email pill */}
+                <div
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full self-center mt-0.5"
+                  style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 13, color: '#16a34a', fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 13" }}
+                  >
+                    mail
+                  </span>
+                  <span className="text-[12.5px] font-[800] text-[#15803d]">{email}</span>
+                </div>
+              </div>
             </div>
 
             {/* Instrucciones */}
-            <div
-              className="flex items-start gap-2.5 px-3.5 py-3 rounded-[14px]"
-              style={{ background: '#eff6ff', border: '1px solid #dbeafe' }}
+            <div className="flex flex-col gap-2 px-4 py-3.5 rounded-[16px]"
+              style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
             >
-              <span
-                className="material-symbols-outlined flex-shrink-0 mt-0.5"
-                style={{
-                  fontSize: 16,
-                  color: '#1d4ed8',
-                  fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 16",
-                }}
-              >
-                info
-              </span>
-              <p className="text-[12px] font-[700] text-[#1d4ed8]">
-                El enlace expira en 30 minutos. Si no lo recibes, verifica que el correo
-                sea correcto o usa el botón para reenviar.
-              </p>
+              {[
+                { icon: 'timer', text: 'El enlace expira en 30 minutos.' },
+                { icon: 'folder', text: 'Revisa también tu carpeta de spam.' },
+                { icon: 'edit', text: 'Verifica que el correo sea correcto.' },
+              ].map(({ icon, text }) => (
+                <div key={icon} className="flex items-center gap-2.5">
+                  <span
+                    className="material-symbols-outlined flex-shrink-0"
+                    style={{ fontSize: 15, color: '#94a3b8', fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 15" }}
+                  >
+                    {icon}
+                  </span>
+                  <p className="text-[12.5px] font-[700] text-[#64748b]">{text}</p>
+                </div>
+              ))}
             </div>
 
             {/* Reenviar con cooldown */}
@@ -213,10 +228,7 @@ export default function ForgotPasswordView() {
             >
               {loading ? (
                 <>
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 16, animation: 'spin 0.8s linear infinite' }}
-                  >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 0.8s linear infinite' }}>
                     progress_activity
                   </span>
                   Reenviando…

@@ -230,7 +230,9 @@
   border-bottom: 1.5px solid #f0f0f0;
   margin-bottom: 1.25rem;
   overflow-x: auto;
+  scrollbar-width: none;
 }
+.ad-tabs::-webkit-scrollbar { display: none; }
 
 /* ── Skeleton ── */
 .ad-skel-stat {
@@ -462,3 +464,223 @@
 }
 
 .ad-field__textarea:focus { border-color: #ff6b6b; }
+
+/* ── App shell ── */
+.ad-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #f9fafb;
+}
+
+.ad-main {
+  flex: 1;
+  padding-top: 64px; /* height of navbar */
+}
+
+.ad-main__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+/* ── Navbar ── */
+.ad-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1.5px solid #f0f0f0;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+
+.ad-navbar__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 64px;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Brand */
+.ad-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.ad-navbar__brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.ad-navbar__brand-text {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #18181b;
+  letter-spacing: -0.01em;
+}
+
+.ad-navbar__brand-text span {
+  color: #ff6b6b;
+}
+
+/* Nav links */
+.ad-navbar__nav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+@media (min-width: 640px) {
+  .ad-navbar__nav { display: flex; }
+}
+
+.ad-navbar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: #52525b;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.ad-navbar__link:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.ad-navbar__link--active {
+  background: rgba(255,107,107,0.1);
+  color: #ff6b6b;
+}
+
+.ad-navbar__link--active:hover {
+  background: rgba(255,107,107,0.15);
+}
+
+/* Badge de notificación */
+.ad-navbar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ff6b6b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+/* Acciones derecha */
+.ad-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.ad-navbar__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid #f0f0f0;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #71717a;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 150ms, color 150ms, background 150ms;
+}
+
+.ad-navbar__logout:hover {
+  border-color: #fca5a5;
+  color: #dc2626;
+  background: #fff5f5;
+}
+
+.ad-navbar__logout-label {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .ad-navbar__logout-label { display: inline; }
+}
+
+/* Hamburger (mobile) */
+.ad-navbar__hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 0.75rem;
+  border: 1.5px solid #f0f0f0;
+  background: #fff;
+  cursor: pointer;
+  color: #52525b;
+}
+
+@media (min-width: 640px) {
+  .ad-navbar__hamburger { display: none; }
+}
+
+/* Mobile drawer */
+.ad-navbar__mobile-drawer {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid #f4f4f5;
+  background: #fff;
+  gap: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .ad-navbar__mobile-drawer { display: none; }
+}
+
+.ad-navbar__mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #374151;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.ad-navbar__mobile-link:hover {
+  background: #f4f4f5;
+}
+
+.ad-navbar__mobile-link--active {
+  background: rgba(255,107,107,0.08);
+  color: #ff6b6b;
+}

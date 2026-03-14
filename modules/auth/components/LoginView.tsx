@@ -7,6 +7,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 'use client'
 
+import '../styles/auth.css'
 import { AuthBrand, AuthCard, AuthLayout, GoogleIcon } from '@/modules/shared/components/layout/AuthLayout'
 import { Alert } from '@/modules/shared/components/ui/Alert'
 import { Button } from '@/modules/shared/components/ui/Button'

@@ -48,10 +48,10 @@ export default function ApplicantLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
       <Navbar />
-      <main>{children}</main>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>{children}</main>
       <Footer />
-    </>
+    </div>
   )
 }

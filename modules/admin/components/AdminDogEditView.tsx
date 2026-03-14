@@ -7,6 +7,7 @@ import Link  from 'next/link'
 import { useMemo, useState } from 'react'
 import { useAdminDogs }      from '../application/hooks/useAdminDogs'
 import type { Dog, DogStatus } from '@/modules/shared/domain/Dog'
+import '@/modules/shelter/styles/shelterDashboard.css'
 import '../styles/admin.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -37,7 +38,7 @@ function DogCard({ dog }: { dog: Dog }) {
   const c = STATUS_COLORS[dog.estado] ?? { bg: '#f4f4f5', color: '#71717a' }
 
   return (
-    <div className="ad-card" style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
+    <div className="sd-card" style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
       {/* Foto de portada */}
       <div style={{ position: 'relative', height: 160, background: '#f4f4f5' }}>
         {dog.foto && (
@@ -122,9 +123,9 @@ function ModerationPanel({
   }
 
   return (
-    <div className="ad-card">
-      <div className="ad-card__header">
-        <p className="ad-card__title">
+    <div className="sd-card">
+      <div className="sd-card__header">
+        <p className="sd-card__title">
           <span className="material-symbols-outlined">tune</span>
           Moderar perro
         </p>

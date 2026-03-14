@@ -66,8 +66,10 @@ export function BasicDataStep({ formData, errors, update }: Props) {
       {/* ── Identificación ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">badge</span>
-          Identificación
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">badge</span>
+          </div>
+          <span className="sv-form-section__header-text">Identificación</span>
         </div>
         <div className="sv-form-section__body">
           <div className="sv-form-row">
@@ -123,13 +125,15 @@ export function BasicDataStep({ formData, errors, update }: Props) {
       {/* ── Características ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">pets</span>
-          Características
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">pets</span>
+          </div>
+          <span className="sv-form-section__header-text">Características</span>
         </div>
         <div className="sv-form-section__body">
           <div className="sv-field">
             <label className="sv-field__label">Sexo <span className="sv-field__required">*</span></label>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {SEXES.map(s => (
                 <button key={s.value} type="button" onClick={() => update('sexo', s.value)} style={pill(formData.sexo === s.value)}>
                   <span className="material-symbols-outlined" style={{ fontSize: 15 }}>{s.icon}</span>
@@ -142,7 +146,7 @@ export function BasicDataStep({ formData, errors, update }: Props) {
 
           <div className="sv-field">
             <label className="sv-field__label">Tamaño <span className="sv-field__required">*</span></label>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {SIZES.map(s => (
                 <button key={s.value} type="button" onClick={() => update('tamano', s.value)} style={pill(formData.tamano === s.value)}>
                   {s.label}
@@ -155,7 +159,7 @@ export function BasicDataStep({ formData, errors, update }: Props) {
 
           <div className="sv-field">
             <label className="sv-field__label">Nivel de energía <span className="sv-field__required">*</span></label>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {ENERGIES.map(e => (
                 <button key={e.value} type="button" onClick={() => update('nivelEnergia', e.value)} style={pill(formData.nivelEnergia === e.value)}>
                   <span className="material-symbols-outlined" style={{ fontSize: 15 }}>{e.icon}</span>
@@ -171,8 +175,10 @@ export function BasicDataStep({ formData, errors, update }: Props) {
       {/* ── Descripción ── */}
       <div className="sv-form-section">
         <div className="sv-form-section__header">
-          <span className="material-symbols-outlined">description</span>
-          Descripción
+          <div className="sv-form-section__header-icon">
+            <span className="material-symbols-outlined">description</span>
+          </div>
+          <span className="sv-form-section__header-text">Descripción</span>
         </div>
         <div className="sv-form-section__body">
           <div className="sv-field">

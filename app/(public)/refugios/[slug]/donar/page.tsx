@@ -25,5 +25,9 @@ export default async function DonationPage({ params }: { params: Params }) {
     notFound()
   }
 
-  return <DonationView shelter={shelter} />
+  return (
+    <div className="dn-page-wrap">
+      <DonationView shelter={shelter} />
+    </div>
+  )
 }

@@ -208,57 +208,36 @@ export default function ShelterRequestsView() {
 
   return (
     <>
-      {/* Tabs por estado */}
-      <div style={{
-        display: 'flex', gap: 0, overflowX: 'auto',
-        borderBottom: '1.5px solid #f0f0f0',
-        marginBottom: '1.25rem',
-      }}>
-        {TABS.map(tab => {
-          const isActive = filter === tab.value
-          const count    = countByStatus(tab.value)
-          return (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() => setFilter(tab.value)}
-              style={{
-                flexShrink: 0,
-                padding: '0.7rem 1.1rem',
-                fontSize: '0.82rem',
-                fontWeight: 800,
-                color:      isActive ? '#ff6b6b' : '#71717a',
-                background: 'none',
-                border:     'none',
-                borderBottom: isActive ? '2.5px solid #ff6b6b' : '2.5px solid transparent',
-                cursor:     'pointer',
-                transition: 'all 150ms ease',
-                display:    'inline-flex',
-                alignItems: 'center',
-                gap:        '0.4rem',
-                marginBottom: '-1.5px',
-                fontFamily: 'inherit',
-              }}
-            >
-              {tab.label}
-              {count > 0 && (
-                <span style={{
-                  fontSize: '0.68rem', fontWeight: 900, lineHeight: 1,
-                  padding: '0.15rem 0.45rem', borderRadius: 999,
-                  background: isActive ? 'rgba(255,107,107,0.12)' : '#f4f4f5',
-                  color:      isActive ? '#ff6b6b' : '#71717a',
-                }}>
-                  {count}
-                </span>
-              )}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Buscador */}
+      {/* Toolbar: chips de estado + búsqueda */}
       <div className="sv-toolbar">
-        <div className="sv-search">
+        <div className="sv-filters">
+          {TABS.map(tab => {
+            const isActive = filter === tab.value
+            const count    = countByStatus(tab.value)
+            return (
+              <button
+                key={tab.value}
+                type="button"
+                className={`sv-filter-chip${isActive ? ' sv-filter-chip--active' : ''}`}
+                onClick={() => setFilter(tab.value)}
+              >
+                {tab.label}
+                {count > 0 && (
+                  <span style={{
+                    fontSize: '0.65rem', fontWeight: 900,
+                    padding: '0.1rem 0.4rem', borderRadius: 999, marginLeft: '0.2rem',
+                    background: isActive ? 'rgba(255,107,107,0.15)' : '#e4e4e7',
+                    color:      isActive ? '#ff6b6b' : '#71717a',
+                  }}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="sv-search" style={{ marginLeft: 'auto' }}>
           <span className="material-symbols-outlined">search</span>
           <input
             type="text"
@@ -277,7 +256,7 @@ export default function ShelterRequestsView() {
             </button>
           )}
         </div>
-        <p style={{ fontSize: '0.78rem', color: '#a1a1aa', fontWeight: 600, marginLeft: 'auto' }}>
+        <p style={{ fontSize: '0.78rem', color: '#a1a1aa', fontWeight: 600, whiteSpace: 'nowrap' }}>
           {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
         </p>
       </div>
