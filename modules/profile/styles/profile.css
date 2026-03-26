@@ -1,0 +1,380 @@
+/* =====================================================
+   profile.css — Mi perfil · aDOGme
+   Prefijo: pf-  (profile view)
+   ===================================================== */
+
+/* ── Page wrapper ──────────────────────────────────── */
+.pf-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 5rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .pf-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Sidebar card (columna izquierda) ────────────────── */
+.pf-sidebar-card {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1.5px solid #f0f0f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 1.5rem;
+}
+
+.pf-cover {
+  height: 90px;
+  background: linear-gradient(130deg, #ff6b6b 0%, #ff8e53 55%, #ffcba4 100%);
+  position: relative;
+}
+
+.pf-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.14) 0%, transparent 60%),
+                    radial-gradient(circle at 15% 80%, rgba(255,255,255,0.08) 0%, transparent 40%);
+}
+
+.pf-cover-body {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pf-header__avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: -40px;
+  padding: 3px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.pf-header__avatar-edit {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #e4e4e7;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 150ms ease;
+}
+
+.pf-header__avatar-edit:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.pf-header__info {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.pf-header__name {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #18181b;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.pf-header__email {
+  font-size: 0.78rem;
+  color: #71717a;
+  font-weight: 500;
+  margin-top: 0.15rem;
+  word-break: break-all;
+}
+
+.pf-header__role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.pf-header__role--applicant { background: #fff0f0; color: #ff6b6b; }
+.pf-header__role--shelter   { background: #eff6ff; color: #2563eb; }
+.pf-header__role--admin     { background: #f5f3ff; color: #7c3aed; }
+
+.pf-header__since {
+  font-size: 0.7rem;
+  color: #a1a1aa;
+  font-weight: 500;
+  margin-top: 0.3rem;
+}
+
+/* ── Vertical nav ─────────────────────────────────────── */
+.pf-vnav {
+  border-top: 1.5px solid #f4f4f5;
+  padding: 0.5rem 0;
+  margin-top: 1rem;
+}
+
+.pf-vnavitem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #71717a;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all 140ms ease;
+}
+
+.pf-vnavitem .material-symbols-outlined {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.pf-vnavitem:hover:not(.pf-vnavitem--active) {
+  background: #fafafa;
+  color: #18181b;
+}
+
+.pf-vnavitem--active {
+  color: #ff6b6b;
+  background: #fff5f5;
+  font-weight: 700;
+}
+
+/* ── Main content column ──────────────────────────────── */
+.pf-main {
+  min-width: 0;
+}
+
+
+/* ── Card ────────────────────────────────────────────── */
+.pf-card {
+  background: #fff;
+  border: 1.5px solid #f0f0f0;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.pf-card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.97rem;
+  font-weight: 900;
+  color: #18181b;
+  margin-bottom: 1.25rem;
+}
+
+.pf-card__title .material-symbols-outlined {
+  font-size: 19px;
+  color: #71717a;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+/* ── Form grid ───────────────────────────────────────── */
+.pf-form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .pf-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pf-form-full {
+  grid-column: 1 / -1;
+}
+
+/* ── Save bar ────────────────────────────────────────── */
+.pf-save-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1.5px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+/* ── Password strength ───────────────────────────────── */
+.pf-pwd-strength {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.4rem;
+}
+
+.pf-pwd-strength__bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #e4e4e7;
+  transition: background 250ms ease;
+}
+
+.pf-pwd-strength__bar--weak   { background: #ef4444; }
+.pf-pwd-strength__bar--medium { background: #f59f00; }
+.pf-pwd-strength__bar--strong { background: #16a34a; }
+
+.pf-pwd-strength__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.35rem;
+}
+
+.pf-pwd-strength__label--weak   { color: #dc2626; }
+.pf-pwd-strength__label--medium { color: #d97706; }
+.pf-pwd-strength__label--strong { color: #16a34a; }
+
+/* ── Notification rows ───────────────────────────────── */
+.pf-notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pf-notif-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.pf-notif-row + .pf-notif-row {
+  border-top: 1.5px solid #f4f4f5;
+}
+
+.pf-notif-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pf-notif-row__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #18181b;
+}
+
+.pf-notif-row__desc {
+  font-size: 0.78rem;
+  color: #71717a;
+  font-weight: 500;
+  margin-top: 0.15rem;
+  line-height: 1.45;
+}
+
+/* ── Preferences ─────────────────────────────────────── */
+.pf-pref-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  gap: 0.75rem;
+}
+
+.pf-pref-empty__icon {
+  font-size: 52px;
+  color: #fca5a5;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+  animation: pf-float 3s ease-in-out infinite;
+}
+
+@keyframes pf-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.pf-pref-empty__title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #18181b;
+}
+
+.pf-pref-empty__sub {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-weight: 500;
+  max-width: 320px;
+  line-height: 1.55;
+}
+
+.pf-pref-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.pf-pref-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #eff6ff;
+  border-radius: 0.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.pf-pref-banner .material-symbols-outlined {
+  font-size: 17px;
+}
+
+/* ── Read-only field ─────────────────────────────────── */
+.pf-field-readonly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.pf-field-readonly__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.pf-field-readonly__value {
+  padding: 0.75rem 0.75rem;
+  background: #f4f4f5;
+  border: 1.5px solid #e4e4e7;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  color: #71717a;
+  font-weight: 600;
+}

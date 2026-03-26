@@ -1,0 +1,273 @@
+/* =====================================================
+   quiz.css — Quiz de estilo de vida · aDOGme
+   Prefijo: qz-  (quiz)
+   ===================================================== */
+
+/* ── Step wrapper ────────────────────────────────────── */
+.qz-step {
+  width: 100%;
+}
+
+/* ── Step heading ────────────────────────────────────── */
+.qz-step__head {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.qz-step__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff5f5;
+  border: 2px solid #ffe4e4;
+  margin-bottom: 1rem;
+  color: #ff6b6b;
+}
+
+.qz-step__icon .material-symbols-outlined {
+  font-size: 36px;
+}
+
+.qz-step__title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #18181b;
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+.qz-step__subtitle {
+  font-size: 0.875rem;
+  color: #71717a;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── Section label (within a multi-section step) ─────── */
+.qz-section {
+  margin-top: 1.5rem;
+}
+
+.qz-section__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Cards grid ─────────────────────────────────────── */
+.qz-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+}
+
+.qz-cards-grid--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.qz-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 0.875rem;
+  background: #fff;
+  border: 2px solid #e4e4e7;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 180ms ease, background 180ms ease,
+              box-shadow 180ms ease, transform 180ms ease;
+  outline: none;
+}
+
+.qz-card:hover:not(.qz-card--selected) {
+  border-color: #fca5a5;
+  background: #fafafa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.qz-card--selected {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Checkmark badge on selected */
+.qz-card--selected::after {
+  content: '✓';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ff6b6b;
+  background: #fff;
+  border: 1.5px solid #ff6b6b;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+}
+
+/* Small card variant (more options in same row) */
+.qz-card--sm {
+  padding: 0.875rem 0.625rem;
+  gap: 0.3rem;
+}
+
+/* ── Card elements ──────────────────────────────────── */
+.qz-card__icon {
+  font-size: 38px;
+  transition: color 180ms ease;
+  color: #a1a1aa;
+}
+
+.qz-card--selected .qz-card__icon {
+  color: #ff6b6b;
+}
+
+.qz-card__label {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #18181b;
+  line-height: 1.2;
+}
+
+.qz-card--selected .qz-card__label {
+  color: #e03131;
+}
+
+.qz-card__desc {
+  font-size: 0.73rem;
+  color: #71717a;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── Pills row ──────────────────────────────────────── */
+.qz-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.qz-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 2px solid #e4e4e7;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #52525b;
+  cursor: pointer;
+  transition: all 180ms ease;
+  white-space: nowrap;
+}
+
+.qz-pill:hover:not(.qz-pill--selected) {
+  border-color: #fca5a5;
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.qz-pill--selected {
+  border-color: #ff6b6b;
+  background: #ff6b6b;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+}
+
+/* ── Budget chips (wider pills) ─────────────────────── */
+.qz-budget-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.qz-budget-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.5rem;
+  border: 2px solid #e4e4e7;
+  border-radius: 1rem;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: all 180ms ease;
+}
+
+.qz-budget-card:hover:not(.qz-budget-card--selected) {
+  border-color: #fca5a5;
+  background: #fafafa;
+}
+
+.qz-budget-card--selected {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.18);
+}
+
+.qz-budget-card__amount {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #18181b;
+}
+
+.qz-budget-card--selected .qz-budget-card__amount {
+  color: #e03131;
+}
+
+.qz-budget-card__range {
+  font-size: 0.73rem;
+  color: #71717a;
+  font-weight: 500;
+}
+
+/* ── Slide animations ───────────────────────────────── */
+
+@keyframes qz-from-right {
+  from { transform: translateX(56px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes qz-from-left {
+  from { transform: translateX(-56px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+.qz-slide-enter-right {
+  animation: qz-from-right 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.qz-slide-enter-left {
+  animation: qz-from-left 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* ── Responsive: 1 column on very small screens ─────── */
+@media (max-width: 400px) {
+  .qz-cards-grid,
+  .qz-cards-grid--3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}

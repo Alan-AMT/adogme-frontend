@@ -1,0 +1,253 @@
+/* =====================================================
+   homeHowItWorks.css — Bloque HowItWorks + DonationCTA
+   modules/home/styles/homeHowItWorks.css
+   Paleta y variables: app/globals.css
+   ===================================================== */
+
+/* ── Combined split block ── */
+.hiw-block {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-md, 0 6px 20px rgba(15, 23, 42, 0.09));
+}
+
+@media (min-width: 768px) {
+  .hiw-block {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* =====================================================
+   LEFT — Cómo adoptar
+   Fondo blanco, pasos numerados
+   ===================================================== */
+
+.hiw-left {
+  background: #fff;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-dark, #e4e4e7);
+  border-right: none;
+}
+
+@media (min-width: 768px) {
+  .hiw-left {
+    border-right: 1px solid var(--border-dark, #e4e4e7);
+    border-bottom: none;
+  }
+}
+
+/* Kicker — igual que .home-dogs__kicker / .hs-kicker */
+.hiw-kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-500, #ff6b6b);
+  margin-bottom: 0.25rem;
+}
+
+/* Title — igual que .home-dogs__title / .hs-title */
+.hiw-title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--fg, #18181b);
+  margin: 0 0 0.4rem;
+}
+
+.hiw-subtitle {
+  margin-top: 0.2rem;
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+/* ── Steps list ── */
+.hiw-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  flex: 1;
+}
+
+.hiw-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Numbered circle */
+.hiw-step__num {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.1rem;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.35);
+}
+
+.hiw-step__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.hiw-step__title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--fg, #18181b);
+  line-height: 1.25;
+}
+
+.hiw-step__desc {
+  font-size: 0.82rem;
+  color: var(--fg-muted, #71717a);
+  line-height: 1.45;
+}
+
+/* ── Ver más link — mismo estilo que .hs-all / .home-dogs__all ── */
+.hiw-link {
+  margin-top: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: var(--radius-full, 999px);
+  border: 1.5px solid var(--border-dark, #e4e4e7);
+  background: #fff;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--fg-muted, #3f3f46);
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.hiw-link:hover {
+  border-color: var(--brand-500, #ff6b6b);
+  color: var(--brand-500, #ff6b6b);
+  transform: translateY(-1px);
+}
+
+/* =====================================================
+   RIGHT — Donación CTA
+   Fondo oscuro — contraste con lado izquierdo
+   ===================================================== */
+
+.hiw-right {
+  background: var(--dark, #2B2D42);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Círculos decorativos de fondo */
+.hiw-right__deco {
+  position: absolute;
+  top: -4rem;
+  right: -4rem;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 999px;
+  background: rgba(255, 107, 107, 0.07);
+  pointer-events: none;
+}
+
+.hiw-right__deco2 {
+  position: absolute;
+  bottom: -3rem;
+  left: -3rem;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 999px;
+  background: rgba(255, 107, 107, 0.05);
+  pointer-events: none;
+}
+
+/* Icono decorativo grande */
+.hiw-right__icon {
+  font-size: 4.5rem !important;
+  color: rgba(255, 107, 107, 0.22);
+  line-height: 1;
+  margin-bottom: 2rem;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+/* Kicker — brand-400 para legibilidad sobre oscuro */
+.hiw-right__kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-400, #FF8787);
+  margin-bottom: 0.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Title blanco — mismo tamaño que .hiw-title */
+.hiw-right__title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hiw-right__desc {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.55;
+  margin-bottom: 2rem;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* CTA button — brand-500 pill con sombra brand */
+.hiw-right__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  border-radius: var(--radius-full, 999px);
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background var(--dur-fast, 150ms) ease, transform 180ms ease;
+  align-self: flex-start;
+  box-shadow: var(--shadow-brand, 0 8px 24px rgba(255, 107, 107, 0.30));
+  position: relative;
+  z-index: 1;
+}
+
+.hiw-right__cta:hover {
+  background: var(--brand-600, #fa5252);
+  transform: translateY(-1px);
+}

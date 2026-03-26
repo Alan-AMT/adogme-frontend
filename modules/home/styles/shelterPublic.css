@@ -1,0 +1,490 @@
+/* =====================================================
+   shelterPublic.css — Perfil público de un refugio
+   modules/home/styles/shelterPublic.css
+   Paleta y variables: app/globals.css
+   ===================================================== */
+
+/* ── Banner hero ── */
+.sp-banner {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .sp-banner {
+    height: 420px;
+  }
+}
+
+.sp-banner__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.sp-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.4) 55%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  z-index: 1;
+}
+
+.sp-banner__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .sp-banner__content {
+    padding: 2rem;
+  }
+}
+
+.sp-banner__logo {
+  width: 5.5rem;
+  align-self: stretch;
+  border-radius: 1.15rem;
+  overflow: hidden;
+  background: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.sp-banner__info {
+  flex: 1;
+}
+
+.sp-banner__name {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 0.2rem;
+}
+
+.sp-banner__city {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+/* Stats row on banner */
+.sp-banner__stats {
+  display: flex;
+  gap: 1.75rem;
+  margin-top: 0.85rem;
+}
+
+.sp-banner__stat-val {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  display: block;
+}
+
+.sp-banner__stat-lbl {
+  font-size: 0.63rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.58);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Body — 2-col layout on desktop ── */
+.sp-body {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 2.5rem 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .sp-body {
+    grid-template-columns: 1fr 340px;
+    align-items: start;
+  }
+}
+
+/* ── Main column: description + dogs ── */
+.sp-main {}
+
+.sp-section-kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-500, #ff6b6b);
+  margin-bottom: 0.25rem;
+}
+
+.sp-section-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--fg, #18181b);
+  margin: 0 0 1rem;
+}
+
+.sp-desc {
+  font-size: 0.92rem;
+  color: var(--fg-muted, #52525b);
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+/* ── About card — ancla visual para el texto del refugio ── */
+.sp-about {
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-left: 3.5px solid #ff6b6b;
+  border-radius: 0 16px 16px 0;
+  padding: 1.35rem 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* ── Dogs section header row ── */
+.sp-dogs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sp-dogs-header__left {}
+
+.sp-dogs-header__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #fff5f5;
+  border: 1px solid #ffd5d5;
+  color: #ff6b6b;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  margin-bottom: 0.3rem;
+  width: fit-content;
+}
+
+.sp-dogs-header .sp-section-title {
+  margin-bottom: 0;
+}
+
+.sp-dogs-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ff6b6b;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+.sp-dogs-all-link:hover {
+  opacity: 0.75;
+}
+
+/* Dogs grid — compact */
+.sp-dogs-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 540px) {
+  .sp-dogs-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .sp-dogs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .sp-dogs-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Dog mini card ── */
+.sp-dog-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  border: 1px solid var(--border, #f0f0f0);
+  background: #fff;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(15, 23, 42, 0.04));
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.sp-dog-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(15, 23, 42, 0.08));
+  border-color: var(--brand-200, #ffc9c9);
+}
+
+.sp-dog-card__media {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  overflow: hidden;
+}
+
+.sp-dog-card__img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 350ms ease;
+}
+
+.sp-dog-card:hover .sp-dog-card__img {
+  transform: scale(1.07);
+}
+
+.sp-dog-card__body {
+  padding: 0.6rem 0.75rem 0.75rem;
+}
+
+.sp-dog-card__name {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  line-height: 1.2;
+}
+
+.sp-dog-card__breed {
+  font-size: 0.72rem;
+  color: var(--fg-subtle, #71717a);
+  font-weight: 600;
+}
+
+/* ── Sidebar ── */
+.sp-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 5rem;
+}
+
+/* Contact card */
+.sp-contact-card {
+  background: #fff;
+  border: 1px solid var(--border-dark, #e4e4e7);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+}
+
+.sp-contact-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  margin-bottom: 1rem;
+}
+
+.sp-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.84rem;
+  color: var(--fg-muted, #52525b);
+  padding-block: 0.55rem;
+  border-bottom: 1px solid var(--border, #f0f0f0);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.sp-contact-item:last-of-type {
+  border-bottom: none;
+}
+
+.sp-contact-item:hover {
+  color: var(--brand-500, #ff6b6b);
+}
+
+.sp-contact-icon {
+  color: var(--brand-500, #ff6b6b);
+  font-size: 18px !important;
+  flex-shrink: 0;
+}
+
+/* Social links */
+.sp-social {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border, #f0f0f0);
+}
+
+.sp-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--fg-muted, #3f3f46);
+  border: 1.5px solid var(--border-dark, #e4e4e7);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.sp-social-link:hover {
+  border-color: var(--brand-300, #ffa8a8);
+  color: var(--brand-600, #fa5252);
+}
+
+/* Donate card */
+.sp-donate-card {
+  background: var(--dark, #2b2d42);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.sp-donate-card::before {
+  content: "";
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 999px;
+  background: rgba(255, 107, 107, 0.07);
+  pointer-events: none;
+}
+
+.sp-donate-kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--brand-400, #ff8787);
+  position: relative;
+  z-index: 1;
+}
+
+.sp-donate-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sp-donate-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.58);
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sp-donate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 150ms ease, transform 150ms ease;
+  align-self: flex-start;
+  box-shadow: var(--shadow-brand, 0 8px 24px rgba(255, 107, 107, 0.3));
+  position: relative;
+  z-index: 1;
+}
+
+.sp-donate-btn:hover {
+  background: var(--brand-600, #fa5252);
+  transform: translateY(-1px);
+}
+
+/* ── Not found ── */
+.sp-not-found {
+  text-align: center;
+  padding: 5rem 1.25rem;
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+.sp-not-found__icon {
+  font-size: 3.5rem !important;
+  color: var(--fg-disabled, #a1a1aa);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.sp-not-found__title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  margin-bottom: 0.5rem;
+}
+
+.sp-not-found__desc {
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.sp-not-found__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.sp-not-found__link:hover {
+  background: var(--brand-600, #fa5252);
+}

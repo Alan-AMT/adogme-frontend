@@ -1,0 +1,405 @@
+/* =====================================================
+   homeShelters.css — Sección "Refugios Aliados" — Home
+   modules/home/styles/homeShelters.css
+   Fondo: var(--warm-100) #F8F4F2 — tono diferenciado
+   Paleta y variables: app/globals.css
+   ===================================================== */
+
+/* ── Section ── */
+.hs-section {
+  background: var(--warm-100, #F8F4F2);
+  padding-block: 3rem;
+}
+
+.hs-inner {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* ── Header — mismo patrón que homeDogs ── */
+.hs-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.hs-kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-500, #ff6b6b);
+  margin-bottom: 0.25rem;
+}
+
+.hs-title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--fg, #18181b);
+  margin: 0;
+}
+
+.hs-subtitle {
+  margin-top: 0.4rem;
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.hs-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: var(--radius-full, 999px);
+  border: 1.5px solid var(--border-dark, #e4e4e7);
+  background: #fff;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--fg-muted, #3f3f46);
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hs-all:hover {
+  border-color: var(--brand-500, #ff6b6b);
+  color: var(--brand-500, #ff6b6b);
+  transform: translateY(-1px);
+}
+
+/* =====================================================
+   GRID — featured (L) + 4 small cards (R)
+   Desktop: 3 columnas, 2 filas, featured cubre col 1 ambas filas
+   ===================================================== */
+
+.hs-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Mobile: featured ocupa todo el ancho, los 4 pequeños en 2×2 */
+@media (max-width: 767px) {
+  .hs-featured-wrap {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hs-grid {
+    grid-template-columns: 1.55fr 1fr 1fr;
+    grid-template-rows: 238px 238px;
+    height: auto;
+  }
+
+  .hs-featured-wrap {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+}
+
+/* =====================================================
+   FEATURED CARD — imagen full-bleed + gradient overlay
+   ===================================================== */
+
+.hs-featured {
+  position: relative;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-decoration: none;
+  box-shadow: var(--shadow-md, 0 6px 20px rgba(15,23,42,0.09));
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 300ms ease;
+}
+
+@media (min-width: 1024px) {
+  .hs-featured {
+    height: 100%;
+    min-height: 490px;
+  }
+}
+
+.hs-featured:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-lg, 0 16px 40px rgba(15,23,42,0.14));
+}
+
+/* Cover image */
+.hs-featured__img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 450ms ease;
+}
+
+.hs-featured:hover .hs-featured__img {
+  transform: scale(1.05);
+}
+
+/* Dark gradient: transparent top → dark bottom */
+.hs-featured__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.35) 50%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  z-index: 1;
+}
+
+/* Logo badge — top-left */
+.hs-featured__logo-wrap {
+  position: absolute;
+  top: 1.1rem;
+  left: 1.1rem;
+  z-index: 2;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+/* Content pinned to bottom */
+.hs-featured__body {
+  position: relative;
+  z-index: 2;
+  padding: 1.5rem;
+  color: #fff;
+}
+
+.hs-featured__name {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 0.2rem;
+}
+
+.hs-featured__city {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+/* Stats row */
+.hs-featured__stats {
+  display: flex;
+  gap: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.hs-featured__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.hs-featured__stat-val {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.hs-featured__stat-lbl {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* CTA button */
+.hs-featured__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  border-radius: var(--radius-full, 999px);
+  padding: 0.55rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  transition: background var(--dur-fast, 150ms) ease;
+  text-decoration: none;
+}
+
+.hs-featured__cta:hover {
+  background: var(--brand-600, #fa5252);
+}
+
+/* =====================================================
+   SMALL CARD — cover image + body con logo flotante
+   ===================================================== */
+
+.hs-small {
+  position: relative;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  box-shadow: var(--shadow-xs, 0 1px 4px rgba(15,23,42,0.05));
+  border: 1px solid var(--border, #f0f0f0);
+  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+  height: 240px;
+}
+
+@media (min-width: 1024px) {
+  .hs-small {
+    height: 100%;
+  }
+}
+
+.hs-small:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md, 0 6px 20px rgba(15,23,42,0.1));
+  border-color: var(--brand-200, #ffc9c9);
+}
+
+/* Cover image area */
+.hs-small__media {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.hs-small__img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 350ms ease;
+}
+
+.hs-small:hover .hs-small__img {
+  transform: scale(1.06);
+}
+
+/* Subtle overlay on image bottom */
+.hs-small__img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.25) 100%);
+  z-index: 1;
+}
+
+/* Logo badge — positioned relative to .hs-small, straddles image/body border */
+.hs-small__logo-wrap {
+  position: absolute;
+  top: calc(125px - 1.25rem); /* image height minus slightly more than half logo = shows above seam */
+  left: 0.9rem;
+  z-index: 2;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: 2px solid #fff;
+}
+
+/* Body */
+.hs-small__body {
+  flex: 1;
+  padding: 0.6rem 0.9rem 0.85rem;
+  padding-top: 1.4rem; /* space for logo overflow */
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.hs-small__name {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.hs-small__city {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--fg-subtle, #71717a);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.hs-small__stat {
+  margin-top: auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brand-500, #ff6b6b);
+}
+
+/* ── Skeleton loading ── */
+.hs-skel-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 767px) {
+  .hs-skel-featured {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hs-skel-grid {
+    grid-template-columns: 1.55fr 1fr 1fr;
+    grid-template-rows: 238px 238px;
+  }
+
+  .hs-skel-featured {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+}
+
+.hs-skel-card {
+  border-radius: 1.25rem;
+  background: linear-gradient(90deg, #ede9e7 25%, #e5e0dd 50%, #ede9e7 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+  height: 340px;
+}
+
+@media (min-width: 1024px) {
+  .hs-skel-card {
+    height: 100%;
+  }
+}
+
+.hs-skel-card:not(.hs-skel-featured) {
+  height: 235px;
+}
+
+@media (min-width: 1024px) {
+  .hs-skel-card:not(.hs-skel-featured) {
+    height: 100%;
+  }
+}

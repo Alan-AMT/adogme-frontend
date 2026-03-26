@@ -1,0 +1,281 @@
+/* =====================================================
+   sheltersList.css — Página listado de Refugios
+   modules/home/styles/sheltersList.css
+   Paleta y variables: app/globals.css
+   ===================================================== */
+
+.sl-page {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 3rem 1.25rem 4rem;
+}
+
+/* ── Hero header ── */
+.sl-hero {
+  margin-bottom: 2rem;
+}
+
+.sl-kicker {
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-500, #ff6b6b);
+  margin-bottom: 0.25rem;
+}
+
+.sl-title {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--fg, #18181b);
+  margin: 0 0 0.4rem;
+}
+
+.sl-subtitle {
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ── City filter tabs ── */
+.sl-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border, #f0f0f0);
+}
+
+.sl-filter {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--border-dark, #e4e4e7);
+  background: #fff;
+  color: var(--fg-muted, #3f3f46);
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+  line-height: 1;
+}
+
+.sl-filter:hover {
+  border-color: var(--brand-300, #ffa8a8);
+  color: var(--brand-600, #fa5252);
+}
+
+.sl-filter.is-active {
+  background: var(--brand-500, #ff6b6b);
+  border-color: var(--brand-500, #ff6b6b);
+  color: #fff;
+}
+
+/* ── Grid ── */
+.sl-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 580px) {
+  .sl-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sl-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Shelter card ── */
+.sl-card {
+  position: relative;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  box-shadow: var(--shadow-xs, 0 1px 4px rgba(15, 23, 42, 0.05));
+  border: 1px solid var(--border, #f0f0f0);
+  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+}
+
+.sl-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md, 0 6px 20px rgba(15, 23, 42, 0.1));
+  border-color: var(--brand-200, #ffc9c9);
+}
+
+/* Cover image */
+.sl-card__media {
+  position: relative;
+  width: 100%;
+  height: 185px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sl-card__img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 350ms ease;
+}
+
+.sl-card:hover .sl-card__img {
+  transform: scale(1.05);
+}
+
+/* Logo badge — outside media to avoid clipping */
+.sl-card__logo-wrap {
+  position: absolute;
+  top: calc(185px - 1.25rem);
+  left: 1rem;
+  z-index: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #fff;
+}
+
+/* Body */
+.sl-card__body {
+  flex: 1;
+  padding: 1.5rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sl-card__name {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.sl-card__city {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--fg-subtle, #71717a);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Stats row */
+.sl-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--border, #f0f0f0);
+  margin-top: auto;
+}
+
+.sl-card__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.sl-card__stat-val {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+  line-height: 1;
+}
+
+.sl-card__stat-lbl {
+  font-size: 0.63rem;
+  font-weight: 600;
+  color: var(--fg-disabled, #a1a1aa);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sl-card__rating {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--fg, #18181b);
+}
+
+.sl-card__rating-icon {
+  font-size: 15px !important;
+  color: #f59e0b;
+}
+
+/* CTA */
+.sl-card__cta {
+  display: block;
+  text-align: center;
+  margin-top: 0.85rem;
+  background: var(--brand-500, #ff6b6b);
+  color: #fff;
+  border-radius: var(--radius-full, 999px);
+  padding: 0.55rem;
+  font-weight: 800;
+  font-size: 0.82rem;
+  transition: background 150ms ease;
+}
+
+.sl-card:hover .sl-card__cta {
+  background: var(--brand-600, #fa5252);
+}
+
+/* ── Empty state ── */
+.sl-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--fg-muted, #71717a);
+  font-size: 0.9rem;
+  grid-column: 1 / -1;
+}
+
+/* ── Skeleton ── */
+.sl-skel-card {
+  border-radius: 1.1rem;
+  overflow: hidden;
+  border: 1px solid var(--border, #f0f0f0);
+  background: #fff;
+}
+
+.sl-skel-img {
+  height: 185px;
+  background: linear-gradient(90deg, #ededee 25%, #e4e4e6 50%, #ededee 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+}
+
+.sl-skel-body {
+  padding: 1.5rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sl-skel-line {
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ededee 25%, #e4e4e6 50%, #ededee 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s infinite;
+}
+
+.sl-skel-line.is-name { width: 65%; height: 16px; }
+.sl-skel-line.is-city { width: 40%; }
+.sl-skel-line.is-cta  { height: 34px; border-radius: 999px; margin-top: 0.25rem; }
