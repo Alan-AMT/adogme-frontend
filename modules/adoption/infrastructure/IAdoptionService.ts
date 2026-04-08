@@ -25,7 +25,7 @@ export interface IAdoptionService {
    * Envía una nueva solicitud de adopción.
    * El userId se obtiene del authStore dentro de la implementación.
    */
-  submit(payload: SubmitAdoptionPayload): Promise<AdoptionRequest>
+  submit(payload: SubmitAdoptionPayload, adoptanteId: number): Promise<AdoptionRequest>
 
   /**
    * Lista todas las solicitudes del adoptante autenticado.

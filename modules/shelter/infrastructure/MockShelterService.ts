@@ -46,7 +46,7 @@ function toDogListItem(d: Dog): DogListItem {
     edad: d.edad, edadCategoria: d.edadCategoria, raza: d.raza,
     tamano: d.tamano, sexo: d.sexo, nivelEnergia: d.nivelEnergia,
     estado: d.estado, foto: d.foto, compatibilidad: d.compatibilidad,
-    aptoNinos: d.aptoNinos, aptoPerros: d.aptoPerros,
+    aptoNinos: d.aptoNinos, aptoPerros: d.aptoPerros, necesitaJardin: d.necesitaJardin,
     refugioNombre: d.refugioNombre, refugioSlug: d.refugioSlug,
     refugioCiudad: d.refugioCiudad,
   }

@@ -10,8 +10,19 @@ import {
   Cell,
   Tooltip,
   ResponsiveContainer,
-  type TooltipProps,
 } from 'recharts'
+
+interface TooltipEntry {
+  name?:    string
+  value?:   number
+  color?:   string
+  payload?: { color?: string }
+}
+
+interface CustomTooltipProps {
+  active?:  boolean
+  payload?: TooltipEntry[]
+}
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -29,7 +40,7 @@ export interface DonutChartProps {
 
 // ─── Tooltip personalizado ────────────────────────────────────────────────────
 
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   const d = payload[0]
 

@@ -35,6 +35,25 @@ export interface Donation {
   adoptanteNombre?: string
 }
 
+// ─── Formulario de donación ───────────────────────────────────────────────────
+
+export interface DonationFormData {
+  monto:      number
+  metodoPago: PaymentMethod
+  concepto?:  string
+  esAnonima:  boolean
+}
+
+// ─── Resumen de donaciones para el refugio ────────────────────────────────────
+
+export interface DonationSummary {
+  totalMes:        number
+  totalHistorico:  number
+  totalDonaciones: number
+  progresoMeta?:   number       // 0-100 (porcentaje de la meta mensual)
+  ultimasDonaciones: Donation[]
+}
+
 // ─── Configuración del refugio para recibir donaciones ───────────────────────
 
 export interface DonationConfig {
