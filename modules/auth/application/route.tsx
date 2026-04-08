@@ -1,7 +1,7 @@
 // modules/auth/app/route.tsx
 // Capa de aplicación: rutas de autenticación y lógica de redirección post-login
 
-import type { UserRole } from '../domain/AuthUser'
+import type { UserRole } from '@/modules/shared/domain/User'
 
 // ─── Rutas de autenticación ───────────────────────────────────────────────────
 export const AUTH_ROUTES = {
@@ -17,9 +17,10 @@ export type AuthRoutePath = (typeof AUTH_ROUTES)[keyof typeof AUTH_ROUTES]
 
 // ─── Redirección post-login según rol ─────────────────────────────────────────
 export const ROLE_HOME: Record<UserRole, string> = {
-  adoptante:     '/perros',
-  refugio:       '/refugio/dashboard',
-  administrador: '/admin/dashboard',
+  visitor:   '/perros',
+  applicant: '/mis-solicitudes',
+  shelter:   '/refugio/dashboard',
+  admin:     '/admin',
 }
 
 export function getPostLoginUrl(role: UserRole): string {

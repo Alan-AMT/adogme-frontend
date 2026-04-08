@@ -476,6 +476,7 @@ export const getDogListItem = (dog: Dog): DogListItem => ({
   compatibilidad: dog.compatibilidad,
   aptoNinos: dog.aptoNinos,
   aptoPerros: dog.aptoPerros,
+  necesitaJardin: dog.necesitaJardin,
   refugioNombre: dog.refugioNombre,
   refugioSlug: dog.refugioSlug,
   refugioCiudad: dog.refugioCiudad,

@@ -11,8 +11,19 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  type TooltipProps,
 } from 'recharts'
+
+interface TooltipEntry {
+  name?:    string
+  value?:   number
+  color?:   string
+}
+
+interface CustomTooltipProps {
+  active?:  boolean
+  payload?: TooltipEntry[]
+  label?:   string
+}
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -30,7 +41,7 @@ export interface LineChartProps {
 
 // ─── Tooltip personalizado ────────────────────────────────────────────────────
 
-function CustomTooltip({ active, payload, label: xLabel }: TooltipProps<number, string>) {
+function CustomTooltip({ active, payload, label: xLabel }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   const point = payload[0]
 
@@ -60,7 +71,8 @@ function CustomTooltip({ active, payload, label: xLabel }: TooltipProps<number, 
 
 function CustomDot(props: {
   cx?: number; cy?: number; stroke?: string; fill?: string
-  r?: number; index?: number; dataLength?: number
+  r?: number | string; index?: number; dataLength?: number
+  [key: string]: unknown
 }) {
   const { cx, cy, stroke, index, dataLength } = props
   // Solo mostrar dot en el último punto
