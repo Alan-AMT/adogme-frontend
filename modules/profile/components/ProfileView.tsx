@@ -42,22 +42,10 @@ const ROLE_LABEL: Record<string, string> = {
 }
 
 const LIFESTYLE_DEFAULTS: LifestyleQuizAnswers = {
-  actividadFisica:                    'moderado',
-  horasEnCasaDiarias:                 8,
-  horasLibresParaPerro:               2,
-  tipoVivienda:                       'departamento',
-  tieneJardin:                        false,
-  tamanoEspacio:                      'mediano',
-  experienciaPrevia:                  false,
-  conviveConNinos:                    false,
-  conviveConMascotas:                 false,
-  tamanoPreferido:                    ['sin_preferencia'],
-  energiaPreferida:                   'sin_preferencia',
-  sexoPreferido:                      'sin_preferencia',
-  edadPreferida:                      ['sin_preferencia'],
-  presupuestoMensualMXN:              2000,
-  disponibilidadEntrenamiento:        false,
-  aceptaPerroConNecesidadesEspeciales: false,
+  q1: 3, q2: 3, q3: 3, q4: 3, q5: 3,
+  q6: 3, q7: 3, q8: 3, q9: 3, q10: 3,
+  q11: 3, q12: 3, q13: 3, q14: 3, q15: 3,
+  q16: 3, q17: 3, q18: 3, q19: 3, q20: 3,
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -312,215 +300,22 @@ function TabSecurity() {
 
 // ── Tab 3: Preferencias ML ────────────────────────────────────────────────────
 
-type PrefDraft = Pick<LifestyleQuizAnswers,
-  | 'actividadFisica'
-  | 'horasLibresParaPerro'
-  | 'tipoVivienda'
-  | 'tieneJardin'
-  | 'tamanoEspacio'
-  | 'energiaPreferida'
-  | 'sexoPreferido'
-  | 'tamanoPreferido'
-  | 'edadPreferida'
-  | 'presupuestoMensualMXN'
-  | 'conviveConNinos'
-  | 'conviveConMascotas'
-  | 'experienciaPrevia'
-  | 'disponibilidadEntrenamiento'
-  | 'aceptaPerroConNecesidadesEspeciales'
->
-
-// ── Quiz option constants ─────────────────────────────────────────────────────
-
-const PF_ACTIVITIES = [
-  { value: 'sedentario' as const, icon: 'weekend',         label: 'Sedentario', desc: 'Prefiero el descanso, salidas cortas' },
-  { value: 'moderado'   as const, icon: 'directions_walk', label: 'Moderado',   desc: 'Caminatas y actividad ocasional'      },
-  { value: 'activo'     as const, icon: 'directions_run',  label: 'Activo',     desc: 'Ejercito varias veces por semana'     },
-  { value: 'muy_activo' as const, icon: 'sports',          label: 'Muy activo', desc: 'Deporte diario o actividad intensa'   },
-]
-
-const PF_HORAS = [
-  { value: 0.5, label: '< 1 hora'    },
-  { value: 1.5, label: '1 – 2 horas' },
-  { value: 3.5, label: '3 – 4 horas' },
-  { value: 5,   label: '+ 4 horas'   },
-]
-
-const PF_VIVIENDA = [
-  { value: 'casa'         as const, icon: 'house',     label: 'Casa',          desc: 'Con o sin patio propio'   },
-  { value: 'departamento' as const, icon: 'apartment', label: 'Departamento',  desc: 'Piso en edificio o torre' },
-  { value: 'casa_campo'   as const, icon: 'cabin',     label: 'Casa de campo', desc: 'Rancho, granja o terreno' },
-  { value: 'otro'         as const, icon: 'home_work', label: 'Otro',          desc: 'Habitación, cuarto, etc.' },
-]
-
-const PF_GARDEN = [
-  { value: true,  icon: 'yard',           label: 'Sí, tengo', desc: 'Jardín, patio o terraza' },
-  { value: false, icon: 'do_not_disturb', label: 'No tengo',  desc: 'Sin espacio exterior'    },
-]
-
-const PF_TAMANO_ESPACIO = [
-  { value: 'pequeño' as const, label: 'Pequeño' },
-  { value: 'mediano' as const, label: 'Mediano' },
-  { value: 'grande'  as const, label: 'Grande'  },
-]
-
-const PF_TAMANO_PERRO = [
-  { value: 'pequeño'         as const, icon: 'cruelty_free',    label: 'Pequeño',         desc: 'Menos de 10 kg'   },
-  { value: 'mediano'         as const, icon: 'pets',            label: 'Mediano',         desc: '10 – 25 kg'       },
-  { value: 'grande'          as const, icon: 'service_toolbox', label: 'Grande',          desc: '25 – 45 kg'       },
-  { value: 'gigante'         as const, icon: 'skull',           label: 'Gigante',         desc: 'Más de 45 kg'     },
-  { value: 'sin_preferencia' as const, icon: 'favorite',        label: 'Sin preferencia', desc: 'Cualquier tamaño' },
-]
-
-const PF_ENERGIA = [
-  { value: 'baja'            as const, icon: 'self_care',       label: 'Tranquilo',  desc: 'Ideal para el sofá'         },
-  { value: 'moderada'        as const, icon: 'directions_walk', label: 'Moderado',   desc: 'Equilibrado y adaptable'    },
-  { value: 'alta'            as const, icon: 'directions_run',  label: 'Energético', desc: 'Le encanta el movimiento'   },
-  { value: 'sin_preferencia' as const, icon: 'favorite',        label: 'Cualquiera', desc: 'Sin preferencia de energía' },
-]
-
-const PF_SEXO = [
-  { value: 'macho'           as const, icon: 'male',        label: 'Macho'           },
-  { value: 'hembra'          as const, icon: 'female',      label: 'Hembra'          },
-  { value: 'sin_preferencia' as const, icon: 'transgender', label: 'Sin preferencia' },
-]
-
-const PF_EDAD = [
-  { value: 'cachorro'        as const, label: 'Cachorro (0-1 año)' },
-  { value: 'joven'           as const, label: 'Joven (1-3 años)'   },
-  { value: 'adulto'          as const, label: 'Adulto (3-8 años)'  },
-  { value: 'senior'          as const, label: 'Senior (8+ años)'   },
-  { value: 'sin_preferencia' as const, label: 'Sin preferencia'    },
-]
-
-const PF_EXP = [
-  { value: true,  icon: 'military_tech',  label: 'Tengo experiencia',  desc: 'He tenido o cuidado perros antes' },
-  { value: false, icon: 'emoji_nature',   label: 'Soy nuevo en esto',  desc: 'Primera vez que adoptaré un perro' },
-]
-
-const PF_NINOS = [
-  { value: true,  icon: 'child_care',    label: 'Sí, hay niños',   desc: 'El perro convivirá con menores' },
-  { value: false, icon: 'person',        label: 'No hay niños',    desc: 'Solo adultos en casa'           },
-]
-
-const PF_MASCOTAS = [
-  { value: true,  icon: 'pets',            label: 'Sí, tengo',  desc: 'Perros, gatos u otras mascotas' },
-  { value: false, icon: 'do_not_disturb',  label: 'No tengo',   desc: 'Será el único animal en casa'   },
-]
-
-const PF_BUDGET = [
-  { value: 500,  icon: 'savings',                label: 'Básico',     range: 'hasta $500/mes'      },
-  { value: 1500, icon: 'account_balance_wallet', label: 'Estándar',   range: '$500 – $1,500/mes'   },
-  { value: 3000, icon: 'credit_card',            label: 'Cómodo',     range: '$1,500 – $3,000/mes' },
-  { value: 5000, icon: 'diamond',                label: 'Sin límite', range: 'más de $3,000/mes'   },
-]
-
-// ── Yes/No pill pair ──────────────────────────────────────────────────────────
-
-function YesNoPair({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <div className="qz-pills">
-      <button type="button"
-        className={`qz-pill${value === true ? ' qz-pill--selected' : ''}`}
-        onClick={() => onChange(true)}
-      >
-        <span className="material-symbols-outlined"
-          style={{ fontSize: 15, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}>
-          check_circle
-        </span>
-        Sí
-      </button>
-      <button type="button"
-        className={`qz-pill${value === false ? ' qz-pill--selected' : ''}`}
-        onClick={() => onChange(false)}
-      >
-        <span className="material-symbols-outlined"
-          style={{ fontSize: 15, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}>
-          cancel
-        </span>
-        No
-      </button>
-    </div>
-  )
-}
-
-// ── defaultDraft ──────────────────────────────────────────────────────────────
-
-function defaultDraft(base: LifestyleQuizAnswers | null): PrefDraft {
-  const src = base ?? LIFESTYLE_DEFAULTS
-  return {
-    actividadFisica:                     src.actividadFisica,
-    horasLibresParaPerro:                src.horasLibresParaPerro,
-    tipoVivienda:                        src.tipoVivienda,
-    tieneJardin:                         src.tieneJardin,
-    tamanoEspacio:                       src.tamanoEspacio,
-    energiaPreferida:                    src.energiaPreferida,
-    sexoPreferido:                       src.sexoPreferido,
-    tamanoPreferido:                     src.tamanoPreferido,
-    edadPreferida:                       src.edadPreferida,
-    presupuestoMensualMXN:               src.presupuestoMensualMXN,
-    conviveConNinos:                     src.conviveConNinos,
-    conviveConMascotas:                  src.conviveConMascotas,
-    experienciaPrevia:                   src.experienciaPrevia,
-    disponibilidadEntrenamiento:         src.disponibilidadEntrenamiento,
-    aceptaPerroConNecesidadesEspeciales: src.aceptaPerroConNecesidadesEspeciales,
-  }
-}
-
 // ── TabPreferences ────────────────────────────────────────────────────────────
 
+const CATEGORY_LABELS = [
+  { label: 'Actividad',    icon: 'directions_run', keys: ['q1','q2','q3','q4','q5']   as const },
+  { label: 'Hogar',        icon: 'home',           keys: ['q6','q7','q8','q9','q10']  as const },
+  { label: 'Experiencia',  icon: 'school',         keys: ['q11','q12','q13','q14','q15'] as const },
+  { label: 'Recursos',     icon: 'favorite',       keys: ['q16','q17','q18','q19','q20'] as const },
+]
+
+function categoryAvg(answers: LifestyleQuizAnswers, keys: readonly (keyof LifestyleQuizAnswers)[]): number {
+  const vals = keys.map(k => answers[k] as number)
+  return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10
+}
+
 function TabPreferences() {
-  const {
-    lifestyle, loadingPreferences, savingPreferences,
-    preferencesError, preferencesOk,
-    updatePreferences, clearStatus,
-    isApplicant,
-  } = useProfile()
-
-  const [draft, setDraft] = useState<PrefDraft>(() => defaultDraft(lifestyle))
-
-  useEffect(() => {
-    if (lifestyle) setDraft(defaultDraft(lifestyle))
-  }, [lifestyle])
-
-  function set<K extends keyof PrefDraft>(key: K, val: PrefDraft[K]) {
-    setDraft(prev => ({ ...prev, [key]: val }))
-  }
-
-  function toggleTamanoPerro(value: LifestyleQuizAnswers['tamanoPreferido'][number]) {
-    const selected = draft.tamanoPreferido
-    if (value === 'sin_preferencia') { set('tamanoPreferido', ['sin_preferencia']); return }
-    const withoutSin = selected.filter(v => v !== 'sin_preferencia')
-    if (withoutSin.includes(value)) {
-      const next = withoutSin.filter(v => v !== value)
-      set('tamanoPreferido', (next.length ? next : ['sin_preferencia']) as typeof selected)
-    } else {
-      set('tamanoPreferido', [...withoutSin, value] as typeof selected)
-    }
-  }
-
-  function toggleEdadPerro(value: LifestyleQuizAnswers['edadPreferida'][number]) {
-    const selected = draft.edadPreferida
-    if (value === 'sin_preferencia') { set('edadPreferida', ['sin_preferencia']); return }
-    const withoutSin = selected.filter(v => v !== 'sin_preferencia')
-    if (withoutSin.includes(value)) {
-      const next = withoutSin.filter(v => v !== value)
-      set('edadPreferida', (next.length ? next : ['sin_preferencia']) as typeof selected)
-    } else {
-      set('edadPreferida', [...withoutSin, value] as typeof selected)
-    }
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    clearStatus('preferences')
-    const full: LifestyleQuizAnswers = {
-      ...LIFESTYLE_DEFAULTS,
-      ...(lifestyle ?? {}),
-      ...draft,
-    }
-    await updatePreferences(full)
-  }
+  const { lifestyle, loadingPreferences, isApplicant } = useProfile()
 
   if (!isApplicant) {
     return (
@@ -545,48 +340,29 @@ function TabPreferences() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-
-      {/* ── Banner: estado y acceso al quiz ── */}
+    <div>
+      {/* ── Banner ── */}
       <div className="pf-card" style={{
         background: 'linear-gradient(135deg, #fff5f5 0%, #fff0f9 100%)',
         border: '1.5px solid #fecdd3',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{
-              width: 44, height: 44, borderRadius: '50%',
-              background: '#ff6b6b',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-              <span className="material-symbols-outlined" style={{
-                fontSize: 22, color: '#fff',
-                fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24",
-              }}>
-                auto_awesome
-              </span>
+            <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#ff6b6b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#fff', fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24" }}>auto_awesome</span>
             </div>
             <div>
               <p style={{ fontWeight: 900, fontSize: '0.92rem', color: '#18181b', lineHeight: 1.2 }}>
                 {lifestyle ? 'Perfil de compatibilidad activo' : 'Completa el cuestionario de compatibilidad'}
               </p>
               <p style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500, marginTop: '0.15rem' }}>
-                {lifestyle
-                  ? 'Edita tus respuestas directamente o vuelve a llenar el cuestionario completo'
-                  : 'El quiz de 7 pasos mejora la precisión de tu match con los perros'}
+                {lifestyle ? '20 preguntas · 4 categorías · actualizado' : 'El quiz de 20 preguntas mejora la precisión de tu match'}
               </p>
             </div>
           </div>
           <Link
             href="/mi-match/quiz"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-              padding: '0.55rem 1.1rem', borderRadius: '999px',
-              background: '#ff6b6b', color: '#fff',
-              fontWeight: 700, fontSize: '0.82rem',
-              textDecoration: 'none', flexShrink: 0,
-              boxShadow: '0 3px 10px rgba(255,107,107,0.28)',
-            }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.55rem 1.1rem', borderRadius: '999px', background: '#ff6b6b', color: '#fff', fontWeight: 700, fontSize: '0.82rem', textDecoration: 'none', flexShrink: 0, boxShadow: '0 3px 10px rgba(255,107,107,0.28)' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>quiz</span>
             {lifestyle ? 'Volver a llenar el quiz' : 'Llenar quiz'}
@@ -594,407 +370,39 @@ function TabPreferences() {
         </div>
       </div>
 
-      {/* ── 1: Estilo de vida ── */}
-      <div className="pf-card">
-        <h2 className="pf-card__title">
-          <span className="material-symbols-outlined">directions_run</span>
-          Estilo de vida
-        </h2>
-
-        <div className="qz-section" style={{ marginTop: 0 }}>
-          <p className="qz-section__label">Actividad física</p>
-          <div className="qz-cards-grid">
-            {PF_ACTIVITIES.map(opt => {
-              const isSel = draft.actividadFisica === opt.value
+      {/* ── Resumen de scores por categoría ── */}
+      {lifestyle && (
+        <div className="pf-card">
+          <h2 className="pf-card__title">
+            <span className="material-symbols-outlined">bar_chart</span>
+            Resumen de tu perfil
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+            {CATEGORY_LABELS.map(cat => {
+              const avg = categoryAvg(lifestyle, cat.keys)
+              const pct = Math.round((avg / 5) * 100)
               return (
-                <button key={opt.value} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('actividadFisica', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 30, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 32"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 32" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
+                <div key={cat.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#ff6b6b', fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 18" }}>{cat.icon}</span>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>{cat.label}</span>
+                    </div>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#ff6b6b' }}>{avg} / 5</span>
+                  </div>
+                  <div style={{ height: 8, background: '#f0f0f0', borderRadius: 99, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg, #ff6b6b, #ff8e53)', borderRadius: 99, transition: 'width 600ms ease' }} />
+                  </div>
+                </div>
               )
             })}
           </div>
-        </div>
-
-        <div className="qz-section">
-          <p className="qz-section__label">Horas al día para tu perro</p>
-          <div className="qz-pills">
-            {PF_HORAS.map(h => {
-              const isSel = draft.horasLibresParaPerro === h.value
-              return (
-                <button key={h.value} type="button"
-                  className={`qz-pill${isSel ? ' qz-pill--selected' : ''}`}
-                  onClick={() => set('horasLibresParaPerro', h.value)}
-                >
-                  <span className="material-symbols-outlined"
-                    style={{ fontSize: 14, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 14" }}>
-                    schedule
-                  </span>
-                  {h.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 2: Tu vivienda ── */}
-      <div className="pf-card">
-        <h2 className="pf-card__title">
-          <span className="material-symbols-outlined">house</span>
-          Tu vivienda
-        </h2>
-
-        <div className="qz-section" style={{ marginTop: 0 }}>
-          <p className="qz-section__label">Tipo de vivienda</p>
-          <div className="qz-cards-grid">
-            {PF_VIVIENDA.map(opt => {
-              const isSel = draft.tipoVivienda === opt.value
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('tipoVivienda', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 30, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 32"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 32" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="qz-section">
-          <p className="qz-section__label">¿Cuentas con jardín o patio?</p>
-          <div className="qz-cards-grid">
-            {PF_GARDEN.map(opt => {
-              const isSel = draft.tieneJardin === opt.value
-              return (
-                <button key={String(opt.value)} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('tieneJardin', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 30, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 32"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 32" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="qz-section">
-          <p className="qz-section__label">Tamaño del espacio interior</p>
-          <div className="qz-pills">
-            {PF_TAMANO_ESPACIO.map(opt => {
-              const isSel = draft.tamanoEspacio === opt.value
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-pill${isSel ? ' qz-pill--selected' : ''}`}
-                  onClick={() => set('tamanoEspacio', opt.value)}
-                >
-                  {opt.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 3: Experiencia y convivencia ── */}
-      <div className="pf-card">
-        <h2 className="pf-card__title">
-          <span className="material-symbols-outlined">family_restroom</span>
-          Experiencia y convivencia
-        </h2>
-
-        {/* Experiencia previa */}
-        <div className="qz-section" style={{ marginTop: 0 }}>
-          <p className="qz-section__label">¿Tienes experiencia con perros?</p>
-          <div className="qz-cards-grid">
-            {PF_EXP.map(opt => {
-              const isSel = draft.experienciaPrevia === opt.value
-              return (
-                <button key={String(opt.value)} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('experienciaPrevia', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 30, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 32"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 32" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Niños */}
-        <div className="qz-section">
-          <p className="qz-section__label">¿Hay niños en el hogar?</p>
-          <div className="qz-cards-grid">
-            {PF_NINOS.map(opt => {
-              const isSel = draft.conviveConNinos === opt.value
-              return (
-                <button key={String(opt.value)} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('conviveConNinos', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 30, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 32"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 32" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Mascotas */}
-        <div className="qz-section">
-          <p className="qz-section__label">¿Tienes otras mascotas?</p>
-          <div className="qz-cards-grid">
-            {PF_MASCOTAS.map(opt => {
-              const isSel = draft.conviveConMascotas === opt.value
-              return (
-                <button key={String(opt.value)} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('conviveConMascotas', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 30, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 32"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 32" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 4: Tu perro ideal ── */}
-      <div className="pf-card">
-        <h2 className="pf-card__title">
-          <span className="material-symbols-outlined">pets</span>
-          Tu perro ideal
-        </h2>
-
-        {/* Tamaño preferido — multi-select */}
-        <div className="qz-section" style={{ marginTop: 0 }}>
-          <p className="qz-section__label">Tamaño preferido (puedes elegir varios)</p>
-          <div className="qz-cards-grid">
-            {PF_TAMANO_PERRO.slice(0, 4).map(opt => {
-              const isSel = draft.tamanoPreferido.includes(opt.value)
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => toggleTamanoPerro(opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 28, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 30"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 30" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-          {/* Sin preferencia — fila completa */}
-          {(() => {
-            const sinPref = PF_TAMANO_PERRO[4]
-            const isSel   = draft.tamanoPreferido.includes('sin_preferencia')
-            return (
-              <button type="button"
-                className={`qz-card${isSel ? ' qz-card--selected' : ''}`}
-                style={{ marginTop: '0.875rem', flexDirection: 'row', justifyContent: 'center', gap: '0.75rem', padding: '0.875rem', width: '100%' }}
-                onClick={() => toggleTamanoPerro('sin_preferencia')}
-              >
-                <span className="material-symbols-outlined qz-card__icon"
-                  style={{ fontSize: 22, fontVariationSettings: isSel
-                    ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24"
-                    : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24" }}>
-                  {sinPref.icon}
-                </span>
-                <span className="qz-card__label">{sinPref.label}</span>
-                <span className="qz-card__desc" style={{ margin: 0 }}>{sinPref.desc}</span>
-              </button>
-            )
-          })()}
-        </div>
-
-        {/* Energía preferida */}
-        <div className="qz-section">
-          <p className="qz-section__label">Nivel de energía preferido</p>
-          <div className="qz-cards-grid">
-            {PF_ENERGIA.map(opt => {
-              const isSel = draft.energiaPreferida === opt.value
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-card qz-card--sm${isSel ? ' qz-card--selected' : ''}`}
-                  onClick={() => set('energiaPreferida', opt.value)}
-                >
-                  <span className="material-symbols-outlined qz-card__icon"
-                    style={{ fontSize: 28, fontVariationSettings: isSel
-                      ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 30"
-                      : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 30" }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-card__label">{opt.label}</p>
-                  <p className="qz-card__desc">{opt.desc}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Sexo preferido */}
-        <div className="qz-section">
-          <p className="qz-section__label">Sexo preferido</p>
-          <div className="qz-pills">
-            {PF_SEXO.map(opt => {
-              const isSel = draft.sexoPreferido === opt.value
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-pill${isSel ? ' qz-pill--selected' : ''}`}
-                  onClick={() => set('sexoPreferido', opt.value)}
-                >
-                  <span className="material-symbols-outlined"
-                    style={{ fontSize: 15, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}>
-                    {opt.icon}
-                  </span>
-                  {opt.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Edad preferida — multi-select */}
-        <div className="qz-section">
-          <p className="qz-section__label">Edad preferida (puedes elegir varias)</p>
-          <div className="qz-pills">
-            {PF_EDAD.map(opt => {
-              const isSel = draft.edadPreferida.includes(opt.value)
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-pill${isSel ? ' qz-pill--selected' : ''}`}
-                  onClick={() => toggleEdadPerro(opt.value)}
-                >
-                  {opt.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 5: Compromisos y presupuesto ── */}
-      <div className="pf-card">
-        <h2 className="pf-card__title">
-          <span className="material-symbols-outlined">volunteer_activism</span>
-          Compromisos y presupuesto
-        </h2>
-
-        <div className="qz-section" style={{ marginTop: 0 }}>
-          <p className="qz-section__label">Presupuesto mensual estimado</p>
-          <div className="qz-budget-grid">
-            {PF_BUDGET.map(opt => {
-              const isSel = draft.presupuestoMensualMXN === opt.value
-              return (
-                <button key={opt.value} type="button"
-                  className={`qz-budget-card${isSel ? ' qz-budget-card--selected' : ''}`}
-                  onClick={() => set('presupuestoMensualMXN', opt.value)}
-                >
-                  <span className="material-symbols-outlined"
-                    style={{
-                      fontSize: 26,
-                      color: isSel ? '#ff6b6b' : '#a1a1aa',
-                      fontVariationSettings: isSel
-                        ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 28"
-                        : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 28",
-                      marginBottom: '0.2rem',
-                    }}>
-                    {opt.icon}
-                  </span>
-                  <p className="qz-budget-card__amount">{opt.label}</p>
-                  <p className="qz-budget-card__range">{opt.range}</p>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="qz-section">
-          <p className="qz-section__label">¿Estás dispuesto a entrenar al perro?</p>
-          <p style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500, marginBottom: '0.6rem', lineHeight: 1.4 }}>
-            Algunos perros necesitan adiestramiento básico y paciencia inicial
+          <p style={{ fontSize: '0.75rem', color: '#a1a1aa', fontWeight: 500, marginTop: '1rem' }}>
+            Para actualizar tu perfil, vuelve a completar el cuestionario de 20 preguntas.
           </p>
-          <YesNoPair
-            value={draft.disponibilidadEntrenamiento}
-            onChange={v => set('disponibilidadEntrenamiento', v)}
-          />
         </div>
-
-        <div className="qz-section">
-          <p className="qz-section__label">¿Aceptas perros con necesidades especiales?</p>
-          <p style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500, marginBottom: '0.6rem', lineHeight: 1.4 }}>
-            Perros con discapacidades, enfermedades crónicas o que requieren cuidados extra
-          </p>
-          <YesNoPair
-            value={draft.aceptaPerroConNecesidadesEspeciales}
-            onChange={v => set('aceptaPerroConNecesidadesEspeciales', v)}
-          />
-        </div>
-      </div>
-
-      {preferencesError && (
-        <Alert type="error" message={preferencesError} closable />
       )}
-      {preferencesOk && (
-        <Alert type="success" message="Preferencias guardadas. Las recomendaciones se actualizarán en tu próxima sesión." closable />
-      )}
-
-      <div className="pf-save-bar">
-        <Button type="submit" loading={savingPreferences} size="md">
-          <span className="material-symbols-outlined" style={{ fontSize: 17 }}>auto_awesome</span>
-          {lifestyle ? 'Guardar cambios' : 'Guardar preferencias'}
-        </Button>
-      </div>
-    </form>
+    </div>
   )
 }
 

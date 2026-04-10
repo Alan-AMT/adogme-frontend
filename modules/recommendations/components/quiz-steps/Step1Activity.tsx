@@ -1,128 +1,45 @@
 // modules/recommendations/components/quiz-steps/Step1Activity.tsx
-// Paso 1 — Estilo de vida
-// Campos: actividadFisica (single-select) + horasLibresParaPerro (chips)
+// Paso 1 — Actividad (q1-q5)
 'use client'
 
 import type { StepProps } from './types'
-import type { LifestyleQuizAnswers } from '@/modules/shared/domain/LifestyleProfile'
+import type { QuizScale } from '@/modules/shared/domain/LifestyleProfile'
+import { ScaleQuestion } from './ScaleQuestion'
 
-// ─── Opciones ─────────────────────────────────────────────────────────────────
-
-type Activity = LifestyleQuizAnswers['actividadFisica']
-
-const ACTIVITIES: {
-  value: Activity
-  icon:  string
-  label: string
-  desc:  string
+const QUESTIONS: {
+  key: 'q1' | 'q2' | 'q3' | 'q4' | 'q5'
+  text: string
+  min: string
+  max: string
 }[] = [
-  {
-    value: 'sedentario',
-    icon:  'weekend',
-    label: 'Sedentario',
-    desc:  'Prefiero el descanso, salidas cortas',
-  },
-  {
-    value: 'moderado',
-    icon:  'directions_walk',
-    label: 'Moderado',
-    desc:  'Caminatas y actividad ocasional',
-  },
-  {
-    value: 'activo',
-    icon:  'directions_run',
-    label: 'Activo',
-    desc:  'Ejercito varias veces por semana',
-  },
-  {
-    value: 'muy_activo',
-    icon:  'sports',
-    label: 'Muy activo',
-    desc:  'Deporte diario o actividad intensa',
-  },
+  { key: 'q1', text: '¿Qué tan activo eres físicamente durante la semana?',              min: 'Sedentario',      max: 'Muy activo'         },
+  { key: 'q2', text: '¿Con qué frecuencia podrías sacar a pasear a un perro?',           min: 'Rara vez',        max: 'Varias veces al día' },
+  { key: 'q3', text: '¿Qué tan importante es para ti hacer actividades al aire libre?',  min: 'Nada importante', max: 'Muy importante'      },
+  { key: 'q4', text: '¿Cuánto tiempo podrías dedicar diariamente al ejercicio con tu perro?', min: 'Menos de 15 min', max: 'Más de 2 horas' },
+  { key: 'q5', text: '¿Qué tan cómodo te sientes con un perro muy enérgico?',            min: 'Nada cómodo',     max: 'Muy cómodo'         },
 ]
-
-const HORAS: { value: number; label: string }[] = [
-  { value: 0.5, label: '< 1 hora' },
-  { value: 1.5, label: '1 – 2 horas' },
-  { value: 3.5, label: '3 – 4 horas' },
-  { value: 5,   label: '+ 4 horas' },
-]
-
-// ─── Componente ───────────────────────────────────────────────────────────────
 
 export function Step1Activity({ answers, onChange }: StepProps) {
-  const selected      = answers.actividadFisica
-  const horasSelected = answers.horasLibresParaPerro
-
   return (
     <div className="qz-step">
-
       <div className="qz-step__head">
         <div className="qz-step__icon">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}>directions_run</span>
         </div>
-        <h2 className="qz-step__title">¿Cómo es tu estilo de vida?</h2>
-        <p className="qz-step__subtitle">
-          Selecciona la opción que mejor te describe
-        </p>
+        <h2 className="qz-step__title">Estilo de vida y actividad</h2>
+        <p className="qz-step__subtitle">¿Cómo es tu día a día y qué tan activo eres?</p>
       </div>
 
-      {/* Actividad física — 4 cards 2×2 */}
-      <div className="qz-cards-grid">
-        {ACTIVITIES.map(opt => {
-          const isSelected = selected === opt.value
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              className={`qz-card${isSelected ? ' qz-card--selected' : ''}`}
-              onClick={() => onChange('actividadFisica', opt.value)}
-              aria-pressed={isSelected}
-            >
-              <span
-                className="material-symbols-outlined qz-card__icon"
-                style={{
-                  fontVariationSettings: isSelected
-                    ? "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 40"
-                    : "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 40",
-                }}
-              >
-                {opt.icon}
-              </span>
-              <p className="qz-card__label">{opt.label}</p>
-              <p className="qz-card__desc">{opt.desc}</p>
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Horas disponibles — chips */}
-      <div className="qz-section">
-        <p className="qz-section__label">Horas al día para tu perro</p>
-        <div className="qz-pills">
-          {HORAS.map(h => {
-            const isSelected = horasSelected === h.value
-            return (
-              <button
-                key={h.value}
-                type="button"
-                className={`qz-pill${isSelected ? ' qz-pill--selected' : ''}`}
-                onClick={() => onChange('horasLibresParaPerro', h.value)}
-                aria-pressed={isSelected}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 14, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 14" }}
-                >
-                  schedule
-                </span>
-                {h.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      {QUESTIONS.map(q => (
+        <ScaleQuestion
+          key={q.key}
+          text={q.text}
+          min={q.min}
+          max={q.max}
+          value={answers[q.key]}
+          onChange={v => onChange(q.key, v as QuizScale)}
+        />
+      ))}
     </div>
   )
 }

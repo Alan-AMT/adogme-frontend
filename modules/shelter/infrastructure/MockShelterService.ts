@@ -176,7 +176,11 @@ export class MockShelterService implements IShelterService {
       descripcion:   data.descripcion,
       foto:          data.foto,
       fotos:         data.fotos        ?? [data.foto],
-      salud:         data.salud        ?? '',
+      salud:         [
+        data.vacunado      ? 'Vacunado'      : null,
+        data.desparasitado ? 'Desparasitado' : null,
+        data.castrado      ? 'Castrado'      : null,
+      ].filter(Boolean).join(', ') || 'Sin información',
       edadCategoria: data.edadCategoria ?? calcEdadCategoria(data.edad),
       castrado:      data.castrado     ?? false,
       microchip:     data.microchip    ?? false,

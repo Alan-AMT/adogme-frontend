@@ -50,19 +50,54 @@ export function MedicalStep({ formData, errors, update }: Props) {
           <span className="sv-form-section__header-text">Salud general</span>
         </div>
         <div className="sv-form-section__body">
+          {/* Vacunado */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f4f4f5' }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#374151', cursor: 'pointer' }} htmlFor="check-vacunado">Vacunado</label>
+            <input id="check-vacunado" type="checkbox" checked={formData.vacunado}
+              onChange={e => update('vacunado', e.target.checked)}
+              style={{ width: 18, height: 18, accentColor: '#ff6b6b', cursor: 'pointer' }} />
+          </div>
+
+          {/* Desparasitado */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f4f4f5', marginBottom: '1rem' }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#374151', cursor: 'pointer' }} htmlFor="check-desparasitado">Desparasitado</label>
+            <input id="check-desparasitado" type="checkbox" checked={formData.desparasitado}
+              onChange={e => update('desparasitado', e.target.checked)}
+              style={{ width: 18, height: 18, accentColor: '#ff6b6b', cursor: 'pointer' }} />
+          </div>
+
+          {/* Nivel de salud */}
           <div className="sv-field">
-            <label className="sv-field__label">Estado de salud y cuidados</label>
-            <textarea
-              className="sv-field__textarea"
-              value={formData.salud}
-              onChange={e => update('salud', e.target.value)}
-              placeholder="Ej: Vacunado contra rabia y moquillo. Desparasitado en octubre 2024. Alergia a pollo. Dieta especial para articulaciones..."
-              rows={4}
-              maxLength={800}
-              style={{ minHeight: 100 }}
-            />
-            <p className="sv-field__helper">{formData.salud.length}/800 · dieta, medicación, alergias, condiciones crónicas, etc.</p>
-            {errors.salud && <p className="sv-field__error">{errors.salud}</p>}
+            <label className="sv-field__label">Estado de salud</label>
+            <select className="sv-field__select"
+              value={formData.nivelSalud}
+              onChange={e => update('nivelSalud', Number(e.target.value) as 1 | 2 | 3)}>
+              <option value={1}>Sano</option>
+              <option value={2}>Lesión o condición leve</option>
+              <option value={3}>Lesión o condición grave</option>
+            </select>
+          </div>
+
+          {/* Pelaje */}
+          <div className="sv-field">
+            <label className="sv-field__label">Tipo de pelaje</label>
+            <select className="sv-field__select"
+              value={formData.pelaje}
+              onChange={e => update('pelaje', Number(e.target.value) as 1 | 2 | 3)}>
+              <option value={1}>Corto</option>
+              <option value={2}>Mediano</option>
+              <option value={3}>Largo</option>
+            </select>
+          </div>
+
+          {/* Cuota de adopción */}
+          <div className="sv-field">
+            <label className="sv-field__label">Cuota de adopción (MXN)</label>
+            <input type="number" className="sv-field__input" min={0}
+              value={formData.cuotaAdopcion}
+              onChange={e => update('cuotaAdopcion', Number(e.target.value))}
+              placeholder="0 = sin costo" />
+            <p className="sv-field__helper">Deja en 0 si la adopción es gratuita</p>
           </div>
         </div>
       </div>
@@ -128,7 +163,7 @@ export function MedicalStep({ formData, errors, update }: Props) {
           {/* Formulario agregar vacuna */}
           <div style={{ background: '#f9fafb', borderRadius: '0.9rem', padding: '1rem', border: '1.5px dashed #e4e4e7' }}>
             <p style={{ fontSize: '0.75rem', fontWeight: 900, color: '#52525b', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Agregar vacuna</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', marginBottom: '0.65rem' }}>
+            <div className="sv-vac-grid">
               <div className="sv-field">
                 <label className="sv-field__label">Nombre de la vacuna</label>
                 <input

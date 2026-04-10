@@ -22,26 +22,20 @@ import { Button }      from '../../shared/components/ui/Button'
 import { Alert }       from '../../shared/components/ui/Alert'
 import { Spinner }     from '../../shared/components/ui/Spinner'
 import { useLifestyleQuiz, TOTAL_STEPS } from '../application/hooks/useLifestyleQuiz'
-import { Step1Activity }      from './quiz-steps/Step1Activity'
-import { Step2Housing }       from './quiz-steps/Step2Housing'
-import { Step3Experience }    from './quiz-steps/Step3Experience'
-import { Step4Coexistence }   from './quiz-steps/Step4Coexistence'
-import { Step5SizePreference } from './quiz-steps/Step5SizePreference'
-import { Step6DogProfile }    from './quiz-steps/Step6DogProfile'
-import { Step7Commitment }    from './quiz-steps/Step7Commitment'
+import { Step1Activity }    from './quiz-steps/Step1Activity'
+import { Step2Housing }     from './quiz-steps/Step2Housing'
+import { Step3Experience }  from './quiz-steps/Step3Experience'
+import { Step4Coexistence } from './quiz-steps/Step4Coexistence'
 import type { StepProps } from './quiz-steps/types'
 import '../styles/quiz.css'
 
 // ─── Metadatos por paso ───────────────────────────────────────────────────────
 
 const STEP_META: { label: string }[] = [
-  { label: 'Actividad'    },
-  { label: 'Vivienda'     },
-  { label: 'Experiencia'  },
-  { label: 'Convivencia'  },
-  { label: 'Tamaño'       },
-  { label: 'Perfil'       },
-  { label: 'Compromisos'  },
+  { label: 'Actividad'   },
+  { label: 'Hogar'       },
+  { label: 'Experiencia' },
+  { label: 'Cuidados'    },
 ]
 
 // ─── Componentes de paso ──────────────────────────────────────────────────────
@@ -51,9 +45,6 @@ const STEP_COMPONENTS: ComponentType<StepProps>[] = [
   Step2Housing,
   Step3Experience,
   Step4Coexistence,
-  Step5SizePreference,
-  Step6DogProfile,
-  Step7Commitment,
 ]
 
 // ─── Componente ───────────────────────────────────────────────────────────────

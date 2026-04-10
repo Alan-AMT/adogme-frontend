@@ -18,64 +18,36 @@ import type {
 import type { OnChangeQuiz } from '../../components/quiz-steps/types'
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
+// 4 pasos — uno por categoría del ML (5 preguntas cada uno)
 
-export const TOTAL_STEPS = 7
+export const TOTAL_STEPS = 4
 
 const DRAFT_KEY   = (id: number) => `quiz-draft-${id}`
 const RESULTS_KEY = (id: number) => `ml-results-${id}`
 
-/** Valores por defecto para campos no cubiertos en el quiz simplificado */
+/** Valor neutro (3) para todas las preguntas al iniciar */
 const DEFAULTS: LifestyleQuizAnswers = {
-  actividadFisica:                    'moderado',
-  horasEnCasaDiarias:                 10,
-  horasLibresParaPerro:               2,
-  tipoVivienda:                       'departamento',
-  tieneJardin:                        false,
-  tamanoEspacio:                      'mediano',
-  experienciaPrevia:                  false,
-  conviveConNinos:                    false,
-  conviveConMascotas:                 false,
-  tamanoPreferido:                    ['sin_preferencia'],
-  energiaPreferida:                   'sin_preferencia',
-  sexoPreferido:                      'sin_preferencia',
-  edadPreferida:                      ['sin_preferencia'],
-  presupuestoMensualMXN:              2000,
-  disponibilidadEntrenamiento:        false,
-  aceptaPerroConNecesidadesEspeciales: false,
-}
-
-/** horasEnCasaDiarias derivado de actividadFisica */
-function deriveHorasEnCasa(actividad: LifestyleQuizAnswers['actividadFisica']): number {
-  const map: Record<string, number> = {
-    sedentario: 14, moderado: 10, activo: 8, muy_activo: 6,
-  }
-  return map[actividad] ?? 10
+  q1: 3, q2: 3, q3: 3, q4: 3, q5: 3,   // actividad
+  q6: 3, q7: 3, q8: 3, q9: 3, q10: 3,  // hogar
+  q11: 3, q12: 3, q13: 3, q14: 3, q15: 3, // experiencia
+  q16: 3, q17: 3, q18: 3, q19: 3, q20: 3, // recursos
 }
 
 // ─── Validadores por paso (0-indexed) ────────────────────────────────────────
-// Devuelven true si los campos requeridos del paso están respondidos.
+// Paso válido si todas sus 5 preguntas tienen respuesta (valor 1-5).
+
+const isAnswered = (v: unknown): boolean =>
+  v !== undefined && v !== null && (v as number) >= 1 && (v as number) <= 5
 
 const STEP_VALIDATORS: Array<(a: Partial<LifestyleQuizAnswers>) => boolean> = [
-  // Paso 1 — Actividad
-  a => a.actividadFisica !== undefined && a.horasLibresParaPerro !== undefined,
-  // Paso 2 — Vivienda
-  a => a.tipoVivienda !== undefined && a.tieneJardin !== undefined && a.tamanoEspacio !== undefined,
-  // Paso 3 — Experiencia
-  a => a.experienciaPrevia !== undefined,
-  // Paso 4 — Convivencia
-  a => a.conviveConNinos !== undefined && a.conviveConMascotas !== undefined,
-  // Paso 5 — Tamaño preferido
-  a => (a.tamanoPreferido?.length ?? 0) > 0,
-  // Paso 6 — Perfil del perro
-  a =>
-    a.energiaPreferida !== undefined &&
-    a.sexoPreferido    !== undefined &&
-    (a.edadPreferida?.length ?? 0) > 0,
-  // Paso 7 — Compromisos
-  a =>
-    a.presupuestoMensualMXN              !== undefined &&
-    a.disponibilidadEntrenamiento        !== undefined &&
-    a.aceptaPerroConNecesidadesEspeciales !== undefined,
+  // Paso 0 — Actividad (q1-q5)
+  a => [a.q1, a.q2, a.q3, a.q4, a.q5].every(isAnswered),
+  // Paso 1 — Hogar (q6-q10)
+  a => [a.q6, a.q7, a.q8, a.q9, a.q10].every(isAnswered),
+  // Paso 2 — Experiencia (q11-q15)
+  a => [a.q11, a.q12, a.q13, a.q14, a.q15].every(isAnswered),
+  // Paso 3 — Recursos y cuidados (q16-q20)
+  a => [a.q16, a.q17, a.q18, a.q19, a.q20].every(isAnswered),
 ]
 
 // ─── Tipos de retorno ─────────────────────────────────────────────────────────
@@ -165,14 +137,8 @@ export function useLifestyleQuiz(): UseLifestyleQuizReturn {
     setSubmitError(null)
 
     try {
-      // Completar campos derivados o ausentes con defaults
-      const fullAnswers: LifestyleQuizAnswers = {
-        ...DEFAULTS,
-        ...answers,
-        // derivar horasEnCasaDiarias si no está seteado explícitamente
-        horasEnCasaDiarias: answers.horasEnCasaDiarias
-          ?? deriveHorasEnCasa(answers.actividadFisica ?? 'moderado'),
-      }
+      // Completar con defaults (valor neutro 3) para preguntas no respondidas
+      const fullAnswers: LifestyleQuizAnswers = { ...DEFAULTS, ...answers }
 
       const result = await mlService.generateRecommendations(user.id, fullAnswers)
 
