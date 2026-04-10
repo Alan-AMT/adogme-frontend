@@ -1051,3 +1051,18 @@
 
 /* ── Mensajes del refugio (mismo layout que applicant) ── */
 /* Reutiliza ms-* de messaging.css; no hay clases extra */
+
+/* ── Grilla de campos de vacuna (2 col → 1 col en móvil) ── */
+.sv-vac-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 0.65rem;
+}
+
+@media (max-width: 480px) {
+  .sv-vac-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
