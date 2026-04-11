@@ -93,14 +93,7 @@ export default function ShelterDogFormView({ dogId }: { dogId?: number }) {
       {form.currentStep === 1 && <PersonalityStep {...stepProps} />}
       {form.currentStep === 2 && <CareStep {...stepProps} />}
       {form.currentStep === 3 && <MedicalStep {...stepProps} />}
-      {form.currentStep === 4 && (
-        <MediaStep
-          {...stepProps}
-          validateMedia={form.validateMedia}
-          mediaValidationResults={form.mediaValidationResults}
-          isValidatingMedia={form.isValidatingMedia}
-        />
-      )}
+      {form.currentStep === 4 && <MediaStep {...stepProps} />}
       {form.currentStep === 5 && (
         <ReviewStep
           formData={form.formData}
