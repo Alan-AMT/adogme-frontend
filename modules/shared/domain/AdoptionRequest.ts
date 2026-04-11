@@ -85,6 +85,7 @@ export interface AdoptionRequest {
   refugioNombre?: string
   adoptanteNombre?: string
   adoptanteCorreo?: string
+  adoptanteTelefono?: string
 }
 
 // ─── Versión reducida para listas ────────────────────────────────────────────
