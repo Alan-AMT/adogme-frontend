@@ -12,10 +12,10 @@ const WS   = process.env.NEXT_PUBLIC_WS_URL ?? ''
 export const API_ENDPOINTS = {
 
   AUTH: {
-    LOGIN:           `${BASE}/api/auth/login`,
-    REGISTER:        `${BASE}/api/auth/register`,
-    REGISTER_SHELTER:`${BASE}/api/auth/register/shelter`,
-    REFRESH:         `${BASE}/api/auth/refresh`,
+    LOGIN:           `${BASE}/auth-ms/user/login`,
+    REGISTER:        `${BASE}/auth-ms/adopter`,
+    REGISTER_SHELTER:`${BASE}/auth-ms/shelter`,
+    REFRESH:         `${BASE}/auth-ms/user/update-tokens`,
     LOGOUT:          `${BASE}/api/auth/logout`,
     FORGOT:          `${BASE}/api/auth/forgot-password`,
     RESET:           `${BASE}/api/auth/reset-password`,
@@ -34,11 +34,12 @@ export const API_ENDPOINTS = {
   },
 
   SHELTERS: {
-    LIST:            `${BASE}/api/shelters`,
-    DETAIL:          (id: number)    => `${BASE}/api/shelters/${id}`,
-    BY_SLUG:         (slug: string)  => `${BASE}/api/shelters/slug/${slug}`,
-    UPDATE:          (id: number)    => `${BASE}/api/shelters/${id}`,
-    STATS:           (id: number)    => `${BASE}/api/shelters/${id}/stats`,
+    LIST:            `${BASE}/shelters-ms/shelters`,
+    CREATE:          `${BASE}/shelters-ms/shelter`,
+    DETAIL:          (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    BY_SLUG:         (slug: string)        => `${BASE}/api/shelters/slug/${slug}`,
+    UPDATE:          (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    STATS:           (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
     UPLOAD_LOGO:     `${BASE}/api/media/shelter/logo`,
     UPLOAD_COVER:    `${BASE}/api/media/shelter/cover`,
   },

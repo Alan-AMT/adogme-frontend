@@ -8,13 +8,9 @@ import {
 import {
   MOCK_SHELTERS as SHARED_SHELTERS,
 } from "../../shared/mockData/shelters.mock";
-import {
-  MOCK_GLOBAL_STATS as SHARED_STATS,
-} from "../../shared/mockData/content.mock";
 import type { AdoptionProcess } from "../domain/AdoptionProcess";
 import type { AdoptionStory } from "../domain/AdoptionStory";
 import type { DogCard } from "../domain/DogCard";
-import type { GlobalStats } from "../domain/GlobalStats";
 import type { ShelterCard } from "../domain/ShelterCard";
 import type { IHomeService } from "./IHomeService";
 
@@ -111,20 +107,6 @@ export const MOCK_ADOPTION_PROCESS: AdoptionProcess = [
   },
 ];
 
-// ─── Stats derivadas de los datos reales ─────────────────────────────────────
-
-const perrosEnEspera   = getAvailableDogs().length;
-const refugiosActivos  = SHARED_SHELTERS.filter(s => s.aprobado).length;
-const totalAdopciones  = SHARED_SHELTERS.reduce((sum, s) => sum + (s.adopcionesRealizadas ?? 0), 0);
-
-export const MOCK_GLOBAL_STATS: GlobalStats = {
-  perrosEnEspera,
-  refugiosActivos,
-  totalAdopciones,
-  porcentajeExito: SHARED_STATS.tasaExito,
-  aniosEnOperacion: 9,
-};
-
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export class MockHomeService implements IHomeService {
@@ -178,10 +160,5 @@ export class MockHomeService implements IHomeService {
   async getAdoptionProcess(): Promise<AdoptionProcess> {
     await delay(300);
     return MOCK_ADOPTION_PROCESS;
-  }
-
-  async getGlobalStats(): Promise<GlobalStats> {
-    await delay(300);
-    return MOCK_GLOBAL_STATS;
   }
 }

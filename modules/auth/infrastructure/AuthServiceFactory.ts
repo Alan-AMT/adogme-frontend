@@ -14,19 +14,10 @@
 
 import type { IAuthService } from './IAuthService'
 import { MockAuthService } from './MockAuthService'
-
-// import { AuthService } from './AuthService'  ← descomentar cuando el API esté listo
+import { AuthService } from './AuthService'
 
 const isMock = process.env.NEXT_PUBLIC_USE_MOCK !== 'false'
 
 export const authService: IAuthService = isMock
   ? new MockAuthService()
-  : (() => {
-      // Fallback seguro mientras AuthService no esté implementado.
-      // En producción: reemplazar con `new AuthService()`
-      console.warn(
-        '[AuthServiceFactory] NEXT_PUBLIC_USE_MOCK=false pero AuthService real no ' +
-        'está implementado. Usando MockAuthService como fallback.'
-      )
-      return new MockAuthService()
-    })()
+  : new AuthService()

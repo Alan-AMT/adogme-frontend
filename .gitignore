@@ -44,3 +44,5 @@ next-env.d.ts
 PR_PLAN*
 analisis_diagramas*
 .claude/
+
+ApiGateway.yml

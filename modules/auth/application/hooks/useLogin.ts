@@ -100,11 +100,12 @@ export function useLogin(): UseLoginReturn {
       setUser(res.user)
       setToken(res.token)
 
-      const redirectParam = searchParams.get('redirect')
-      router.push(getPostLoginUrl(res.user.role, redirectParam))
-      router.refresh()
+      // const redirectParam = searchParams.get('redirect')
+      // router.push(getPostLoginUrl(res.user.role, redirectParam))
+      // router.refresh()
 
     } catch (err) {
+      console.log(err)
       const msg = err instanceof Error ? err.message : 'Error al iniciar sesión.'
 
       if (msg.startsWith('SHELTER_PENDING')) {
