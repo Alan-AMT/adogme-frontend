@@ -997,6 +997,8 @@ Same interface as Adoption Service but from shelter perspective. See [Adoption S
 
 ---
 
+## COMPLETELY REMOVED - ALAN
+
 ## 7. Messaging Service
 
 ### Service Contract
@@ -1151,6 +1153,8 @@ Same interface as Adoption Service but from shelter perspective. See [Adoption S
 | **Optimistic updates**       | LOW      | `useChat` does optimistic updates with fake IDs (`Date.now()`). Backend must return the real ID so the UI can reconcile.                                                                                            |
 
 ---
+
+## COMPLETELY REMOVED (only links left) - ALAN
 
 ## 8. Donation Service
 

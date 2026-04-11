@@ -1,58 +1,4 @@
 // modules/shared/domain/Donation.ts
-// Entidad Donacion — basada en tabla Donacion del diagrama ER
-// Tabla: id, adoptante_id, refugio_id, monto, metodoPago, fecha, confirmado
-
-// ─── Métodos de pago ─────────────────────────────────────────────────────────
-
-export type PaymentMethod =
-  | 'tarjeta'       // Stripe card
-  | 'paypal'
-  | 'transferencia' // SPEI / wire
-  | 'efectivo'      // pago en refugio
-
-export type DonationStatus = 'pending' | 'confirmed' | 'failed' | 'refunded'
-
-// ─── Entidad completa ─────────────────────────────────────────────────────────
-
-export interface Donation {
-  id: number
-  adoptanteId: number      // FK → Adoptante (del diagrama)
-  refugioId: number        // FK → Refugio (del diagrama)
-  monto: number            // float del diagrama — en MXN
-  metodoPago: PaymentMethod // varchar del diagrama
-  fecha: string            // ISO date del diagrama
-  confirmado: boolean      // boolean del diagrama
-
-  // Campos enriquecidos
-  status: DonationStatus   // derivado de confirmado + lógica de error
-  transactionId?: string   // ID de Stripe / PayPal
-  concepto?: string        // mensaje libre del donante
-  esAnonima: boolean
-
-  // Datos relacionados (joins — para recibos y listados)
-  refugioNombre?: string
-  refugioLogo?: string
-  adoptanteNombre?: string
-}
-
-// ─── Formulario de donación ───────────────────────────────────────────────────
-
-export interface DonationFormData {
-  monto:      number
-  metodoPago: PaymentMethod
-  concepto?:  string
-  esAnonima:  boolean
-}
-
-// ─── Resumen de donaciones para el refugio ────────────────────────────────────
-
-export interface DonationSummary {
-  totalMes:        number
-  totalHistorico:  number
-  totalDonaciones: number
-  progresoMeta?:   number       // 0-100 (porcentaje de la meta mensual)
-  ultimasDonaciones: Donation[]
-}
 
 // ─── Configuración del refugio para recibir donaciones ───────────────────────
 
@@ -65,4 +11,3 @@ export interface DonationConfig {
   paypalLink?: string          // URL directa de PayPal.me o pago
   mercadoPagoLink?: string     // URL de MercadoPago (link de cobro)
 }
-

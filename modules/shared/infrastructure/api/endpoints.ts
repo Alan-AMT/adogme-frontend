@@ -7,7 +7,6 @@
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? ''
 const ML   = process.env.NEXT_PUBLIC_ML_API_URL ?? ''
-const WS   = process.env.NEXT_PUBLIC_WS_URL ?? ''
 
 export const API_ENDPOINTS = {
 
@@ -54,24 +53,6 @@ export const API_ENDPOINTS = {
     CANCEL:          (id: number)    => `${BASE}/api/adoptions/${id}/cancel`,
   },
 
-  MESSAGES: {
-    CONVERSATIONS:          `${BASE}/api/conversations`,
-    CONV_BY_ADOPTANTE:      `${BASE}/api/conversations/me`,
-    CONV_BY_SHELTER:        (id: number)    => `${BASE}/api/conversations/shelter/${id}`,
-    MESSAGES:               (convId: number) => `${BASE}/api/conversations/${convId}/messages`,
-    SEND:                   (convId: number) => `${BASE}/api/conversations/${convId}/messages`,
-    MARK_READ:              (convId: number) => `${BASE}/api/conversations/${convId}/read`,
-    WS_CONNECT:             (convId: number) => `${WS}/ws/conversations/${convId}`,
-  },
-
-  DONATIONS: {
-    CREATE:          `${BASE}/api/donations`,
-    BY_SHELTER:      (id: number)    => `${BASE}/api/donations/shelter/${id}`,
-    BY_ADOPTANTE:    `${BASE}/api/donations/me`,
-    SUMMARY:         (id: number)    => `${BASE}/api/donations/shelter/${id}/summary`,
-    STRIPE_INTENT:   `${BASE}/api/payments/stripe/intent`,
-    CONFIRM:         (id: number)    => `${BASE}/api/payments/confirm/${id}`,
-  },
 
   RECOMMENDATIONS: {
     GENERATE:        `${ML}/api/ml/recommendations`,
