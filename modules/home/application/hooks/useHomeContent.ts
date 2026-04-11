@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AdoptionProcess } from "../../domain/AdoptionProcess";
 import type { AdoptionStory } from "../../domain/AdoptionStory";
 import type { DogCard } from "../../domain/DogCard";
 import type { ShelterCard } from "../../domain/ShelterCard";
@@ -53,18 +52,4 @@ export function useAdoptionStories() {
   return { stories, loading };
 }
 
-export function useAdoptionProcess() {
-  const [process, setProcess] = useState<AdoptionProcess>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    homeService
-      .getAdoptionProcess()
-      .then(setProcess)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  return { process, loading };
-}
 

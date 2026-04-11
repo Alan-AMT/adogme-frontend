@@ -12,12 +12,13 @@
 //   3. Cambiar NEXT_PUBLIC_USE_MOCK=false en .env.production
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { IAuthService } from './IAuthService'
-import { MockAuthService } from './MockAuthService'
-import { AuthService } from './AuthService'
+import type { IAuthService } from "./IAuthService";
+import { MockAuthService } from "./MockAuthService";
+import { AuthService } from "./AuthService";
 
-const isMock = process.env.NEXT_PUBLIC_USE_MOCK !== 'false'
+// const isMock = process.env.NEXT_PUBLIC_USE_MOCK !== 'false'
+const isMock = false;
 
 export const authService: IAuthService = isMock
   ? new MockAuthService()
-  : new AuthService()
+  : new AuthService();
