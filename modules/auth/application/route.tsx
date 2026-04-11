@@ -10,7 +10,6 @@ export const AUTH_ROUTES = {
   shelterRegister:   '/registro/refugio',
   forgotPassword:    '/forgot-password',
   resetPassword:     '/reset-password',
-  emailVerification: '/verify-email',
 } as const
 
 export type AuthRoutePath = (typeof AUTH_ROUTES)[keyof typeof AUTH_ROUTES]

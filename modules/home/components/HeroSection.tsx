@@ -5,54 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useGlobalStats, useHomeDogs } from "../application/hooks/useHomeContent";
+import { useHomeDogs } from "../application/hooks/useHomeContent";
 import styles from "../styles/hero.module.css";
 
 // ─── SLIDE DURATION ───────────────────────────────────────────────────────────
 const SLIDE_DURATION = 8000;
 
-// ─── STATS TICKER ─────────────────────────────────────────────────────────────
-
 function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
-}
-
-function useCountUp(target: number, active: boolean) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    let start = 0;
-    const step = Math.ceil(target / 40);
-    const id = setInterval(() => {
-      start += step;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(id);
-      } else {
-        setCount(start);
-      }
-    }, 30);
-    return () => clearInterval(id);
-  }, [active, target]);
-  return count;
-}
-
-function StatItem({
-  value,
-  label,
-  active,
-}: {
-  value: number;
-  label: string;
-  active: boolean;
-}) {
-  const count = useCountUp(value, active);
-  return (
-    <div className={styles["hero-stat"]}>
-      <span className={styles["hero-stat__num"]}>{count}</span>
-      <span className={styles["hero-stat__label"]}>{label}</span>
-    </div>
-  );
 }
 
 // ─── SLIDE 1 — BUSCADOR RÁPIDO + GRID DE PERROS ───────────────────────────────
@@ -728,24 +688,12 @@ export default function HeroSection() {
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const slideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [statsVisible, setStatsVisible] = useState(false);
-
   const { dogs: allDogs, loading } = useHomeDogs();
-  const { stats: globalStats } = useGlobalStats();
   // Slide 2 (polaroids) uses first 3; Slide 1 uses all for filtering
   const polaroidDogs: DogLite[] = (allDogs ?? []).slice(0, 3);
 
-  const STATS = globalStats
-    ? [
-        { value: globalStats.perrosEnEspera, label: "perros esperando" },
-        { value: globalStats.refugiosActivos, label: "refugios aliados" },
-        { value: globalStats.totalAdopciones, label: "adopciones totales" },
-      ]
-    : [];
-
   useEffect(() => {
     setProgress(0);
-    setStatsVisible(false);
 
     let elapsed = 0;
     const tick = 80;
@@ -756,7 +704,6 @@ export default function HeroSection() {
     progressRef.current = setInterval(() => {
       elapsed += tick;
       setProgress(Math.min((elapsed / SLIDE_DURATION) * 100, 100));
-      if (elapsed >= SLIDE_DURATION * 0.3) setStatsVisible(true);
     }, tick);
 
     slideRef.current = setTimeout(() => {
@@ -804,13 +751,6 @@ export default function HeroSection() {
             {active === 0 && <Slide2 dogs={polaroidDogs} loading={loading} />}
             {active === 1 && <Slide1 allDogs={allDogs ?? []} loading={loading} />}
             {active === 2 && <Slide3 active={active === 2} />}
-          </div>
-
-          {/* Stats ticker — oculto en slide 1 (filtros) */}
-          <div className={cx(styles["hero-stats"], statsVisible && active !== 1 && styles["is-visible"])}>
-            {STATS.map((s, i) => (
-              <StatItem key={i} value={s.value} label={s.label} active={statsVisible && active !== 1} />
-            ))}
           </div>
 
           {/* Indicadores */}
