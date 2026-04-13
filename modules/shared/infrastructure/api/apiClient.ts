@@ -49,7 +49,9 @@ apiClient.interceptors.response.use(
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
     // 401 — Token expirado: intentar refresh una vez
-    if (error.response?.status === 401 && !original._retry) {
+    // Skip refresh logic for the login endpoint itself (invalid credentials → just reject)
+    const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN)
+    if (error.response?.status === 401 && !original._retry && !isLoginRequest) {
       if (isRefreshing) {
         // Encolar mientras se refresca
         return new Promise((resolve) => {

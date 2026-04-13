@@ -1629,6 +1629,8 @@ Same interface as Adoption Service but from shelter perspective. See [Adoption S
 
 ---
 
+## COMPLETELY REMOVED - ALAN
+
 ## 13. Media Validation Service
 
 ### Service Contract

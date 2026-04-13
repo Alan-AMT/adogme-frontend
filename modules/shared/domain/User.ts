@@ -3,65 +3,65 @@
 
 // ─── Roles y estados ────────────────────────────────────────────────────────
 
-export type UserRole = 'visitor' | 'applicant' | 'shelter' | 'admin'
+export type UserRole = "visitor" | "applicant" | "shelter" | "admin";
 
-export type AccountStatus = 'active' | 'suspended' | 'pending_verification'
+export type AccountStatus = "active" | "suspended" | "pending_verification";
 
 // ─── Entidad base ────────────────────────────────────────────────────────────
 
 export interface User {
-  id: number
-  nombre: string
-  correo: string
-  telefono: string
-  role: UserRole
-  status: AccountStatus
-  avatarUrl?: string
-  fechaRegistro: string // ISO date
+  id: number;
+  name: string;
+  email: string;
+  // telefono?: string;
+  role: UserRole;
+  // status: AccountStatus;
+  // avatarUrl?: string;
+  // fechaRegistro?: string; // ISO date
 }
 
 // ─── Adoptante (extiende User con campos propios) ────────────────────────────
 // Tabla: Adoptante — id, nombre, correo, telefono, direccion, fechaRegistro
 
 export interface Adoptante extends User {
-  role: 'applicant'
-  direccion: string
+  role: "applicant";
+  // direccion?: string;
 }
 
 // ─── Administrador ────────────────────────────────────────────────────────────
 // Tabla: Administrador — id, nombre, correo, telefono, puesto
 
 export interface Administrador extends User {
-  role: 'admin'
-  puesto: string
+  role: "admin";
+  // puesto: string;
 }
 
 // ─── Shelter user (usuario autenticado con rol shelter) ──────────────────────
 
 export interface ShelterUser extends User {
-  role: 'shelter'
-  shelterId: number
-  shelterStatus: 'pending' | 'approved' | 'rejected' | 'suspended'
+  role: "shelter";
+  // shelterId: number;
+  // shelterStatus: "pending" | "approved" | "rejected" | "suspended";
 }
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export interface AuthResponse {
-  user: Adoptante | ShelterUser | Administrador
-  token: string
-  refreshToken: string
-  expiresAt: string // ISO datetime
+  user: Adoptante | ShelterUser | Administrador;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string; // ISO datetime
 }
 
 export interface LoginCredentials {
-  correo: string
-  password: string
+  correo: string;
+  password: string;
 }
 
 export interface RegisterAdoptanteData {
-  nombre: string
-  correo: string
-  telefono: string
-  direccion: string
-  password: string
+  nombre: string;
+  correo: string;
+  telefono: string;
+  direccion: string;
+  password: string;
 }
