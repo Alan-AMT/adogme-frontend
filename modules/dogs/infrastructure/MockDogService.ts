@@ -204,7 +204,11 @@ export class MockDogService implements IDogService {
       descripcion:    data.descripcion,
       foto:           data.foto,
       fotos:          data.fotos ?? [data.foto],
-      salud:          data.salud ?? "",
+      salud:          [
+        data.vacunado      ? 'Vacunado'      : null,
+        data.desparasitado ? 'Desparasitado' : null,
+        data.castrado      ? 'Castrado'      : null,
+      ].filter(Boolean).join(', ') || 'Sin información',
       estado:         "no_disponible",  // borrador hasta publishDog
       compatibilidad: 0,
       fechaRegistro:  new Date().toISOString().slice(0, 10),

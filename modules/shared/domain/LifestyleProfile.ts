@@ -40,39 +40,70 @@ export type QuizCategory =
   | 'preferencias'      // tamaño, energía preferida
   | 'compromisos'       // tiempo, veterinario, entrenamiento
 
-// ─── Respuestas del quiz (lo que el adoptante llena) ─────────────────────────
+// ─── Respuestas del quiz (20 preguntas, escala 1-5) ──────────────────────────
+// Estructura exacta que espera el ML service en /predict/process-questionnaire
+// El backend convierte estas respuestas a un vector de 4 dimensiones:
+//   [activity_score, housing_score, experience_score, care_score]
+//
+// CATEGORÍA 1 — Estilo de vida y actividad (q1-q5)
+//   Compara con: Age + MaturitySize del perro
+//   q1: ¿Qué tan activo eres físicamente durante la semana?        1=Sedentario … 5=Muy activo
+//   q2: ¿Con qué frecuencia podrías sacar a pasear a un perro?     1=Rara vez … 5=Varias veces al día
+//   q3: ¿Qué tan importante es para ti hacer actividades al aire libre? 1=Nada … 5=Muy importante
+//   q4: ¿Cuánto tiempo podrías dedicar diariamente al ejercicio con tu perro? 1=Menos de 15min … 5=Más de 2 horas
+//   q5: ¿Qué tan cómodo te sientes con un perro muy enérgico?      1=Nada cómodo … 5=Muy cómodo
+//
+// CATEGORÍA 2 — Hogar y espacio (q6-q10)
+//   Compara con: MaturitySize del perro
+//   q6:  ¿Qué tipo de vivienda tienes?                             1=Depto pequeño … 5=Casa con jardín grande
+//   q7:  ¿Tienes acceso a un espacio exterior donde el perro pueda moverse? 1=Sin acceso … 5=Jardín/parque propio
+//   q8:  ¿Qué tan cómodo estás con perros grandes dentro del hogar? 1=Nada cómodo … 5=Muy cómodo
+//   q9:  ¿Qué tan tranquilo o ruidoso es tu hogar normalmente?     1=Muy ruidoso … 5=Muy tranquilo
+//   q10: ¿Cuántas personas viven en tu casa?                       1=Vivo solo … 5=Familia grande (5+)
+//
+// CATEGORÍA 3 — Experiencia y entrenamiento (q11-q15)
+//   Compara con: Age (cachorros necesitan entrenamiento) + Health del perro
+//   q11: ¿Has tenido perros antes?                                 1=Nunca … 5=Muchos años de experiencia
+//   q12: ¿Qué tan cómodo te sientes entrenando a un perro?         1=Nada cómodo … 5=Muy experimentado
+//   q13: ¿Cuánta paciencia tienes para enseñar comportamientos nuevos? 1=Poca … 5=Mucha
+//   q14: ¿Estarías dispuesto a asistir a clases de entrenamiento?  1=No … 5=Definitivamente
+//   q15: ¿Qué tan preparado te sientes para adaptarte a un perro rescatado? 1=Nada preparado … 5=Totalmente preparado
+//
+// CATEGORÍA 4 — Recursos y cuidados (q16-q20)
+//   Compara con: Health + health_score + Fee del perro
+//   q16: ¿Qué tan preparado estás para cubrir gastos veterinarios inesperados? 1=Nada preparado … 5=Totalmente preparado
+//   q17: ¿Qué tan cómodo estás administrando medicación si fuera necesario? 1=Nada cómodo … 5=Muy cómodo
+//   q18: ¿Cuánto podrías gastar mensualmente en el cuidado de tu perro? 1=Muy poco … 5=Sin restricción
+//   q19: ¿Estarías dispuesto a pagar tratamientos médicos si el perro lo necesitara? 1=No … 5=Sin duda
+//   q20: ¿Qué tan comprometido estás con mantener vacunas y cuidados preventivos? 1=Poco … 5=Totalmente comprometido
+
+export type QuizScale = 1 | 2 | 3 | 4 | 5
 
 export interface LifestyleQuizAnswers {
-  // Estilo de vida
-  actividadFisica: 'sedentario' | 'moderado' | 'activo' | 'muy_activo'
-  horasEnCasaDiarias: number       // 0-24
-  horasLibresParaPerro: number     // horas al día dedicadas al perro
-
-  // Vivienda
-  tipoVivienda: 'casa' | 'departamento' | 'casa_campo' | 'otro'
-  tieneJardin: boolean
-  tamanoEspacio: 'pequeño' | 'mediano' | 'grande'
-
-  // Experiencia
-  experienciaPrevia: boolean
-  tiposPerrosAnteriores?: string[] // razas o tamaños que ha tenido
-
-  // Convivencia
-  conviveConNinos: boolean
-  edadMenorNino?: number
-  conviveConMascotas: boolean
-  tiposMascotas?: ('perros' | 'gatos' | 'otros')[]
-
-  // Preferencias
-  tamanoPreferido: ('pequeño' | 'mediano' | 'grande' | 'gigante' | 'sin_preferencia')[]
-  energiaPreferida: 'baja' | 'moderada' | 'alta' | 'sin_preferencia'
-  sexoPreferido: 'macho' | 'hembra' | 'sin_preferencia'
-  edadPreferida: ('cachorro' | 'joven' | 'adulto' | 'senior' | 'sin_preferencia')[]
-
-  // Compromisos
-  presupuestoMensualMXN: number
-  disponibilidadEntrenamiento: boolean
-  aceptaPerroConNecesidadesEspeciales: boolean
+  // Categoría 1: Estilo de vida y actividad
+  q1:  QuizScale
+  q2:  QuizScale
+  q3:  QuizScale
+  q4:  QuizScale
+  q5:  QuizScale
+  // Categoría 2: Hogar y espacio
+  q6:  QuizScale
+  q7:  QuizScale
+  q8:  QuizScale
+  q9:  QuizScale
+  q10: QuizScale
+  // Categoría 3: Experiencia y entrenamiento
+  q11: QuizScale
+  q12: QuizScale
+  q13: QuizScale
+  q14: QuizScale
+  q15: QuizScale
+  // Categoría 4: Recursos y cuidados
+  q16: QuizScale
+  q17: QuizScale
+  q18: QuizScale
+  q19: QuizScale
+  q20: QuizScale
 }
 
 // ─── Cuestionario (tabla completa) ───────────────────────────────────────────
@@ -115,7 +146,7 @@ export interface DogRecommendation {
 }
 
 export interface MatchReason {
-  categoria: 'actividad' | 'espacio' | 'experiencia' | 'convivencia' | 'tamaño' | 'energia' | 'preferencias'
+  categoria: 'actividad' | 'espacio' | 'experiencia' | 'cuidados' | 'convivencia' | 'tamaño' | 'energia' | 'preferencias'
   texto: string     // ej: "Su nivel de energía coincide con tu estilo activo"
   esPositivo: boolean
 }

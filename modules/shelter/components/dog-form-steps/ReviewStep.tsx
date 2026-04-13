@@ -150,19 +150,23 @@ export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submi
           </div>
 
           {/* Datos de salud y cuidados */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: formData.salud ? '1rem' : 0 }}>
-            {formData.castrado      && <InfoChip icon="medical_services" label="Esterilizado"  />}
-            {formData.microchip     && <InfoChip icon="memory"           label="Microchip"     />}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+            {formData.vacunado      && <InfoChip icon="vaccines"         label="Vacunado"       />}
+            {formData.desparasitado && <InfoChip icon="medication"       label="Desparasitado"  />}
+            {formData.castrado      && <InfoChip icon="medical_services" label="Esterilizado"   />}
+            {formData.microchip     && <InfoChip icon="memory"           label="Microchip"      />}
             {formData.necesitaJardin && <InfoChip icon="yard"            label="Necesita jardín" />}
             {formData.pesoKg        && <InfoChip icon="monitor_weight"   label={`${formData.pesoKg} kg`} />}
             {formData.vacunas.length > 0 && <InfoChip icon="vaccines" label={`${formData.vacunas.length} vacuna${formData.vacunas.length !== 1 ? 's' : ''}`} />}
           </div>
-
-          {formData.salud && (
-            <p style={{ fontSize: '0.8rem', color: '#71717a', fontWeight: 500, lineHeight: 1.5, padding: '0.75rem', background: '#f9fafb', borderRadius: '0.75rem', border: '1px solid #f0f0f0' }}>
-              <strong style={{ color: '#374151' }}>Salud: </strong>{formData.salud}
-            </p>
-          )}
+          <p style={{ fontSize: '0.8rem', color: '#71717a', lineHeight: 1.5, padding: '0.75rem', background: '#f9fafb', borderRadius: '0.75rem', border: '1px solid #f0f0f0' }}>
+            <strong style={{ color: '#374151' }}>Estado de salud: </strong>
+            {{ 1: 'Sano', 2: 'Lesión leve', 3: 'Lesión grave' }[formData.nivelSalud]}
+            {' · '}
+            <strong style={{ color: '#374151' }}>Pelaje: </strong>
+            {{ 1: 'Corto', 2: 'Mediano', 3: 'Largo' }[formData.pelaje]}
+            {formData.cuotaAdopcion > 0 && ` · Cuota: $${formData.cuotaAdopcion} MXN`}
+          </p>
         </div>
       </div>
 

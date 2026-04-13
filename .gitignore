@@ -45,4 +45,9 @@ PR_PLAN*
 analisis_diagramas*
 .claude/
 
+# ML microservice (repositorio separado, no pertenece al frontend)
+adogme-ml-main/
+
+# Documentacion TT — carpeta local, no pertenece al repo del proyecto
+Docu/
 ApiGateway.yml

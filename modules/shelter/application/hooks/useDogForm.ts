@@ -56,9 +56,13 @@ export interface DogFormData {
   necesitaJardin: boolean
   pesoKg:        number | undefined
 
-  // Step 3 — Salud
-  salud:   string
-  vacunas: Vaccination[]
+  // Step 3 — Salud (campos ML-ready)
+  vacunado:      boolean
+  desparasitado: boolean
+  nivelSalud:    1 | 2 | 3   // 1=Sano, 2=Lesión leve, 3=Lesión grave
+  pelaje:        1 | 2 | 3   // 1=Corto, 2=Mediano, 3=Largo
+  cuotaAdopcion: number       // 0 = sin costo
+  vacunas:       Vaccination[]
 
   // Step 4 — Fotos
   foto:  string        // URL principal
@@ -69,7 +73,8 @@ const FORM_DEFAULTS: DogFormData = {
   nombre: '', edad: 0, raza: '', tamano: '', sexo: '', nivelEnergia: '', descripcion: '',
   personalidad: [], aptoNinos: false, aptoPerros: false, aptoGatos: false,
   castrado: false, microchip: false, necesitaJardin: false, pesoKg: undefined,
-  salud: '', vacunas: [],
+  vacunado: false, desparasitado: false, nivelSalud: 1, pelaje: 1, cuotaAdopcion: 0,
+  vacunas: [],
   foto: '', fotos: [],
 }
 
@@ -186,7 +191,11 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
           microchip:     dog.microchip,
           necesitaJardin: dog.necesitaJardin,
           pesoKg:        dog.pesoKg,
-          salud:         dog.salud,
+          vacunado:      dog.vacunas != null && dog.vacunas.length > 0,
+          desparasitado: false,
+          nivelSalud:    1 as 1 | 2 | 3,
+          pelaje:        1 as 1 | 2 | 3,
+          cuotaAdopcion: 0,
           vacunas:       dog.vacunas        ?? [],
           foto:          dog.foto,
           fotos:         dog.fotos          ?? [dog.foto],
@@ -293,7 +302,11 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
           descripcion:   formData.descripcion,
           foto:          formData.foto,
           fotos:         formData.fotos,
-          salud:         formData.salud,
+          vacunado:      formData.vacunado,
+          desparasitado: formData.desparasitado,
+          nivelSalud:    formData.nivelSalud,
+          pelaje:        formData.pelaje,
+          cuotaAdopcion: formData.cuotaAdopcion,
           personalidad:  formData.personalidad,
           aptoNinos:     formData.aptoNinos,
           aptoPerros:    formData.aptoPerros,
@@ -318,7 +331,11 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
           descripcion:   formData.descripcion,
           foto:          formData.foto,
           fotos:         formData.fotos,
-          salud:         formData.salud,
+          vacunado:      formData.vacunado,
+          desparasitado: formData.desparasitado,
+          nivelSalud:    formData.nivelSalud,
+          pelaje:        formData.pelaje,
+          cuotaAdopcion: formData.cuotaAdopcion,
           personalidad:  formData.personalidad,
           aptoNinos:     formData.aptoNinos,
           aptoPerros:    formData.aptoPerros,
