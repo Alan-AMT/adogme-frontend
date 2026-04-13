@@ -14,9 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import type { DogSize, DogSex, EnergyLevel, PersonalityTag, Vaccination } from '@/modules/shared/domain/Dog'
 import type { DogCreateData, DogUpdateData } from '../../infrastructure/IShelterService'
-import { shelterService }        from '../../infrastructure/ShelterServiceFactory'
-import { mediaValidationService } from '../../infrastructure/MockMediaValidationService'
-import type { ValidationResult } from '../../infrastructure/MockMediaValidationService'
+import { shelterService } from '../../infrastructure/ShelterServiceFactory'
 
 const CURRENT_SHELTER_ID = 1
 
@@ -80,13 +78,6 @@ const FORM_DEFAULTS: DogFormData = {
   foto: '', fotos: [],
 }
 
-// ─── Resultado por imagen validada ────────────────────────────────────────────
-
-export interface MediaValidationResult extends ValidationResult {
-  fileIndex: number
-  fileName:  string
-}
-
 // ─── Validadores por paso ────────────────────────────────────────────────────
 
 function validateStep(step: number, data: DogFormData): Record<string, string> {
@@ -137,10 +128,8 @@ export interface UseDogFormReturn {
   currentStep:            DogFormStep
   formData:               DogFormData
   errors:                 Record<string, string>
-  mediaValidationResults: MediaValidationResult[]
   isDraft:                boolean
   isSubmitting:           boolean
-  isValidatingMedia:      boolean
   submitError:            string | null
 
   // Acciones de navegación
@@ -154,9 +143,6 @@ export interface UseDogFormReturn {
   saveDraft:  () => void
   clearDraft: () => void
 
-  // Media
-  validateMedia: (files: File[]) => Promise<void>
-
   // Submit
   submit: () => Promise<void>
 }
@@ -165,10 +151,8 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
   const [currentStep, setCurrentStep]   = useState<DogFormStep>(0)
   const [formData,    setFormData]      = useState<DogFormData>(FORM_DEFAULTS)
   const [errors,      setErrors]        = useState<Record<string, string>>({})
-  const [mediaVR,     setMediaVR]       = useState<MediaValidationResult[]>([])
   const [isDraft,     setIsDraft]       = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isValidating, setIsValidating] = useState(false)
   const [submitError,  setSubmitError]  = useState<string | null>(null)
 
   const initializedRef = useRef(false)
@@ -286,27 +270,7 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
     setFormData(FORM_DEFAULTS)
     setCurrentStep(0)
     setErrors({})
-    setMediaVR([])
   }, [dogId])
-
-  // ── Validación de media ──────────────────────────────────────────────────────
-
-  const validateMedia = useCallback(async (files: File[]) => {
-    if (files.length === 0) return
-    setIsValidating(true)
-    setMediaVR([])
-    try {
-      const results = await Promise.all(
-        files.map(async (file, i) => {
-          const res = await mediaValidationService.validate(file)
-          return { ...res, fileIndex: i, fileName: file.name } satisfies MediaValidationResult
-        })
-      )
-      setMediaVR(results)
-    } finally {
-      setIsValidating(false)
-    }
-  }, [])
 
   // ── Submit ───────────────────────────────────────────────────────────────────
 
@@ -400,10 +364,8 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
     currentStep,
     formData,
     errors,
-    mediaValidationResults: mediaVR,
     isDraft,
     isSubmitting,
-    isValidatingMedia: isValidating,
     submitError,
     nextStep,
     prevStep,
@@ -412,7 +374,6 @@ export function useDogForm(dogId?: number): UseDogFormReturn {
     updateMany,
     saveDraft,
     clearDraft,
-    validateMedia,
     submit,
   }
 }

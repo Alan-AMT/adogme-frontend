@@ -13,7 +13,10 @@ import { API_ENDPOINTS } from './endpoints'
 const apiClient: AxiosInstance = axios.create({
   baseURL:        process.env.NEXT_PUBLIC_API_URL ?? '',
   timeout:        15_000,                            // 15 segundos
-  headers:        { 'Content-Type': 'application/json' },
+  headers:        { 
+    'Content-Type': 'application/json',
+    'x-api-key': process.env.NEXT_PUBLIC_API_KEY ?? ''
+  },
   withCredentials: true,                             // envía cookies HTTP-only
 })
 

@@ -5,24 +5,21 @@
 
 import Image from 'next/image'
 import { useCallback, useRef, type ChangeEvent, type DragEvent } from 'react'
-import type { DogFormData, MediaValidationResult } from '../../application/hooks/useDogForm'
+import type { DogFormData } from '../../application/hooks/useDogForm'
 import '../../styles/shelterViews.css'
 
 type UpdateFn = <K extends keyof DogFormData>(field: K, value: DogFormData[K]) => void
 
 interface Props {
-  formData:               DogFormData
-  errors:                 Record<string, string>
-  update:                 UpdateFn
-  validateMedia:          (files: File[]) => Promise<void>
-  mediaValidationResults: MediaValidationResult[]
-  isValidatingMedia:      boolean
+  formData: DogFormData
+  errors:   Record<string, string>
+  update:   UpdateFn
 }
 
 const MAX_PHOTOS = 10
 const MAX_MB     = 5
 
-export function MediaStep({ formData, errors, update, validateMedia, mediaValidationResults, isValidatingMedia }: Props) {
+export function MediaStep({ formData, errors, update }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleFiles = useCallback((files: FileList | File[]) => {
@@ -34,8 +31,7 @@ export function MediaStep({ formData, errors, update, validateMedia, mediaValida
 
     update('fotos', allUrls)
     update('foto',  allUrls[0] ?? '')
-    validateMedia(arr)
-  }, [formData.fotos, update, validateMedia])
+  }, [formData.fotos, update])
 
   const onDrop = (e: DragEvent) => {
     e.preventDefault()
@@ -60,9 +56,6 @@ export function MediaStep({ formData, errors, update, validateMedia, mediaValida
   }
 
   const canAdd = formData.fotos.length < MAX_PHOTOS
-
-  // Map validation results by index offset (validation runs only on last-added batch)
-  const validationOffset = formData.fotos.length - mediaValidationResults.length
 
   return (
     <div className="sv-form-section">
@@ -122,9 +115,6 @@ export function MediaStep({ formData, errors, update, validateMedia, mediaValida
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '0.65rem' }}>
               {formData.fotos.map((url, idx) => {
                 const isMain = url === formData.foto
-                // Find validation result for this index in the last-added batch
-                const vrIdx  = idx - validationOffset
-                const vr     = vrIdx >= 0 ? mediaValidationResults[vrIdx] : undefined
 
                 return (
                   <div
@@ -147,32 +137,6 @@ export function MediaStep({ formData, errors, update, validateMedia, mediaValida
                     {isMain && (
                       <div style={{ position: 'absolute', top: 4, left: 4, background: '#ff6b6b', color: '#fff', fontSize: '0.6rem', fontWeight: 900, padding: '0.15rem 0.45rem', borderRadius: 999 }}>
                         PRINCIPAL
-                      </div>
-                    )}
-
-                    {/* Validation overlay */}
-                    {isValidatingMedia && vr === undefined && vrIdx >= 0 && (
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#ff6b6b', animation: 'spin 1s linear infinite' }}>progress_activity</span>
-                      </div>
-                    )}
-                    {vr && (
-                      <div style={{
-                        position: 'absolute', bottom: 4, right: 4,
-                        width: 22, height: 22, borderRadius: '50%',
-                        background: vr.valid ? '#16a34a' : '#dc2626',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#fff', fontVariationSettings: "'FILL' 1" }}>
-                          {vr.valid ? 'check' : 'close'}
-                        </span>
-                      </div>
-                    )}
-                    {vr && !vr.valid && (
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(220,38,38,0.15)', display: 'flex', alignItems: 'flex-end', padding: '0.35rem' }}>
-                        <p style={{ fontSize: '0.6rem', color: '#fff', fontWeight: 700, background: 'rgba(0,0,0,0.5)', borderRadius: 4, padding: '0.15rem 0.3rem', lineHeight: 1.3 }}>
-                          {vr.reason}
-                        </p>
                       </div>
                     )}
 
@@ -202,24 +166,13 @@ export function MediaStep({ formData, errors, update, validateMedia, mediaValida
               })}
             </div>
 
-            {/* Validation summary */}
-            {mediaValidationResults.length > 0 && (
-              <div style={{ marginTop: '0.75rem' }}>
-                {mediaValidationResults.filter(r => !r.valid).map(r => (
-                  <p key={r.fileIndex} style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>warning</span>
-                    <strong>{r.fileName}</strong>: {r.reason}
-                  </p>
-                ))}
-              </div>
-            )}
           </>
         )}
 
         {errors.foto && <p className="sv-field__error" style={{ marginTop: '0.5rem' }}>{errors.foto}</p>}
 
         <p className="sv-field__helper" style={{ marginTop: '0.5rem' }}>
-          Haz clic en una foto para establecerla como principal. Las fotos se analizan automáticamente para verificar que muestren claramente al perro.
+          Haz clic en una foto para establecerla como principal.
         </p>
       </div>
     </div>

@@ -554,36 +554,40 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: num
         {/* ── Columna derecha ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
-          {/* Card — Mensajes / chat */}
-          <div className="sv-detail-card">
-            <div className="sv-detail-card__header">
-              <span className="material-symbols-outlined">chat</span>
-              Mensajes
+          {/* Card — Contacto WhatsApp */}
+          {request.adoptanteTelefono && (
+            <div className="sv-detail-card">
+              <div className="sv-detail-card__header">
+                <span className="material-symbols-outlined">phone</span>
+                Contacto
+              </div>
+              <div className="sv-detail-card__body">
+                <p style={{ fontSize: '0.85rem', color: '#52525b', marginBottom: '0.85rem' }}>
+                  Contactar a {request.adoptanteNombre} por WhatsApp.
+                </p>
+                <a
+                  href={`https://wa.me/52${request.adoptanteTelefono.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.55rem 1.2rem',
+                    borderRadius: 999,
+                    background: '#25d366',
+                    color: '#fff',
+                    fontSize: '0.85rem',
+                    fontWeight: 900,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>chat</span>
+                  Abrir WhatsApp
+                </a>
+              </div>
             </div>
-            <div className="sv-detail-card__body">
-              <p style={{ fontSize: '0.85rem', color: '#52525b', marginBottom: '0.85rem' }}>
-                Contactar a {request.adoptanteNombre} directamente por chat.
-              </p>
-              <Link
-                href={`/refugio/mensajes?adoptanteId=${request.adoptanteId}`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.55rem 1.2rem',
-                  borderRadius: 999,
-                  background: '#ff6b6b',
-                  color: '#fff',
-                  fontSize: '0.85rem',
-                  fontWeight: 900,
-                  textDecoration: 'none',
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>chat</span>
-                Ir al chat
-              </Link>
-            </div>
-          </div>
+          )}
 
           {/* Card — Acción de estado */}
           <div className="sv-detail-card">

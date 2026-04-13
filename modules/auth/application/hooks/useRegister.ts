@@ -241,6 +241,7 @@ export function useRegister(): UseRegisterReturn {
       // Adoptante → verificar email; refugio → estado pendiente
       // El componente decide la UI de éxito según el role
     } catch (err) {
+      console.log(err)
       setError(err instanceof Error ? err.message : 'Error al crear la cuenta.')
     } finally {
       setLoading(false)
