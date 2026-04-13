@@ -63,8 +63,8 @@ export function useLogin(): UseLoginReturn {
   const router       = useRouter()
   const searchParams = useSearchParams()
 
-  const setUser  = useAuthStore(s => s.setUser)
-  const setToken = useAuthStore(s => s.setToken)
+  const setUser   = useAuthStore(s => s.setUser)
+  const setTokens = useAuthStore(s => s.setTokens)
 
   const [correo,   setCorreo]   = useState('')
   const [password, setPassword] = useState('')
@@ -98,7 +98,7 @@ export function useLogin(): UseLoginReturn {
 
       // Actualiza authStore — Navbar y rutas protegidas reaccionan automáticamente
       setUser(res.user)
-      setToken(res.token)
+      setTokens(res.token, res.refreshToken)
 
       // const redirectParam = searchParams.get('redirect')
       // router.push(getPostLoginUrl(res.user.role, redirectParam))

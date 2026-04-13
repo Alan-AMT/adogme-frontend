@@ -64,10 +64,23 @@ apiClient.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const res = await axios.post(API_ENDPOINTS.AUTH.REFRESH, {}, { withCredentials: true })
-        const newToken: string = res.data.token
+        // Send the refresh token in the Authorization header
+        const storedRefresh = typeof window !== 'undefined' ? window.__refreshToken : undefined
+        const res = await axios.post(
+          API_ENDPOINTS.AUTH.REFRESH,
+          {},
+          {
+            withCredentials: true,
+            headers: storedRefresh ? { Authorization: `Bearer ${storedRefresh}` } : {},
+          }
+        )
+        const newToken: string        = res.data.accessToken ?? res.data.token
+        const newRefresh: string | undefined = res.data.refreshToken
 
-        if (typeof window !== 'undefined') window.__authToken = newToken
+        if (typeof window !== 'undefined') {
+          window.__authToken = newToken
+          if (newRefresh) window.__refreshToken = newRefresh
+        }
         refreshQueue.forEach(cb => cb(newToken))
         refreshQueue = []
 
@@ -112,6 +125,7 @@ export { apiClient }
 
 declare global {
   interface Window {
-    __authToken?: string
+    __authToken?:    string
+    __refreshToken?: string
   }
 }
