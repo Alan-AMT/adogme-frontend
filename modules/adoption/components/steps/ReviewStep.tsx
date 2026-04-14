@@ -107,10 +107,8 @@ export default function ReviewStep({ data, dog, isSubmitting, errors, onSubmit }
 
       {/* Sección 1: Datos personales */}
       <Section icon="person" title="Datos personales">
-        <Row label="Nombre"    value={user?.nombre  ?? ''} />
-        <Row label="Correo"    value={user?.correo  ?? ''} />
-        <Row label="Teléfono"  value={user?.telefono ?? ''} />
-        <Row label="Dirección" value={(user as Adoptante | null)?.direccion ?? ''} />
+        <Row label="Nombre"    value={user?.name  ?? ''} />
+        <Row label="Correo"    value={user?.email ?? ''} />
       </Section>
 
       {/* Sección 2: Vivienda */}

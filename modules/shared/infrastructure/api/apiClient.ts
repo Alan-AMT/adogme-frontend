@@ -1,133 +1,143 @@
 // modules/shared/infrastructure/api/apiClient.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Instancia de Axios lista para producción.
-// En mock mode (NEXT_PUBLIC_USE_MOCK=true) este cliente no se usa —
-// los MockServices devuelven datos directamente sin HTTP.
+// Axios instance for production API calls.
+// In mock mode (NEXT_PUBLIC_USE_MOCK=true) this client is not used —
+// MockServices return data directly without HTTP.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import axios, { type AxiosError, type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
-import { API_ENDPOINTS } from './endpoints'
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from "axios";
+import { API_ENDPOINTS } from "./endpoints";
 
-// ─── Instancia base ───────────────────────────────────────────────────────────
+// ─── Base instance ───────────────────────────────────────────────────────────
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL:        process.env.NEXT_PUBLIC_API_URL ?? '',
-  timeout:        15_000,                            // 15 segundos
-  headers:        { 
-    'Content-Type': 'application/json',
-    'x-api-key': process.env.NEXT_PUBLIC_API_KEY ?? ''
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "",
+  timeout: 15_000,
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
   },
-  withCredentials: true,                             // envía cookies HTTP-only
-})
+  withCredentials: true,
+});
 
-// ─── Interceptor de REQUEST — agrega el token ────────────────────────────────
+// ─── Request interceptor — attach token ──────────────────────────────────────
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // En el cliente (browser), intentamos leer el token del localStorage como fallback
-    // El token real viene de la cookie HTTP-only que el servidor gestiona
-    if (typeof window !== 'undefined') {
-      const token = window.__authToken  // se setea desde authStore.hydrate()
+    if (typeof window !== "undefined") {
+      const token = window.__authToken;
       if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
-    return config
+    return config;
   },
-  (error) => Promise.reject(error)
-)
+  (error) => Promise.reject(error),
+);
 
-// ─── Interceptor de RESPONSE — maneja errores globales ───────────────────────
+// ─── Response interceptor — handle 401 refresh ──────────────────────────────
 
-let isRefreshing = false
-let refreshQueue: Array<(token: string) => void> = []
+let isRefreshing = false;
+let refreshQueue: Array<(token: string) => void> = [];
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
 
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const original = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
-    // 401 — Token expirado: intentar refresh una vez
-    // Skip refresh logic for the login endpoint itself (invalid credentials → just reject)
-    const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN)
+    // 401 — Token expired: attempt refresh once
+    // Skip for login endpoint (invalid credentials → just reject)
+    const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN);
     if (error.response?.status === 401 && !original._retry && !isLoginRequest) {
       if (isRefreshing) {
-        // Encolar mientras se refresca
         return new Promise((resolve) => {
           refreshQueue.push((newToken) => {
-            original.headers.Authorization = `Bearer ${newToken}`
-            resolve(apiClient(original))
-          })
-        })
+            original.headers.Authorization = `Bearer ${newToken}`;
+            resolve(apiClient(original));
+          });
+        });
       }
 
-      original._retry = true
-      isRefreshing = true
+      original._retry = true;
+      isRefreshing = true;
 
       try {
-        // Send the refresh token in the Authorization header
-        const storedRefresh = typeof window !== 'undefined' ? window.__refreshToken : undefined
+        const storedRefresh =
+          typeof window !== "undefined" ? window.__refreshToken : undefined;
         const res = await axios.post(
           API_ENDPOINTS.AUTH.REFRESH,
           {},
           {
             withCredentials: true,
-            headers: storedRefresh ? { Authorization: `Bearer ${storedRefresh}` } : {},
-          }
-        )
-        const newToken: string        = res.data.accessToken ?? res.data.token
-        const newRefresh: string | undefined = res.data.refreshToken
+            headers: storedRefresh
+              ? { Authorization: `Bearer ${storedRefresh}` }
+              : {},
+          },
+        );
+        const newToken: string =
+          res.data.accessToken ?? res.data.token;
+        const newRefresh: string | undefined = res.data.refreshToken;
 
-        if (typeof window !== 'undefined') {
-          window.__authToken = newToken
-          if (newRefresh) window.__refreshToken = newRefresh
-        }
-        refreshQueue.forEach(cb => cb(newToken))
-        refreshQueue = []
+        // Sync Zustand store (dynamic import to avoid circular deps)
+        const { useAuthStore } = await import("../store/authStore");
+        const store = useAuthStore.getState();
+        store.setTokens(newToken, newRefresh ?? store.refreshToken ?? "");
 
-        original.headers.Authorization = `Bearer ${newToken}`
-        return apiClient(original)
+        refreshQueue.forEach((cb) => cb(newToken));
+        refreshQueue = [];
+
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient(original);
       } catch {
-        // Refresh falló → limpiar sesión y redirigir a login
-        if (typeof window !== 'undefined') {
-          window.__authToken = undefined
-          window.location.href = '/login?session=expired'
+        // Refresh failed → clear session and redirect to login
+        const { useAuthStore } = await import("../store/authStore");
+        useAuthStore.getState().logout();
+        if (typeof window !== "undefined") {
+          window.location.href = "/login?session=expired";
         }
-        return Promise.reject(error)
+        return Promise.reject(error);
       } finally {
-        isRefreshing = false
+        isRefreshing = false;
       }
     }
 
-    // 403 — Sin permisos
+    // 403 — Forbidden
     if (error.response?.status === 403) {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/'
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
       }
     }
 
-    // 500 — Error de servidor: disparar toast global
+    // 5xx — Server error
     if (error.response?.status && error.response.status >= 500) {
-      // El uiStore lo escucha via el event bus si está disponible
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('api:server-error', {
-          detail: { status: error.response.status }
-        }))
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("api:server-error", {
+            detail: { status: error.response.status },
+          }),
+        );
       }
     }
 
-    return Promise.reject(error)
-  }
-)
+    return Promise.reject(error);
+  },
+);
 
-export { apiClient }
+export { apiClient };
 
-// ─── Tipado global de window.__authToken ─────────────────────────────────────
+// ─── Global window types ─────────────────────────────────────────────────────
 
 declare global {
   interface Window {
-    __authToken?:    string
-    __refreshToken?: string
+    __authToken?: string;
+    __refreshToken?: string;
   }
 }

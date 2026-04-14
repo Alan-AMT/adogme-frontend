@@ -209,23 +209,20 @@ function formatGenDate(iso: string): string {
 // ─── Vista principal ──────────────────────────────────────────────────────────
 
 export function RecommendationsView() {
-  // C2 — Leer isLoading del store para detectar cuando termina la hydration
-  const { user, isLoading: storeLoading } = useAuthStore()
+  const { user } = useAuthStore()
   const [result, setResult]               = useState<MLRecommendationResponse | null>(null)
   const [loaded, setLoaded]               = useState(false)
 
-  // C2 — Solo leer localStorage cuando el store ya está hidratado (storeLoading=false)
   useEffect(() => {
-    if (storeLoading) return   // esperar hydration del auth store
     if (!user?.id) { setLoaded(true); return }
     try {
       const raw = localStorage.getItem(RESULTS_KEY(user.id))
       if (raw) setResult(JSON.parse(raw) as MLRecommendationResponse)
     } catch { /* noop */ }
     setLoaded(true)
-  }, [user?.id, storeLoading])
+  }, [user?.id])
 
-  if (!loaded || storeLoading) return <LoadingSkeleton />
+  if (!loaded) return <LoadingSkeleton />
 
   const recomendaciones = result?.recomendaciones ?? []
   const hasResults      = recomendaciones.length > 0

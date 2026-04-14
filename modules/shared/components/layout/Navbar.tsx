@@ -687,11 +687,6 @@ export default function Navbar() {
 
   const authUser = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
-  const hydrate = useAuthStore((s) => s.hydrate);
-
-  useEffect(() => {
-    hydrate();
-  }, [hydrate]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

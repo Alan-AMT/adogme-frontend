@@ -1,6 +1,7 @@
 // modules/auth/infrastructure/AuthService.ts
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
+import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
 import type {
   IAuthService,
   RegisterData,
@@ -12,38 +13,42 @@ import type {
 export class AuthService implements IAuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const payload = {
-      email: credentials.correo,
+      email: credentials.email,
       password: credentials.password,
     };
     const res = await apiClient.post<{
-      user: any;
+      user: AuthResponse["user"];
       accessToken: string;
       refreshToken: string;
     }>(API_ENDPOINTS.AUTH.LOGIN, payload);
 
+    const { user, accessToken, refreshToken } = res.data;
+
+    const store = useAuthStore.getState();
+    store.setUser(user);
+    store.setTokens(accessToken, refreshToken);
+
     return {
-      user: res.data.user,
-      accessToken: res.data.accessToken,
-      refreshToken: res.data.refreshToken,
-      expiresAt: new Date(Date.now() + 86400000).toISOString(), // Placeholder fallback if not provided
-    } as AuthResponse;
+      user,
+      accessToken,
+      refreshToken,
+      expiresAt: new Date(Date.now() + 86400000).toISOString(),
+    };
   }
 
   async register(data: RegisterData): Promise<void> {
-    // Map to CreateAdopterDto exactly as expected by the backend
     const payload = {
-      email: data.correo,
-      name: data.nombre,
+      email: data.email,
+      name: data.name,
       password: data.password,
     };
-    const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, payload);
+    await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, payload);
   }
 
   async registerShelter(data: ShelterRegisterData): Promise<void> {
-    // Step 1: Create the User account mapping to CreateShelterDto (user)
     const userPayload = {
-      email: data.correo,
-      name: data.nombre,
+      email: data.email,
+      name: data.name,
       password: data.password,
     };
 
@@ -58,16 +63,13 @@ export class AuthService implements IAuthService {
       throw new Error("No se pudo obtener el ID del usuario creado.");
     }
 
-    // Step 2: Create the Shelter profile mapping to CreateShelterDto (profile)
     const shelterPayload = {
       userId: String(userId),
-      name: data.nombreRefugio,
-      description: data.descripcion,
-      phone: data.telefonoRefugio,
-      email: data.correoRefugio,
-      ubicacion: data.alcaldia,
-      // The frontend ShelterRegisterData only has alcaldia, direccion, but DTO expects ubicacion, ciudad, estado
-      // Mapping alcaldia to ubicacion per requirements
+      name: data.shelterName,
+      description: data.description,
+      phone: data.shelterPhone,
+      email: data.shelterEmail,
+      ubicacion: data.municipality,
     };
 
     await apiClient.post(API_ENDPOINTS.SHELTERS.CREATE, shelterPayload);
@@ -82,6 +84,11 @@ export class AuthService implements IAuthService {
   }
 
   async logout(): Promise<void> {
-    await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+    try {
+      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+    } catch {
+      // Ignore API errors on logout — always clear local state
+    }
+    useAuthStore.getState().logout();
   }
 }

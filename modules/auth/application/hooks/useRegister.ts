@@ -210,31 +210,31 @@ export function useRegister(): UseRegisterReturn {
     try {
       if (role === 'adoptante') {
         await authService.register({
-          nombre:         data.nombre,
-          correo:         data.correo,
-          telefono:       data.telefono,
-          password:       data.password,
-          alcaldia:       data.alcaldia,
-          colonia:        data.colonia,
-          calle:          data.calle,
-          numeroExterior: data.numExt,
-          numeroInterior: data.numInt || undefined,
-          codigoPostal:   data.cp,
+          name:            data.nombre,
+          email:           data.correo,
+          phone:           data.telefono,
+          password:        data.password,
+          municipality:    data.alcaldia,
+          neighborhood:    data.colonia,
+          street:          data.calle,
+          exteriorNumber:  data.numExt,
+          interiorNumber:  data.numInt || undefined,
+          postalCode:      data.cp,
         })
       } else {
         await authService.registerShelter({
-          nombre:         data.nombre,
-          correo:         data.correo,
-          telefono:       data.telefono,
+          name:           data.nombre,
+          email:          data.correo,
+          phone:          data.telefono,
           password:       data.password,
-          nombreRefugio:  data.refNombre,
-          alcaldia:       data.refAlcaldia,
-          direccion:      data.refUbicacion,
-          telefonoRefugio: data.refTelefono || undefined,
-          correoRefugio:  data.refCorreo   || undefined,
-          horario:        data.refHorario  || undefined,
-          capacidad:      data.refCapacidad ? Number(data.refCapacidad) : undefined,
-          descripcion:    data.refDescripcion,
+          shelterName:    data.refNombre,
+          municipality:   data.refAlcaldia,
+          address:        data.refUbicacion,
+          shelterPhone:   data.refTelefono || undefined,
+          shelterEmail:   data.refCorreo   || undefined,
+          schedule:       data.refHorario  || undefined,
+          capacity:       data.refCapacidad ? Number(data.refCapacidad) : undefined,
+          description:    data.refDescripcion,
         })
       }
       setSuccess(true)

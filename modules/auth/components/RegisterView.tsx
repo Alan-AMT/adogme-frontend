@@ -23,7 +23,7 @@ import { Stepper } from "@/modules/shared/components/ui/Stepper";
 
 import type { RegisterRole } from "../application/hooks/useRegister";
 import { useRegister } from "../application/hooks/useRegister";
-import { ALCALDIAS_CDMX } from "../infrastructure/MockAuthService";
+import { ALCALDIAS_CDMX } from "@/modules/shared/constants/alcaldias";
 
 // ── Helpers de icono ──────────────────────────────────────────────────────────
 function MIcon({ name, fill = false }: { name: string; fill?: boolean }) {

@@ -19,7 +19,7 @@ import { Button } from "@/modules/shared/components/ui/Button";
 import { Input } from "@/modules/shared/components/ui/Input";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ALCALDIAS_CDMX } from "../infrastructure/MockAuthService";
+import { ALCALDIAS_CDMX } from "@/modules/shared/constants/alcaldias";
 import { useRegister } from "../application/hooks/useRegister";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

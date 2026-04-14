@@ -73,19 +73,13 @@ const STRENGTH_CLS   = ['', 'weak',  'medium', 'strong']
 function TabData() {
   const { user, isApplicant, saving, saveError, saveOk, updateProfile, clearStatus } = useProfile()
 
-  const [nombre,    setNombre]    = useState(user?.nombre    ?? '')
-  const [telefono,  setTelefono]  = useState(user?.telefono  ?? '')
-  const [direccion, setDireccion] = useState(
-    isApplicant && user && 'direccion' in user ? (user as { direccion: string }).direccion : ''
-  )
+  const [nombre,    setNombre]    = useState(user?.name    ?? '')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     clearStatus('data')
     await updateProfile({
-      nombre:    nombre    !== user?.nombre   ? nombre    : undefined,
-      telefono:  telefono  !== user?.telefono ? telefono  : undefined,
-      ...(isApplicant ? { direccion } : {}),
+      nombre:    nombre    !== user?.name   ? nombre    : undefined,
     })
   }
 
@@ -107,26 +101,8 @@ function TabData() {
           />
           <div className="pf-field-readonly">
             <p className="pf-field-readonly__label">Correo electrónico</p>
-            <p className="pf-field-readonly__value">{user?.correo}</p>
+            <p className="pf-field-readonly__value">{user?.email}</p>
           </div>
-          <Input
-            label="Teléfono"
-            value={telefono}
-            onChange={e => setTelefono(e.target.value)}
-            type="tel"
-            leftIcon={<span className="material-symbols-outlined" style={{ fontSize: 18 }}>phone</span>}
-          />
-          {isApplicant && (
-            <div className="pf-form-full">
-              <Input
-                label="Dirección"
-                value={direccion}
-                onChange={e => setDireccion(e.target.value)}
-                leftIcon={<span className="material-symbols-outlined" style={{ fontSize: 18 }}>home_pin</span>}
-                helperText="Colonia, calle y número, alcaldía, CDMX"
-              />
-            </div>
-          )}
         </div>
 
         {saveError && (
@@ -516,7 +492,7 @@ export default function ProfileView() {
         <div className="pf-cover" />
         <div className="pf-cover-body">
           <div className="pf-header__avatar-wrap">
-            <Avatar src={user.avatarUrl} name={user.nombre} size="xl" />
+            <Avatar name={user.name} size="xl" />
             <button
               type="button"
               className="pf-header__avatar-edit"
@@ -528,17 +504,14 @@ export default function ProfileView() {
           </div>
 
           <div className="pf-header__info">
-            <p className="pf-header__name">{user.nombre}</p>
-            <p className="pf-header__email">{user.correo}</p>
+            <p className="pf-header__name">{user.name}</p>
+            <p className="pf-header__email">{user.email}</p>
             <span className={`pf-header__role ${roleCls}`}>
               <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 13" }}>
                 verified_user
               </span>
               {roleLabel}
             </span>
-            <p className="pf-header__since">
-              Miembro desde {formatDate(user.fechaRegistro)}
-            </p>
           </div>
         </div>
 
