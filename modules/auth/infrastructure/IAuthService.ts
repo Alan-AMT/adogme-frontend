@@ -4,7 +4,10 @@
 // Components and hooks depend on this interface, never on a concrete class.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { AuthResponse, LoginCredentials } from "@/modules/shared/domain/User";
+import type {
+  AuthResponse,
+  LoginCredentials,
+} from "@/modules/shared/domain/User";
 
 // ─── Registration data ──────────────────────────────────────────────────────
 
@@ -32,11 +35,11 @@ export interface ShelterRegisterData {
   // Shelter info
   shelterName: string;
   municipality: string;
-  address: string;
+  fullAddress: string;
   shelterPhone?: string;
   shelterEmail?: string;
+  shelterWebsite?: string;
   schedule?: string;
-  capacity?: number;
   description?: string;
 }
 
@@ -44,7 +47,7 @@ export interface ShelterRegisterData {
 
 export interface IAuthService {
   login(credentials: LoginCredentials): Promise<AuthResponse>;
-  register(data: RegisterData): Promise<void>;
+  register(data: RegisterData): Promise<AuthResponse>;
   registerShelter(data: ShelterRegisterData): Promise<void>;
   forgotPassword(email: string): Promise<void>;
   resetPassword(token: string, password: string): Promise<void>;

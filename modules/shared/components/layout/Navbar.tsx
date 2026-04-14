@@ -188,7 +188,6 @@ function AvatarDropdown({
   user: NavUser;
   onLogout: () => void;
 }) {
-  console.log("user AvatarDropDown", user);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 

@@ -58,12 +58,18 @@ export class MockAuthService implements IAuthService {
     return { user, accessToken, refreshToken, expiresAt };
   }
 
-  async register(data: RegisterData): Promise<void> {
+  async register(data: RegisterData): Promise<AuthResponse> {
     await delay(600);
 
     if (MOCK_CREDENTIALS[data.email]) {
       throw new Error("El correo ya está registrado.");
     }
+    const record = MOCK_CREDENTIALS[data.email];
+    const user = record.user;
+    const accessToken = buildMockToken(user);
+    const refreshToken = `refresh-${user.id}-${Date.now()}`;
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    return { user, accessToken, refreshToken, expiresAt };
   }
 
   async registerShelter(data: ShelterRegisterData): Promise<void> {

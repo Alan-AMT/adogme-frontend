@@ -334,7 +334,7 @@ export default function ShelterRegisterView() {
 
   // Forzar rol 'refugio' al montar
   useEffect(() => {
-    reg.setRole("refugio");
+    reg.setRole("shelter");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -646,14 +646,12 @@ export default function ShelterRegisterView() {
                 leftIcon={<MIcon name="call" />}
               />
               <Input
-                id="sr-refcap"
-                label="Capacidad (perros)"
+                id="sr-refwebsite"
+                label="Página web"
                 placeholder="Ej. 30"
-                value={data.refCapacidad}
-                onChange={(e) =>
-                  update("refCapacidad", e.target.value.replace(/\D/g, ""))
-                }
-                leftIcon={<MIcon name="pets" />}
+                value={data.refWebsite}
+                onChange={(e) => update("refWebsite", e.target.value)}
+                leftIcon={<MIcon name="captive_portal" />}
               />
             </div>
 

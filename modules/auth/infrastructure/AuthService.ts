@@ -36,13 +36,30 @@ export class AuthService implements IAuthService {
     };
   }
 
-  async register(data: RegisterData): Promise<void> {
+  async register(data: RegisterData): Promise<AuthResponse> {
     const payload = {
       email: data.email,
       name: data.name,
       password: data.password,
     };
-    await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, payload);
+    const res = await apiClient.post<{
+      user: AuthResponse["user"];
+      accessToken: string;
+      refreshToken: string;
+    }>(API_ENDPOINTS.AUTH.REGISTER, payload);
+
+    const { user, accessToken, refreshToken } = res.data;
+
+    const store = useAuthStore.getState();
+    store.setUser(user);
+    store.setTokens(accessToken, refreshToken);
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+      expiresAt: new Date(Date.now() + 86400000).toISOString(),
+    };
   }
 
   async registerShelter(data: ShelterRegisterData): Promise<void> {
@@ -52,27 +69,38 @@ export class AuthService implements IAuthService {
       password: data.password,
     };
 
-    const { data: resData } = await apiClient.post<{ user: { id: string } }>(
-      API_ENDPOINTS.AUTH.REGISTER_SHELTER,
-      userPayload,
-    );
+    const { data: resData } = await apiClient.post<{
+      user: AuthResponse["user"];
+      accessToken: string;
+      refreshToken: string;
+    }>(API_ENDPOINTS.AUTH.REGISTER_SHELTER, userPayload);
 
-    const userId = resData?.user?.id;
+    const { user, accessToken, refreshToken } = resData;
+    const store = useAuthStore.getState();
+    store.setUser(user);
+    store.setTokens(accessToken, refreshToken);
 
-    if (!userId) {
+    if (!user.id) {
       throw new Error("No se pudo obtener el ID del usuario creado.");
     }
 
     const shelterPayload = {
-      userId: String(userId),
+      userOwnerId: String(user.id),
       name: data.shelterName,
       description: data.description,
       phone: data.shelterPhone,
       email: data.shelterEmail,
-      ubicacion: data.municipality,
+      website: data.shelterWebsite,
+      municipality: data.municipality,
+      fullAddress: data.fullAddress,
+      schedule: data.schedule,
     };
 
-    await apiClient.post(API_ENDPOINTS.SHELTERS.CREATE, shelterPayload);
+    await apiClient.post(API_ENDPOINTS.SHELTERS.CREATE, shelterPayload, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
   }
 
   async forgotPassword(email: string): Promise<void> {

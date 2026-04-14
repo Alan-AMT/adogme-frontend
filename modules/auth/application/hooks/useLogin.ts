@@ -100,8 +100,12 @@ export function useLogin(): UseLoginReturn {
       });
 
       const redirectParam = searchParams.get("redirect");
-      router.push(getPostLoginUrl(res.user.role, redirectParam));
-      router.refresh();
+      if (redirectParam) {
+        router.push(getPostLoginUrl(res.user.role, redirectParam));
+        router.refresh();
+      } else {
+        router.push("/");
+      }
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Error al iniciar sesión.";

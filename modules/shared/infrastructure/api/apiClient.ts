@@ -56,7 +56,14 @@ apiClient.interceptors.response.use(
     // 401 — Token expired: attempt refresh once
     // Skip for login endpoint (invalid credentials → just reject)
     const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN);
-    if (error.response?.status === 401 && !original._retry && !isLoginRequest) {
+    const requestUrl: string = original.url ? original.url : "";
+    const urlRequireToken = [
+      String(API_ENDPOINTS.SHELTERS.UPDATE),
+      String(API_ENDPOINTS.DOGS.CREATE),
+      String(API_ENDPOINTS.DOGS.DELETE),
+      String(API_ENDPOINTS.DOGS.UPDATE),
+    ].includes(requestUrl);
+    if (error.response?.status === 401 && !original._retry && urlRequireToken) {
       if (isRefreshing) {
         return new Promise((resolve) => {
           refreshQueue.push((newToken) => {
@@ -82,8 +89,7 @@ apiClient.interceptors.response.use(
               : {},
           },
         );
-        const newToken: string =
-          res.data.accessToken ?? res.data.token;
+        const newToken: string = res.data.accessToken ?? res.data.token;
         const newRefresh: string | undefined = res.data.refreshToken;
 
         // Sync Zustand store (dynamic import to avoid circular deps)
