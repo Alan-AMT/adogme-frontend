@@ -59,14 +59,8 @@ export default function PersonalDataStep({ errors: _ }: Props) {
           Información personal
         </p>
         <div className="af-field-grid af-field-grid--2">
-          <ReadonlyField label="Nombre completo" value={user?.nombre ?? ''} icon="badge" />
-          <ReadonlyField label="Correo electrónico" value={user?.correo ?? ''} icon="mail" />
-          <ReadonlyField label="Teléfono" value={user?.telefono ?? ''} icon="phone" />
-          <ReadonlyField
-            label="Dirección"
-            value={user?.role === 'applicant' ? (user as Adoptante).direccion : ''}
-            icon="home"
-          />
+          <ReadonlyField label="Nombre completo" value={user?.name ?? ''} icon="badge" />
+          <ReadonlyField label="Correo electrónico" value={user?.email ?? ''} icon="mail" />
         </div>
       </div>
 

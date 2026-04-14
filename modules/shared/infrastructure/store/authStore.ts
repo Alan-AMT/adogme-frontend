@@ -1,158 +1,82 @@
 // modules/shared/infrastructure/store/authStore.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Estado global de autenticación — Zustand
-// Usado por: Navbar, layouts protegidos, useAuth hook, apiClient
+// Global auth state — Zustand
+// This store holds state only. Auth actions (login, register) go through
+// AuthService which updates this store via getState().
+// Used by: Navbar, layouts, useAuth hook, apiClient
 // ─────────────────────────────────────────────────────────────────────────────
-'use client'
+"use client";
 
-import { create } from 'zustand'
-import type { Administrador, Adoptante, ShelterUser } from '../../domain/User'
-import { MOCK_CREDENTIALS } from '../../mockData/users.mock'
+import { create } from "zustand";
+import type { Adoptante, Administrador, ShelterUser } from "../../domain/User";
+import {
+  clearTokenCookies,
+  clearWindowTokens,
+  decodeUserFromToken,
+  getRefreshTokenFromCookie,
+  getTokenFromCookie,
+  setRefreshTokenCookie,
+  setTokenCookie,
+  setWindowTokens,
+} from "../auth/tokenManager";
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────────────────────────
 
-type AuthUser = Adoptante | ShelterUser | Administrador
+export type AuthUser = Adoptante | ShelterUser | Administrador;
 
 interface AuthState {
-  user:            AuthUser | null
-  token:           string | null
-  isAuthenticated: boolean
-  isLoading:       boolean
-  error:           string | null
+  user: AuthUser | null;
+  token: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
 
   // Actions
-  login:    (correo: string, password: string) => Promise<void>
-  logout:   () => void
-  setUser:  (user: AuthUser) => void
-  setToken: (token: string) => void
-  hydrate:  () => void   // lee el token de cookie/localStorage al montar
-  clearError: () => void
+  setUser: (user: AuthUser) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
+  logout: () => void;
+  hydrate: () => void;
 }
 
-// ─── Mock token builder (client-safe, sin next/headers) ──────────────────────
-// Produce el mismo base64 que session.ts:createMockToken pero usando btoa
-function createMockToken(user: AuthUser): string {
-  const payload = {
-    ...user,
-    userId: user.id,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-  }
-  return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
-}
+// ─── Store ───────────────────────────────────────────────────────────────────
 
-// ─── Helpers de cookie (cliente) ─────────────────────────────────────────────
-
-function getTokenFromCookie(): string | null {
-  if (typeof document === 'undefined') return null
-  const match = document.cookie.match(/(?:^|;\s*)auth-token=([^;]*)/)
-  return match ? decodeURIComponent(match[1]) : null
-}
-
-function setTokenCookie(token: string): void {
-  if (typeof document === 'undefined') return
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()
-  document.cookie = `auth-token=${encodeURIComponent(token)}; path=/; expires=${expires}; SameSite=Lax`
-}
-
-function clearTokenCookie(): void {
-  if (typeof document === 'undefined') return
-  document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-}
-
-function decodeUserFromToken(token: string): AuthUser | null {
-  try {
-    const payload = JSON.parse(decodeURIComponent(escape(atob(token))))
-    return payload as AuthUser
-  } catch {
-    return null
-  }
-}
-
-// ─── Store ────────────────────────────────────────────────────────────────────
-
-export const useAuthStore = create<AuthState>((set, get) => ({
-  user:            null,
-  token:           null,
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  token: null,
+  refreshToken: null,
   isAuthenticated: false,
-  isLoading:       false,
-  error:           null,
 
-  // ── login ──────────────────────────────────────────────────────────────────
-  login: async (correo, password) => {
-    set({ isLoading: true, error: null })
+  setUser: (user) => set({ user, isAuthenticated: true }),
 
-    try {
-      const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
-
-      if (useMock) {
-        // Simula delay de red
-        await new Promise(r => setTimeout(r, 600))
-
-        const entry = MOCK_CREDENTIALS[correo]
-        if (!entry || entry.password !== password) {
-          throw new Error('Correo o contraseña incorrectos')
-        }
-
-        const token = createMockToken(entry.user)
-        setTokenCookie(token)
-
-        // Sincroniza con apiClient
-        if (typeof window !== 'undefined') window.__authToken = token
-
-        set({
-          user:            entry.user,
-          token,
-          isAuthenticated: true,
-          isLoading:       false,
-        })
-        return
-      }
-
-      // ── Modo real ────────────────────────────────────────────────────────
-      const { apiClient } = await import('../api/apiClient')
-      const { API_ENDPOINTS } = await import('../api/endpoints')
-
-      const res = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, { correo, password })
-      const { user, token } = res.data
-
-      setTokenCookie(token)
-      if (typeof window !== 'undefined') window.__authToken = token
-
-      set({ user, token, isAuthenticated: true, isLoading: false })
-
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error al iniciar sesión'
-      set({ isLoading: false, error: message })
-      throw err
-    }
+  setTokens: (accessToken, refreshToken) => {
+    setTokenCookie(accessToken);
+    setRefreshTokenCookie(refreshToken);
+    setWindowTokens(accessToken, refreshToken);
+    set({ token: accessToken, refreshToken });
   },
 
-  // ── logout ─────────────────────────────────────────────────────────────────
   logout: () => {
-    clearTokenCookie()
-    if (typeof window !== 'undefined') window.__authToken = undefined
-    set({ user: null, token: null, isAuthenticated: false, error: null })
+    clearTokenCookies();
+    clearWindowTokens();
+    set({
+      user: null,
+      token: null,
+      refreshToken: null,
+      isAuthenticated: false,
+    });
   },
 
-  // ── setUser / setToken ─────────────────────────────────────────────────────
-  setUser:  (user)  => set({ user, isAuthenticated: true }),
-  setToken: (token) => {
-    setTokenCookie(token)
-    if (typeof window !== 'undefined') window.__authToken = token
-    set({ token })
-  },
-
-  // ── hydrate — lee la sesión al montar la app ───────────────────────────────
   hydrate: () => {
-    const token = getTokenFromCookie()
-    if (!token) return
+    const token = getTokenFromCookie();
+    if (!token) return;
 
-    const user = decodeUserFromToken(token)
-    if (!user) { clearTokenCookie(); return }
+    const user = decodeUserFromToken(token);
+    if (!user) {
+      clearTokenCookies();
+      return;
+    }
 
-    if (typeof window !== 'undefined') window.__authToken = token
-    set({ user, token, isAuthenticated: true })
+    const refreshToken = getRefreshTokenFromCookie();
+    setWindowTokens(token, refreshToken ?? undefined);
+    set({ user, token, refreshToken, isAuthenticated: true });
   },
-
-  clearError: () => set({ error: null }),
-}))
+}));

@@ -1,67 +1,59 @@
 // modules/shared/domain/User.ts
-// Entidades base de usuario — Administrador y Adoptante del diagrama ER
+// Base user entities
 
-// ─── Roles y estados ────────────────────────────────────────────────────────
+// ─── Roles & statuses ───────────────────────────────────────────────────────
 
-export type UserRole = 'visitor' | 'applicant' | 'shelter' | 'admin'
+export type UserRole = "visitor" | "applicant" | "shelter" | "admin";
 
-export type AccountStatus = 'active' | 'suspended' | 'pending_verification'
+export type AccountStatus = "active" | "suspended" | "pending_verification";
 
-// ─── Entidad base ────────────────────────────────────────────────────────────
+// ─── Base entity ─────────────────────────────────────────────────────────────
 
 export interface User {
-  id: number
-  nombre: string
-  correo: string
-  telefono: string
-  role: UserRole
-  status: AccountStatus
-  avatarUrl?: string
-  fechaRegistro: string // ISO date
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
 }
 
-// ─── Adoptante (extiende User con campos propios) ────────────────────────────
-// Tabla: Adoptante — id, nombre, correo, telefono, direccion, fechaRegistro
+// ─── Adoptante ───────────────────────────────────────────────────────────────
 
 export interface Adoptante extends User {
-  role: 'applicant'
-  direccion: string
+  role: "applicant";
 }
 
-// ─── Administrador ────────────────────────────────────────────────────────────
-// Tabla: Administrador — id, nombre, correo, telefono, puesto
+// ─── Administrador ───────────────────────────────────────────────────────────
 
 export interface Administrador extends User {
-  role: 'admin'
-  puesto: string
+  role: "admin";
 }
 
-// ─── Shelter user (usuario autenticado con rol shelter) ──────────────────────
+// ─── Shelter user ────────────────────────────────────────────────────────────
 
 export interface ShelterUser extends User {
-  role: 'shelter'
-  shelterId: number
-  shelterStatus: 'pending' | 'approved' | 'rejected' | 'suspended'
+  role: "shelter";
+  shelterId?: number;
+  shelterStatus?: "pending" | "approved" | "rejected" | "suspended";
 }
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export interface AuthResponse {
-  user: Adoptante | ShelterUser | Administrador
-  token: string
-  refreshToken: string
-  expiresAt: string // ISO datetime
+  user: Adoptante | ShelterUser | Administrador;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
 }
 
 export interface LoginCredentials {
-  correo: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface RegisterAdoptanteData {
-  nombre: string
-  correo: string
-  telefono: string
-  direccion: string
-  password: string
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  password: string;
 }
