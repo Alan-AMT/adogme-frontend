@@ -74,6 +74,80 @@ export class ShelterService implements IShelterService {
     }
   }
 
+  async updateShelterProfile(
+    refugioId: string,
+    shelterUpdate: Partial<Shelter>,
+  ): Promise<Shelter> {
+    try {
+      const { data } = await apiClient.put<{
+        id: string;
+        userOwnerId: string;
+        name: string;
+        description: string | null;
+        phone: string | null;
+        email: string | null;
+        website: string | null;
+        municipality: string | null;
+        fullAddress: string | null;
+        schedule: string | null;
+        facebook: string | null;
+        instagram: string | null;
+        twitter: string | null;
+        approved: boolean;
+        status: "pending" | "approved" | "rejected" | "suspended";
+        logo: string | null;
+        imageUrl: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>(API_ENDPOINTS.SHELTERS.UPDATE(refugioId), {
+        name: shelterUpdate.nombre,
+        description: shelterUpdate.descripcion,
+        phone: shelterUpdate.telefono,
+        email: shelterUpdate.correo,
+        website: shelterUpdate.redesSociales?.web,
+        municipality: shelterUpdate.alcaldia,
+        fullAddress: shelterUpdate.direccionCompleta,
+        schedule: shelterUpdate.schedule,
+        facebook: shelterUpdate.redesSociales?.facebook,
+        instagram: shelterUpdate.redesSociales?.instagram,
+        twitter: shelterUpdate.redesSociales?.twitter,
+        logo: shelterUpdate.logo,
+        imageUrl: shelterUpdate.imagenPortada,
+      });
+      const updated: Shelter = {
+        id: data.id,
+        nombre: data.name,
+        status: data.status,
+        descripcion: data.description ?? "",
+        telefono: data.phone ?? "",
+        correo: data.email ?? "",
+        redesSociales: {
+          facebook: data.facebook ?? "",
+          instagram: data.instagram ?? "",
+          twitter: data.twitter ?? "",
+          web: data.website ?? "",
+        },
+        alcaldia: data.municipality ?? "",
+        ubicacion: data.municipality ?? "",
+        userOwnerId: data.userOwnerId,
+        direccionCompleta: data.fullAddress ?? "",
+        schedule: data.schedule ?? "",
+        aprobado: data.approved,
+        logo: data.logo ?? "",
+        imagenPortada: data.imageUrl ?? "",
+        fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
+        slug: "",
+        donationConfig: {
+          aceptaDonaciones: true,
+        } as DonationConfig,
+      };
+      return updated;
+    } catch (e) {
+      console.log(e);
+      throw Error("No se pudo actualizar el perfil del refugio");
+    }
+  }
+
   createDog(data: DogCreateData): Promise<Dog> {
     throw Error("Nto implemented");
   }
@@ -117,13 +191,6 @@ export class ShelterService implements IShelterService {
     refugioId: string,
     filters?: DogFilters,
   ): Promise<PaginatedDogs> {
-    throw Error("Not implemented");
-  }
-
-  updateShelterProfile(
-    refugioId: string,
-    data: Partial<Shelter>,
-  ): Promise<Shelter> {
     throw Error("Not implemented");
   }
 

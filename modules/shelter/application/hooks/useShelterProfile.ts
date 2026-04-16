@@ -2,7 +2,7 @@
 // Archivo 171 — hook para cargar y actualizar el perfil del refugio.
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import type { Shelter } from "@/modules/shared/domain/Shelter";
 import { shelterService } from "../../infrastructure/ShelterServiceFactory";
 import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
@@ -19,7 +19,7 @@ export interface UseShelterProfileReturn {
 
 export function useShelterProfile(): UseShelterProfileReturn {
   const user = useAuthStore((s) => s.user);
-  const CURRENT_SHELTER_ID = "";
+  const shelterID = useRef("");
   const [shelter, setShelter] = useState<Shelter | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,6 +30,7 @@ export function useShelterProfile(): UseShelterProfileReturn {
     if (user != null) {
       setIsLoading(true);
       const { shelterId } = user as ShelterUser;
+      shelterID.current = shelterId ?? "";
       shelterService
         .getShelterProfile(shelterId ?? "")
         .then((s) => setShelter(s))
@@ -44,7 +45,7 @@ export function useShelterProfile(): UseShelterProfileReturn {
     setSuccess(false);
     try {
       const updated = await shelterService.updateShelterProfile(
-        CURRENT_SHELTER_ID,
+        shelterID.current,
         data,
       );
       setShelter(updated);
