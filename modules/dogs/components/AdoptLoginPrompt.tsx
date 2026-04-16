@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 
 interface Props {
   dogNombre: string
-  dogId: number
+  dogId: string
   onClose: () => void
 }
 

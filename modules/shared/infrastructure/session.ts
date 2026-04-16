@@ -24,7 +24,7 @@ export interface SessionData {
   name: string;
   exp: number;
   shelterStatus?: ShelterUser["shelterStatus"];
-  shelterId?: number;
+  shelterId?: string;
   avatarUrl?: string;
 }
 

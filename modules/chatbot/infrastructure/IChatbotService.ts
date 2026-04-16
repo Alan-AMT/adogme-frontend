@@ -7,5 +7,5 @@ export interface IChatbotService {
    *  @param sessionId UUID de la sesión actual (para trazabilidad en backend)
    *  @param userId   ID del adoptante autenticado, si lo hay
    */
-  getResponse(message: string, sessionId: string, userId?: number): Promise<BotResponse>
+  getResponse(message: string, sessionId: string, userId?: string): Promise<BotResponse>
 }

@@ -28,14 +28,14 @@ export interface IAdminService {
 
   // Gestión de refugios
   getAllShelters(): Promise<Shelter[]>
-  getShelterById(id: number): Promise<Shelter | null>
-  approveShelter(id: number, nota?: string): Promise<Shelter>
-  rejectShelter(id: number, nota?: string): Promise<Shelter>
-  suspendShelter(id: number, nota?: string): Promise<Shelter>
+  getShelterById(id: string): Promise<Shelter | null>
+  approveShelter(id: string, nota?: string): Promise<Shelter>
+  rejectShelter(id: string, nota?: string): Promise<Shelter>
+  suspendShelter(id: string, nota?: string): Promise<Shelter>
 
   // Moderación de perros
   getAllDogs(): Promise<Dog[]>
-  updateDogStatus(id: number, status: DogStatus): Promise<Dog>
+  updateDogStatus(id: string, status: DogStatus): Promise<Dog>
 
   // Gestión de contenido
   getAdoptionProcess(): Promise<AdoptionStep[]>

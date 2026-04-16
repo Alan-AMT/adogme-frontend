@@ -15,7 +15,7 @@ import '../styles/recommendations.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const RESULTS_KEY = (id: number) => `ml-results-${id}`
+const RESULTS_KEY = (id: string | number) => `ml-results-${id}`
 
 function compatClass(score: number): string {
   if (score >= 75) return 'rec-card__compat--high'

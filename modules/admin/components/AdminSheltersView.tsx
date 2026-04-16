@@ -32,7 +32,7 @@ export default function AdminSheltersView() {
   const { shelters, isLoading, isUpdating, approve, reject, suspend } = useAdminShelters();
 
   const [activeTab, setActiveTab] = useState<TabKey>('pending');
-  const [rejectTarget, setRejectTarget] = useState<number | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<string | null>(null);
   const [rejectNota, setRejectNota] = useState('');
   const [search, setSearch] = useState('');
 
@@ -43,7 +43,7 @@ export default function AdminSheltersView() {
       (s) =>
         search.trim() === '' ||
         s.nombre.toLowerCase().includes(search.toLowerCase()) ||
-        s.ciudad.toLowerCase().includes(search.toLowerCase())
+        ( s.alcaldia ?? s.ubicacion ).toLowerCase().includes(search.toLowerCase())
     );
   const inactiveShelters = shelters.filter(
     (s) => s.status === 'suspended' || s.status === 'rejected'
@@ -55,7 +55,7 @@ export default function AdminSheltersView() {
     { key: 'suspended', label: 'Suspendidos / Rechazados' },
   ];
 
-  async function handleApprove(id: number) {
+  async function handleApprove(id: string) {
     await approve(id);
   }
 
@@ -66,7 +66,7 @@ export default function AdminSheltersView() {
     setRejectNota('');
   }
 
-  async function handleSuspend(id: number) {
+  async function handleSuspend(id: string) {
     await suspend(id);
   }
 
@@ -245,7 +245,7 @@ export default function AdminSheltersView() {
                     <div>
                       <p style={{ margin: 0, fontWeight: 700, color: '#18181b', fontSize: '0.975rem' }}>{s.nombre}</p>
                       <p style={{ margin: '0.125rem 0 0', color: '#71717a', fontSize: '0.8rem' }}>
-                        {s.ciudad} &middot; Registro: {formatDate(s.fechaRegistro)}
+                        {( s.alcaldia ?? s.ubicacion )} &middot; Registro: {formatDate(s.fechaRegistro)}
                       </p>
                     </div>
                   </div>
@@ -379,7 +379,7 @@ export default function AdminSheltersView() {
                       </div>
                     </td>
                     <td>
-                      <span className="ad-shelter-cell__city">{s.ciudad}</span>
+                      <span className="ad-shelter-cell__city">{( s.alcaldia ?? s.ubicacion )}</span>
                     </td>
                     <td>
                       {s.calificacion !== undefined ? (
@@ -487,7 +487,7 @@ export default function AdminSheltersView() {
                         </div>
                       </td>
                       <td>
-                        <span className="ad-shelter-cell__city">{s.ciudad}</span>
+                        <span className="ad-shelter-cell__city">{( s.alcaldia ?? s.ubicacion )}</span>
                       </td>
                       <td>
                         <span className={badgeInfo.className}>{badgeInfo.label}</span>

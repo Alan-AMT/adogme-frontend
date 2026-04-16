@@ -123,7 +123,7 @@ function buildResumen(score: number): string {
 
 export class MockMLService implements IMLService {
   async generateRecommendations(
-    adoptanteId: number,
+    adoptanteId: string,
     answers:     LifestyleQuizAnswers,
   ): Promise<MLRecommendationResponse> {
     await delay(DELAY_MS)

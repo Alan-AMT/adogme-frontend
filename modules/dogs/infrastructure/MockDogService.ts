@@ -23,7 +23,7 @@ const delay = (min = 500, max = 800) =>
 
 // ─── Copia mutable en memoria (create / update / delete) ──────────────────────
 let _dogs: Dog[] = [...MOCK_DOGS];
-let _nextId = Math.max(...MOCK_DOGS.map((d) => d.id)) + 1;
+let _nextId = Math.max(...MOCK_DOGS.map((d) => Number(d.id))) + 1;
 
 function computeEdadCategoria(edadMeses: number): Dog["edadCategoria"] {
   if (edadMeses < 12) return "cachorro";
@@ -70,7 +70,7 @@ function applyFilters(filters: DogFilters = {}): DogListItem[] {
   if (filters.estado)        dogs = dogs.filter((d) => d.estado === filters.estado);
   if (filters.edadCategoria) dogs = dogs.filter((d) => d.edadCategoria === filters.edadCategoria);
   if (filters.raza)          dogs = dogs.filter((d) => d.raza.toLowerCase() === filters.raza!.toLowerCase());
-  if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === filters.refugioId);
+  if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === String(filters.refugioId));
 
   // ── Compatibilidad ───────────────────────────────────────────────────────
   if (filters.aptoNinos  === true) dogs = dogs.filter((d) => d.aptoNinos);
@@ -142,7 +142,7 @@ function applyFiltersWithDateSort(filters: DogFilters = {}): DogListItem[] {
     if (filters.estado)        dogs = dogs.filter((d) => d.estado === filters.estado);
     if (filters.edadCategoria) dogs = dogs.filter((d) => d.edadCategoria === filters.edadCategoria);
     if (filters.raza)          dogs = dogs.filter((d) => d.raza.toLowerCase() === filters.raza!.toLowerCase());
-    if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === filters.refugioId);
+    if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === String(filters.refugioId));
     if (filters.aptoNinos  === true) dogs = dogs.filter((d) => d.aptoNinos);
     if (filters.aptoPerros === true) dogs = dogs.filter((d) => d.aptoPerros);
     if (filters.aptoGatos  === true) dogs = dogs.filter((d) => d.aptoGatos);
@@ -177,7 +177,7 @@ export class MockDogService implements IDogService {
     return { data, total, page, totalPages: Math.ceil(total / limit), limit };
   }
 
-  async getDogById(id: number): Promise<Dog | null> {
+  async getDogById(id: string): Promise<Dog | null> {
     await delay(200, 400);
     return _dogs.find((d) => d.id === id) ?? sharedGetById(id) ?? null;
   }
@@ -192,7 +192,7 @@ export class MockDogService implements IDogService {
   async createDog(data: DogCreateData): Promise<Dog> {
     await delay(500, 800);
     const newDog: Dog = {
-      id:             _nextId++,
+      id:             String(_nextId++),
       refugioId:      data.refugioId,
       nombre:         data.nombre,
       edad:           data.edad,
@@ -226,7 +226,7 @@ export class MockDogService implements IDogService {
     return newDog;
   }
 
-  async updateDog(id: number, data: DogUpdateData): Promise<Dog> {
+  async updateDog(id: string, data: DogUpdateData): Promise<Dog> {
     await delay(500, 700);
     const idx = _dogs.findIndex((d) => d.id === id);
     if (idx === -1) throw new Error(`Dog ${id} not found`);
@@ -242,16 +242,16 @@ export class MockDogService implements IDogService {
     return updated;
   }
 
-  async deleteDog(id: number): Promise<void> {
+  async deleteDog(id: string): Promise<void> {
     await delay(500, 700);
     _dogs = _dogs.filter((d) => d.id !== id);
   }
 
-  async publishDog(id: number): Promise<Dog> {
+  async publishDog(id: string): Promise<Dog> {
     return this.updateDog(id, { estado: "disponible" });
   }
 
-  async unpublishDog(id: number): Promise<Dog> {
+  async unpublishDog(id: string): Promise<Dog> {
     return this.updateDog(id, { estado: "no_disponible" });
   }
 

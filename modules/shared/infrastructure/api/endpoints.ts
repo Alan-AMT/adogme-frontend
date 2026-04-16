@@ -45,7 +45,6 @@ export const API_ENDPOINTS = {
     // DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
     // BY_OWNER: (userId: number) =>
     //   `${BASE}/shelters-ms/shelter/user/${userId}`,
-    // BY_SLUG: (slug: string) => `${BASE}/api/shelters/slug/${slug}`,
     // UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
     // STATS: (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
     // UPLOAD_LOGO: `${BASE}/api/media/shelter/logo`,
@@ -53,7 +52,8 @@ export const API_ENDPOINTS = {
     LIST: `http://localhost:3002/shelters-ms/shelters`,
     CREATE: `http://localhost:3002/shelters-ms/shelter`,
     DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    BY_SLUG: (slug: string) => `${BASE}/api/shelters/slug/${slug}`,
+    BY_ID: (id: string) => `http://localhost:3002/shelters-ms/shelter/${id}`,
+    // BY_ID: (id: string) => `${BASE}/shelters-ms/shelter/${id}`,
     UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
     STATS: (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
     UPLOAD_LOGO: `http://localhost:3002/api/media/shelter/logo`,

@@ -70,7 +70,7 @@ export default function ShelterPublicView({ slug }: Props) {
               <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 location_on
               </span>
-              {shelter.ciudad}, {shelter.estado}
+              {shelter.alcaldia ?? shelter.ubicacion}
             </p>
 
             <div className="sp-banner__stats">

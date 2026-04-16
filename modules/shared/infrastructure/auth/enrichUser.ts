@@ -26,7 +26,7 @@ async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
 
   const shelter = await res.json();
 
-  const shelterId: number = shelter.id ?? shelter.shelterId;
+  const shelterId: string = shelter.id ?? shelter.shelterId;
   const shelterStatus: string = shelter.status ?? shelter.shelterStatus;
   const shelterName: string = shelter.name ?? shelter.shelterName;
   const shelterLogo: string | undefined = shelter.logo ?? shelter.shelterLogo;

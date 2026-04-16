@@ -89,7 +89,7 @@ function DataRow({ label, value }: { label: string; value: string }) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function AdoptionDetailView({ requestId }: { requestId: number }) {
+export default function AdoptionDetailView({ requestId }: { requestId: string }) {
   const { request, isLoading, error, cancelling, cancel } = useRequestDetail(requestId)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 

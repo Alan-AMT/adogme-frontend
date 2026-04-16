@@ -35,7 +35,7 @@ export interface Administrador extends User {
 
 export interface ShelterUser extends User {
   role: "shelter";
-  shelterId?: number;
+  shelterId?: string;
   shelterStatus?: "pending" | "approved" | "rejected" | "suspended";
   shelterName?: string;
   shelterLogo?: string;

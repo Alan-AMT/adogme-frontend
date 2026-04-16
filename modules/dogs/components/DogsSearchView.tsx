@@ -397,7 +397,7 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
             label: r.nombre,
           }))}
           onChange={(v) =>
-            setFilter("refugioId", v ? parseInt(v) : undefined)
+            setFilter("refugioId", v || undefined)
           }
         />
       </div>

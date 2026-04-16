@@ -26,7 +26,7 @@ const STEPPER_STEPS = DOG_FORM_STEPS.map(s => ({ id: String(s.id), label: s.labe
 
 // ─── Componente ───────────────────────────────────────────────────────────────
 
-export default function ShelterDogFormView({ dogId }: { dogId?: number }) {
+export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
   const form    = useDogForm(dogId)
   const isEdit  = dogId !== undefined
   const isLast  = form.currentStep === DOG_FORM_STEPS.length - 1

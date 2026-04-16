@@ -11,7 +11,7 @@ export interface UseAdminDogsReturn {
   isLoading:   boolean
   isUpdating:  boolean
   error:       string | null
-  updateStatus:(id: number, status: DogStatus) => Promise<void>
+  updateStatus:(id: string, status: DogStatus) => Promise<void>
 }
 
 export function useAdminDogs(): UseAdminDogsReturn {
@@ -32,7 +32,7 @@ export function useAdminDogs(): UseAdminDogsReturn {
       .finally(() => setIsLoading(false))
   }, [load])
 
-  const updateStatus = useCallback(async (id: number, status: DogStatus) => {
+  const updateStatus = useCallback(async (id: string, status: DogStatus) => {
     setIsUpdating(true)
     try   { await adminService.updateDogStatus(id, status); await load() }
     finally { setIsUpdating(false) }

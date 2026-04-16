@@ -8,7 +8,7 @@ import { getShelterById } from '@/modules/shared/mockData/shelters.mock'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 // ─── Sección de información de cuenta ─────────────────────────────────────────
 

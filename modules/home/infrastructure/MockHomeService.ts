@@ -91,7 +91,7 @@ export class MockHomeService implements IHomeService {
       nombre:               s.nombre,
       slug:                 s.slug,
       ubicacion:            s.ubicacion,
-      ciudad:               s.ciudad,
+      alcaldia:             s.alcaldia ?? s.ubicacion,
       descripcion:          s.descripcion,
       correo:               s.correo,
       telefono:             s.telefono,

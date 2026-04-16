@@ -7,14 +7,14 @@ import type { Shelter, ShelterListItem } from '../domain/Shelter'
 // ─── IDs constantes para referencias cruzadas con dogs.mock.ts ───────────────
 
 export const SHELTER_IDS = {
-  HUELLITAS:     1,
-  PATITAS:       2,
-  AMIGOS:        3,
-  ESPERANZA:     4,
-  SEGUNDA:       5,
-  PENDING_NORTE: 6,
-  PENDING_SUR:   7,
-  PENDING_BAJIO: 8,
+  HUELLITAS:     "1",
+  PATITAS:       "2",
+  AMIGOS:        "3",
+  ESPERANZA:     "4",
+  SEGUNDA:       "5",
+  PENDING_NORTE: "6",
+  PENDING_SUR:   "7",
+  PENDING_BAJIO: "8",
 } as const
 
 // ─── 5 Refugios aprobados ─────────────────────────────────────────────────────
@@ -33,8 +33,10 @@ export const MOCK_SHELTERS: Shelter[] = [
     aprobado: true,
     status: 'approved',
     slug: 'huellitas-mx',
-    ciudad: 'Gustavo A. Madero',
-    estado: 'Ciudad de México',
+    userOwnerId: '101',
+    alcaldia: 'Gustavo A. Madero',
+    direccionCompleta: 'Col. Industrial, Gustavo A. Madero, Ciudad de México',
+    schedule: 'Lun-Vie 9:00-17:00',
     redesSociales: {
       instagram: 'https://instagram.com/huellitasmx',
       facebook: 'https://facebook.com/huellitasmx',
@@ -66,8 +68,10 @@ export const MOCK_SHELTERS: Shelter[] = [
     aprobado: true,
     status: 'approved',
     slug: 'patitas-libres',
-    ciudad: 'Coyoacán',
-    estado: 'Ciudad de México',
+    userOwnerId: '102',
+    alcaldia: 'Coyoacán',
+    direccionCompleta: 'Col. Del Carmen, Coyoacán, Ciudad de México',
+    schedule: 'Lun-Sáb 10:00-18:00',
     redesSociales: {
       instagram: 'https://instagram.com/patitaslibres',
       web: 'https://patitaslibres.mx',
@@ -99,8 +103,10 @@ export const MOCK_SHELTERS: Shelter[] = [
     aprobado: true,
     status: 'approved',
     slug: 'amigos-4-patas',
-    ciudad: 'Iztapalapa',
-    estado: 'Ciudad de México',
+    userOwnerId: '103',
+    alcaldia: 'Iztapalapa',
+    direccionCompleta: 'Col. Santa Martha Acatitla, Iztapalapa, Ciudad de México',
+    schedule: 'Mar-Dom 9:00-16:00',
     redesSociales: {
       facebook: 'https://facebook.com/amigos4patasMTY',
       instagram: 'https://instagram.com/amigos4patas',
@@ -131,8 +137,10 @@ export const MOCK_SHELTERS: Shelter[] = [
     aprobado: true,
     status: 'approved',
     slug: 'refugio-esperanza',
-    ciudad: 'Tlalpan',
-    estado: 'Ciudad de México',
+    userOwnerId: '104',
+    alcaldia: 'Tlalpan',
+    direccionCompleta: 'Col. Pedregal de San Nicolás, Tlalpan, Ciudad de México',
+    schedule: 'Lun-Dom 8:00-17:00',
     redesSociales: {
       instagram: 'https://instagram.com/refugioesperanza_pue',
       facebook: 'https://facebook.com/refugioesperanza',
@@ -165,8 +173,10 @@ export const MOCK_SHELTERS: Shelter[] = [
     aprobado: true,
     status: 'approved',
     slug: 'segunda-oportunidad',
-    ciudad: 'Benito Juárez',
-    estado: 'Ciudad de México',
+    userOwnerId: '105',
+    alcaldia: 'Benito Juárez',
+    direccionCompleta: 'Col. Del Valle, Benito Juárez, Ciudad de México',
+    schedule: 'Lun-Vie 10:00-19:00',
     redesSociales: {
       instagram: 'https://instagram.com/segundaoportunidadtj',
       facebook: 'https://facebook.com/segundaoportunidadtij',
@@ -204,8 +214,10 @@ export const MOCK_PENDING_SHELTERS: Shelter[] = [
     aprobado: false,
     status: 'pending',
     slug: 'patitas-del-norte',
-    ciudad: 'Azcapotzalco',
-    estado: 'Ciudad de México',
+    userOwnerId: '106',
+    alcaldia: 'Azcapotzalco',
+    direccionCompleta: null,
+    schedule: null,
     redesSociales: { facebook: 'https://facebook.com/patitasnorte' },
     donationConfig: { aceptaDonaciones: false },
     totalPerros: 0,
@@ -225,8 +237,10 @@ export const MOCK_PENDING_SHELTERS: Shelter[] = [
     aprobado: false,
     status: 'pending',
     slug: 'rescate-xochimilco',
-    ciudad: 'Xochimilco',
-    estado: 'Ciudad de México',
+    userOwnerId: '107',
+    alcaldia: 'Xochimilco',
+    direccionCompleta: null,
+    schedule: null,
     redesSociales: { instagram: 'https://instagram.com/solyarenamex' },
     donationConfig: { aceptaDonaciones: false },
     totalPerros: 0,
@@ -246,8 +260,10 @@ export const MOCK_PENDING_SHELTERS: Shelter[] = [
     aprobado: false,
     status: 'pending',
     slug: 'rescate-centro',
-    ciudad: 'Cuauhtémoc',
-    estado: 'Ciudad de México',
+    userOwnerId: '108',
+    alcaldia: 'Cuauhtémoc',
+    direccionCompleta: null,
+    schedule: null,
     redesSociales: {},
     donationConfig: { aceptaDonaciones: false },
     totalPerros: 0,
@@ -260,15 +276,15 @@ export const ALL_MOCK_SHELTERS = [...MOCK_SHELTERS, ...MOCK_PENDING_SHELTERS]
 
 // ─── Helper functions ─────────────────────────────────────────────────────────
 
-export const getShelterById = (id: number): Shelter | undefined =>
+export const getShelterById = (id: string): Shelter | undefined =>
   ALL_MOCK_SHELTERS.find(s => s.id === id)
 
 export const getShelterBySlug = (slug: string): Shelter | undefined =>
   ALL_MOCK_SHELTERS.find(s => s.slug === slug)
 
 export const getShelterListItem = (s: Shelter): ShelterListItem => ({
-  id: s.id, nombre: s.nombre, slug: s.slug, ciudad: s.ciudad,
-  estado: s.estado, logo: s.logo, imagenPortada: s.imagenPortada,
+  id: s.id, nombre: s.nombre, slug: s.slug, alcaldia: s.alcaldia,
+  ubicacion: s.ubicacion, logo: s.logo, imagenPortada: s.imagenPortada,
   status: s.status, perrosDisponibles: s.perrosDisponibles,
   adopcionesRealizadas: s.adopcionesRealizadas, calificacion: s.calificacion,
 })

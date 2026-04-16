@@ -16,7 +16,7 @@ import type { DogSize, DogSex, EnergyLevel, PersonalityTag, Vaccination } from '
 import type { DogCreateData, DogUpdateData } from '../../infrastructure/IShelterService'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 // ─── Definición de pasos ──────────────────────────────────────────────────────
 
@@ -99,11 +99,11 @@ function validateStep(step: number, data: DogFormData): Record<string, string> {
 
 // ─── Persistencia localStorage ────────────────────────────────────────────────
 
-function draftKey(dogId: number | undefined) {
+function draftKey(dogId: string | undefined) {
   return `shelter-dog-form-${dogId ?? 'new'}`
 }
 
-function loadDraft(dogId: number | undefined): DogFormData | null {
+function loadDraft(dogId: string | undefined): DogFormData | null {
   if (typeof window === 'undefined') return null
   try {
     const raw = localStorage.getItem(draftKey(dogId))
@@ -111,12 +111,12 @@ function loadDraft(dogId: number | undefined): DogFormData | null {
   } catch { return null }
 }
 
-function saveDraftToStorage(dogId: number | undefined, data: DogFormData) {
+function saveDraftToStorage(dogId: string | undefined, data: DogFormData) {
   if (typeof window === 'undefined') return
   try { localStorage.setItem(draftKey(dogId), JSON.stringify(data)) } catch { /* ignore */ }
 }
 
-function removeDraft(dogId: number | undefined) {
+function removeDraft(dogId: string | undefined) {
   if (typeof window === 'undefined') return
   try { localStorage.removeItem(draftKey(dogId)) } catch { /* ignore */ }
 }
@@ -147,7 +147,7 @@ export interface UseDogFormReturn {
   submit: () => Promise<void>
 }
 
-export function useDogForm(dogId?: number): UseDogFormReturn {
+export function useDogForm(dogId?: string): UseDogFormReturn {
   const [currentStep, setCurrentStep]   = useState<DogFormStep>(0)
   const [formData,    setFormData]      = useState<DogFormData>(FORM_DEFAULTS)
   const [errors,      setErrors]        = useState<Record<string, string>>({})

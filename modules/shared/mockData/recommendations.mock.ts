@@ -20,7 +20,7 @@ export const MOCK_RECOMMENDATIONS: DogRecommendation[] = MOCK_DOGS
   .slice(0, 10)
   .map((dog, i) => ({
     id:              i + 1,
-    adoptanteId:     1,
+    adoptanteId:     "1",
     perroId:         dog.id,
     cuestionarioId:  1001,
     fecha:           '2026-04-10T12:00:00Z',

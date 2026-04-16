@@ -9,9 +9,8 @@ type Props = { params: Promise<{ id: string }> }
 
 export default async function SolicitudDetailPage({ params }: Props) {
   const { id } = await params
-  const requestId = parseInt(id, 10)
 
-  if (isNaN(requestId)) notFound()
+  if (!id) notFound()
 
-  return <AdoptionDetailView requestId={requestId} />
+  return <AdoptionDetailView requestId={id} />
 }

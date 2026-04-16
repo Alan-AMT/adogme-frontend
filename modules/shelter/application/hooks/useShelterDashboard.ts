@@ -7,7 +7,7 @@ import type { ShelterDashboardStats } from '../../infrastructure/IShelterService
 import type { AdoptionRequestListItem } from '../../../shared/domain/AdoptionRequest'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 // ─── Tipos exportados ─────────────────────────────────────────────────────────
 

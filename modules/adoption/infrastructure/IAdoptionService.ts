@@ -11,8 +11,8 @@ import type {
 // ─── Payload para crear una solicitud ─────────────────────────────────────────
 
 export interface SubmitAdoptionPayload {
-  perroId:     number
-  refugioId:   number
+  perroId:     string
+  refugioId:   string
   comentarios: string
   formulario:  AdoptionFormData
 }
@@ -25,20 +25,20 @@ export interface IAdoptionService {
    * Envía una nueva solicitud de adopción.
    * El userId se obtiene del authStore dentro de la implementación.
    */
-  submit(payload: SubmitAdoptionPayload, adoptanteId: number): Promise<AdoptionRequest>
+  submit(payload: SubmitAdoptionPayload, adoptanteId: string): Promise<AdoptionRequest>
 
   /**
    * Lista todas las solicitudes del adoptante autenticado.
    * Filtradas por userId del authStore.
    */
-  getMyRequests(adoptanteId: number): Promise<AdoptionRequestListItem[]>
+  getMyRequests(adoptanteId: string): Promise<AdoptionRequestListItem[]>
 
   /**
    * Detalle completo de una solicitud (con historial).
    * Devuelve null si no existe. Si se pasa adoptanteId, valida ownership.
    * D1 — el servicio debe rechazar accesos de otros adoptantes.
    */
-  getById(id: number, adoptanteId?: number): Promise<AdoptionRequest | null>
+  getById(id: string, adoptanteId?: string): Promise<AdoptionRequest | null>
 
   /**
    * Cambia el estado de una solicitud.
@@ -46,7 +46,7 @@ export interface IAdoptionService {
    * Solo shelter/admin pueden llamar esto; el adoptante solo puede cancelar.
    */
   updateStatus(
-    id:         number,
+    id:         string,
     newStatus:  RequestStatus,
     comentario?: string,
   ): Promise<AdoptionRequest>
@@ -56,5 +56,5 @@ export interface IAdoptionService {
    * Alias de updateStatus(..., 'cancelled') con validación de rol.
    * D2 — adoptanteId es obligatorio para validar ownership.
    */
-  cancel(id: number, adoptanteId: number, motivo?: string): Promise<AdoptionRequest>
+  cancel(id: string, adoptanteId: string, motivo?: string): Promise<AdoptionRequest>
 }

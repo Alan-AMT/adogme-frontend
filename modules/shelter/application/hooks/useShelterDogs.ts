@@ -9,7 +9,7 @@ import type { DogListItem, DogStatus } from '@/modules/shared/domain/Dog'
 import type { DogCreateData, DogUpdateData } from '../../infrastructure/IShelterService'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -34,9 +34,9 @@ export interface UseShelterDogsReturn {
 
   // Mutaciones
   createDog:     (data: DogCreateData) => Promise<void>
-  updateDog:     (id: number, data: DogUpdateData) => Promise<void>
-  deleteDog:     (id: number) => Promise<void>
-  togglePublish: (id: number) => Promise<void>
+  updateDog:     (id: string, data: DogUpdateData) => Promise<void>
+  deleteDog:     (id: string) => Promise<void>
+  togglePublish: (id: string) => Promise<void>
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [load])
 
-  const updateDog = useCallback(async (id: number, data: DogUpdateData) => {
+  const updateDog = useCallback(async (id: string, data: DogUpdateData) => {
     setError(null)
     try {
       await shelterService.updateDog(id, data)
@@ -94,7 +94,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [load])
 
-  const deleteDog = useCallback(async (id: number) => {
+  const deleteDog = useCallback(async (id: string) => {
     setError(null)
     try {
       await shelterService.deleteDog(id)
@@ -106,7 +106,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [selectedDog, load])
 
-  const togglePublish = useCallback(async (id: number) => {
+  const togglePublish = useCallback(async (id: string) => {
     setError(null)
     try {
       await shelterService.togglePublish(id)

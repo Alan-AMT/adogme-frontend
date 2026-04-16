@@ -8,7 +8,7 @@ import { useEffect, useState, useCallback } from 'react'
 import type { AdoptionRequestListItem, RequestStatus } from '@/modules/shared/domain/AdoptionRequest'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 export type RequestFilter = 'all' | RequestStatus
 
@@ -18,14 +18,14 @@ export interface UseShelterRequestsReturn {
   isLoading:   boolean
   error:       string | null
   filter:      RequestFilter
-  dogFilter:   number | null
+  dogFilter:   string | null
   search:      string
   isUpdating:  boolean
   updateError: string | null
   setFilter:    (f: RequestFilter) => void
-  setDogFilter: (id: number | null) => void
+  setDogFilter: (id: string | null) => void
   setSearch:    (s: string) => void
-  updateRequestStatus: (id: number, status: RequestStatus, comentario?: string) => Promise<void>
+  updateRequestStatus: (id: string, status: RequestStatus, comentario?: string) => Promise<void>
   refetch:     () => Promise<void>
 }
 
@@ -34,7 +34,7 @@ export function useShelterRequests(): UseShelterRequestsReturn {
   const [isLoading,   setIsLoading]   = useState(true)
   const [error,       setError]       = useState<string | null>(null)
   const [filter,      setFilter]      = useState<RequestFilter>('all')
-  const [dogFilter,   setDogFilter]   = useState<number | null>(null)
+  const [dogFilter,   setDogFilter]   = useState<string | null>(null)
   const [search,      setSearch]      = useState('')
   const [isUpdating,  setIsUpdating]  = useState(false)
   const [updateError, setUpdateError] = useState<string | null>(null)
@@ -68,7 +68,7 @@ export function useShelterRequests(): UseShelterRequestsReturn {
   })
 
   const updateRequestStatus = useCallback(async (
-    id:          number,
+    id:          string,
     status:      RequestStatus,
     comentario?: string,
   ) => {

@@ -11,19 +11,15 @@ type Props = { params: Promise<{ dogId: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { dogId } = await params
-  const id  = parseInt(dogId, 10)
-  const dog = isNaN(id) ? null : await dogService.getDogById(id)
+  const dog = await dogService.getDogById(dogId)
   const nombre = dog?.nombre ?? 'Adopción'
   return { title: `Adoptar a ${nombre} | aDOGme` }
 }
 
 export default async function AdoptarPage({ params }: Props) {
   const { dogId } = await params
-  const id = parseInt(dogId, 10)
 
-  if (isNaN(id)) notFound()
-
-  const dog = await dogService.getDogById(id)
+  const dog = await dogService.getDogById(dogId)
 
   if (!dog) notFound()
 

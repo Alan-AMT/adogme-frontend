@@ -230,7 +230,7 @@ function ModerationPanel({
 
 // ─── Vista principal ──────────────────────────────────────────────────────────
 
-export default function AdminDogEditView({ id }: { id: number }) {
+export default function AdminDogEditView({ id }: { id: string }) {
   const { dogs, isLoading, isUpdating, updateStatus } = useAdminDogs()
   const dog = useMemo(() => dogs.find(d => d.id === id) ?? null, [dogs, id])
 

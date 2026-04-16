@@ -17,7 +17,7 @@ import { dogService } from '../../dogs/infrastructure/DogServiceFactory'
 // Partimos del mock estático y cualquier submit/update opera aquí.
 
 let _requests: AdoptionRequest[] = [...MOCK_ADOPTION_REQUESTS]
-let _nextId = Math.max(...MOCK_ADOPTION_REQUESTS.map((r) => r.id)) + 1
+let _nextId = Math.max(...MOCK_ADOPTION_REQUESTS.map((r) => Number(r.id))) + 1
 let _nextChangeId = 100
 
 /** Latencia simulada */
@@ -51,7 +51,7 @@ export class MockAdoptionService implements IAdoptionService {
 
   // ── submit ──────────────────────────────────────────────────────────────────
 
-  async submit(payload: SubmitAdoptionPayload, adoptanteId: number): Promise<AdoptionRequest> {
+  async submit(payload: SubmitAdoptionPayload, adoptanteId: string): Promise<AdoptionRequest> {
     await delay(500, 800)
 
     const dog = getDogById(payload.perroId)
@@ -64,7 +64,7 @@ export class MockAdoptionService implements IAdoptionService {
 
     const now = new Date().toISOString()
     const newRequest: AdoptionRequest = {
-      id:          _nextId++,
+      id:          String(_nextId++),
       adoptanteId,
       perroId:     payload.perroId,
       refugioId:   payload.refugioId,
@@ -75,7 +75,7 @@ export class MockAdoptionService implements IAdoptionService {
       historial:   [
         {
           id:             _nextChangeId++,
-          solicitudId:    _nextId - 1,
+          solicitudId:    String(_nextId - 1),
           estadoAnterior: 'pending',
           estadoNuevo:    'pending',
           cambiadoPor:    adoptanteId,
@@ -101,7 +101,7 @@ export class MockAdoptionService implements IAdoptionService {
 
   // ── getMyRequests ────────────────────────────────────────────────────────────
 
-  async getMyRequests(adoptanteId: number): Promise<AdoptionRequestListItem[]> {
+  async getMyRequests(adoptanteId: string): Promise<AdoptionRequestListItem[]> {
     await delay(200, 400)
 
     // Busca en la copia mutable (incluye nuevas solicitudes del submit)
@@ -118,7 +118,7 @@ export class MockAdoptionService implements IAdoptionService {
 
   // ── getById ──────────────────────────────────────────────────────────────────
 
-  async getById(id: number, adoptanteId?: number): Promise<AdoptionRequest | null> {
+  async getById(id: string, adoptanteId?: string): Promise<AdoptionRequest | null> {
     await delay(150, 300)
 
     const req =
@@ -137,10 +137,10 @@ export class MockAdoptionService implements IAdoptionService {
   // ── updateStatus ─────────────────────────────────────────────────────────────
 
   async updateStatus(
-    id:          number,
+    id:          string,
     newStatus:   RequestStatus,
     comentario?: string,
-    changedById = 0,        // userId del shelter/admin que cambia el estado
+    changedById = '',       // userId del shelter/admin que cambia el estado
   ): Promise<AdoptionRequest> {
     await delay(300, 500)
 
@@ -187,7 +187,7 @@ export class MockAdoptionService implements IAdoptionService {
   // ── cancel (acción del adoptante) ────────────────────────────────────────────
 
   // D2 — adoptanteId es requerido; no se admite default 0
-  async cancel(id: number, adoptanteId: number, motivo?: string): Promise<AdoptionRequest> {
+  async cancel(id: string, adoptanteId: string, motivo?: string): Promise<AdoptionRequest> {
     await delay(300, 500)
 
     const req = _requests.find((r) => r.id === id)

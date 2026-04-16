@@ -97,7 +97,7 @@ export function decodeUserFromToken(token: string): AuthUser | null {
 // ─── Shelter session cookie (server-readable) ────────────────────────────────
 
 export interface ShelterSessionData {
-  shelterId: number;
+  shelterId: string;
   shelterStatus: string;
 }
 
