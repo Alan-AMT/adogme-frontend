@@ -2,6 +2,7 @@
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
+import { enrichUser } from "@/modules/shared/infrastructure/auth/enrichUser";
 import type {
   IAuthService,
   RegisterData,
@@ -25,11 +26,12 @@ export class AuthService implements IAuthService {
     const { user, accessToken, refreshToken } = res.data;
 
     const store = useAuthStore.getState();
-    store.setUser(user);
     store.setTokens(accessToken, refreshToken);
+    const enriched = await enrichUser(user);
+    store.setUser(enriched);
 
     return {
-      user,
+      user: enriched,
       accessToken,
       refreshToken,
       expiresAt: new Date(Date.now() + 86400000).toISOString(),
@@ -51,11 +53,12 @@ export class AuthService implements IAuthService {
     const { user, accessToken, refreshToken } = res.data;
 
     const store = useAuthStore.getState();
-    store.setUser(user);
     store.setTokens(accessToken, refreshToken);
+    const enriched = await enrichUser(user);
+    store.setUser(enriched);
 
     return {
-      user,
+      user: enriched,
       accessToken,
       refreshToken,
       expiresAt: new Date(Date.now() + 86400000).toISOString(),
@@ -101,6 +104,9 @@ export class AuthService implements IAuthService {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
+    const enriched = await enrichUser(user);
+    store.setUser(enriched);
   }
 
   async forgotPassword(email: string): Promise<void> {

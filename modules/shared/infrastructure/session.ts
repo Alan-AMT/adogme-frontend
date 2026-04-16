@@ -8,19 +8,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { cookies } from "next/headers";
-import type { Administrador, Adoptante, ShelterUser, User } from "../domain/User";
+import type {
+  Administrador,
+  Adoptante,
+  ShelterUser,
+  User,
+} from "../domain/User";
 
 // ─── Session type ────────────────────────────────────────────────────────────
 
 export interface SessionData {
-  userId: number;
+  id: string;
   email: string;
   role: User["role"];
+  name: string;
+  exp: number;
   shelterStatus?: ShelterUser["shelterStatus"];
   shelterId?: number;
-  name: string;
   avatarUrl?: string;
-  exp: number;
 }
 
 // ─── Main function ───────────────────────────────────────────────────────────
@@ -31,11 +36,32 @@ export async function getAuthSession(): Promise<SessionData | null> {
 
   if (!token) return null;
 
+  let session: SessionData | null;
   try {
-    return decodeSessionToken(token);
-  } catch {
+    session = decodeSessionToken(token);
+  } catch (e) {
     return null;
   }
+
+  if (!session) return null;
+
+  // Enrich shelter users with shelterId + shelterStatus from the shelter-session cookie
+  if (session.role === "shelter") {
+    const raw = cookieStore.get("shelter-session")?.value;
+    if (raw) {
+      try {
+        const { shelterId, shelterStatus } = JSON.parse(
+          decodeURIComponent(raw),
+        );
+        session.shelterId = shelterId;
+        session.shelterStatus = shelterStatus;
+      } catch {
+        // Ignore malformed cookie
+      }
+    }
+  }
+
+  return session;
 }
 
 // ─── Role helpers (for layouts) ──────────────────────────────────────────────
@@ -56,11 +82,11 @@ export async function requireRole(role: User["role"]): Promise<SessionData> {
 // ─── Token decoder ───────────────────────────────────────────────────────────
 
 function decodeSessionToken(token: string): SessionData | null {
-  const useMock = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+  // const useMock = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
-  if (useMock) {
-    return decodeMockToken(token);
-  }
+  // if (useMock) {
+  //   return decodeMockToken(token);
+  // }
 
   return decodeProdToken(token);
 }
@@ -75,20 +101,25 @@ function decodeMockToken(token: string): SessionData | null {
 }
 
 function decodeProdToken(token: string): SessionData | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(
-      Buffer.from(parts[1], "base64url").toString("utf-8"),
-    );
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  const payload = JSON.parse(
+    Buffer.from(parts[1], "base64url").toString("utf-8"),
+  );
 
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000))
-      return null;
-
-    return payload as SessionData;
-  } catch {
+  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+    console.log("Token expired");
     return null;
   }
+  const decoded: SessionData = {
+    id: payload.sub,
+    role: payload.role,
+    name: payload.name,
+    exp: payload.exp,
+    email: payload.email,
+  };
+
+  return decoded;
 }
 
 // ─── Mock token builder (server-side, uses Buffer) ───────────────────────────
@@ -97,7 +128,7 @@ export function createMockToken(
   user: Adoptante | ShelterUser | Administrador,
 ): string {
   const session: SessionData = {
-    userId: user.id,
+    id: user.id,
     email: user.email,
     role: user.role,
     name: user.name,
