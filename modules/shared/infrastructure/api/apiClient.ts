@@ -55,7 +55,7 @@ apiClient.interceptors.response.use(
 
     // 401 — Token expired: attempt refresh once
     // Skip for login endpoint (invalid credentials → just reject)
-    const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN);
+    // const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN);
     const requestUrl: string = original.url ? original.url : "";
     const urlRequireToken = [
       String(API_ENDPOINTS.SHELTERS.UPDATE),

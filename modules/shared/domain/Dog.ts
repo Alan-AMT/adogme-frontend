@@ -15,9 +15,6 @@ export type DogStatus =
 export type EnergyLevel = "baja" | "moderada" | "alta" | "muy_alta";
 export type AgeCategory = "cachorro" | "joven" | "adulto" | "senior";
 
-// compatibilidad es float 0-1 en la BD; en el frontend lo usamos como porcentaje 0-100
-export type CompatibilityScore = number; // 0–100
-
 // ─── Sub-entidades ────────────────────────────────────────────────────────────
 
 export interface Vaccination {
@@ -51,7 +48,8 @@ export interface Dog {
   sexo: DogSex;
   salud: string; // texto libre: "Vacunado, desparasitado"
   estado: DogStatus;
-  compatibilidad: CompatibilityScore; // float del BE → 0-100 en FE
+  // compatibilidad es float 0-1 en la BD; en el frontend lo usamos como porcentaje 0-100
+  compatibilidad?: number; // float del BE → 0-100 en FE
   descripcion: string;
   foto: string; // URL principal
   fechaRegistro: string; // ISO date

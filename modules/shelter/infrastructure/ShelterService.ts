@@ -148,15 +148,15 @@ export class ShelterService implements IShelterService {
     }
   }
 
+  async getShelterById(id: string): Promise<Shelter> {
+    return await this.getShelterProfile(id);
+  }
+
   createDog(data: DogCreateData): Promise<Dog> {
     throw Error("Nto implemented");
   }
 
   deleteDog(id: string): Promise<void> {
-    throw Error("Not implemented");
-  }
-
-  getDashboardStats(refugioId: string): Promise<ShelterDashboardStats> {
     throw Error("Not implemented");
   }
 
@@ -172,25 +172,14 @@ export class ShelterService implements IShelterService {
     throw Error("Not implemented");
   }
 
-  getShelterById(id: string): Promise<Shelter> {
-    throw Error("Not implemented");
-  }
-
-  getRecentRequests(
-    refugioId: string,
-    limit?: number,
-  ): Promise<AdoptionRequestListItem[]> {
-    throw Error("Not implemented");
-  }
-
-  getRequestById(id: string): Promise<AdoptionRequest | null> {
-    throw Error("Not implemented");
-  }
-
   getShelterDogs(
     refugioId: string,
     filters?: DogFilters,
   ): Promise<PaginatedDogs> {
+    throw Error("Not implemented");
+  }
+
+  togglePublish(id: string): Promise<Dog> {
     throw Error("Not implemented");
   }
 
@@ -205,7 +194,18 @@ export class ShelterService implements IShelterService {
     throw Error("Not implemented");
   }
 
-  togglePublish(id: string): Promise<Dog> {
+  getRecentRequests(
+    refugioId: string,
+    limit?: number,
+  ): Promise<AdoptionRequestListItem[]> {
+    throw Error("Not implemented");
+  }
+
+  getRequestById(id: string): Promise<AdoptionRequest | null> {
+    throw Error("Not implemented");
+  }
+
+  getDashboardStats(refugioId: string): Promise<ShelterDashboardStats> {
     throw Error("Not implemented");
   }
 }
