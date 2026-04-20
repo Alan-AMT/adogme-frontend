@@ -42,9 +42,6 @@ export function parseDogsSearchParams(params: RawParams): DogFilters {
   const raza = str(params, 'raza')
   if (raza) filters.raza = raza
 
-  const ciudad = str(params, 'ciudad')
-  if (ciudad) filters.ciudad = ciudad
-
   const sortBy = str(params, 'sortBy')
   if (sortBy === 'fechaRegistro' || sortBy === 'compatibilidad' || sortBy === 'nombre') {
     filters.sortBy = sortBy

@@ -89,7 +89,7 @@ export default function ReviewStep({ data, dog, isSubmitting, errors, onSubmit }
       {/* Dog recap */}
       <div className="flex items-center gap-3 p-4 bg-[#fff5f5] border border-[#ffd0d0] rounded-2xl mb-6">
         <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-[#ffd0d0]">
-          <Image src={dog.foto} alt={dog.nombre} fill className="object-cover" sizes="56px" />
+          <Image src={dog.foto ?? ''} alt={dog.nombre} fill className="object-cover" sizes="56px" />
         </div>
         <div>
           <p className="font-[900] text-[#18181b] text-base">{dog.nombre}</p>

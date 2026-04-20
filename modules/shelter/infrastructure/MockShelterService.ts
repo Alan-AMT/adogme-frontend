@@ -17,8 +17,8 @@ import type {
   DogFilters,
   DogListItem,
   PaginatedDogs,
-  AgeCategory,
 } from "../../shared/domain/Dog";
+import { calcularEdadCategoria } from "../../shared/domain/Dog";
 import type {
   AdoptionRequest,
   AdoptionRequestListItem,
@@ -33,14 +33,6 @@ import { MOCK_ADOPTION_REQUESTS } from "../../shared/mockData/adoptions.mock";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const delay = (ms = 300) => new Promise<void>((r) => setTimeout(r, ms));
-
-/** Calcula la categoría de edad a partir de los meses */
-function calcEdadCategoria(meses: number): AgeCategory {
-  if (meses < 12) return "cachorro";
-  if (meses < 36) return "joven";
-  if (meses < 84) return "adulto";
-  return "senior";
-}
 
 /** Convierte un Dog completo al shape DogListItem para getShelterDogs */
 function toDogListItem(d: Dog): DogListItem {
@@ -61,8 +53,6 @@ function toDogListItem(d: Dog): DogListItem {
     aptoPerros: d.aptoPerros,
     necesitaJardin: d.necesitaJardin,
     refugioNombre: d.refugioNombre,
-    refugioSlug: d.refugioSlug,
-    refugioCiudad: d.refugioCiudad,
   };
 }
 
@@ -201,53 +191,45 @@ export class MockShelterService implements IShelterService {
 
   // ── Perros — escritura (CRUD) ────────────────────────────────────────────────
 
-  async createDog(data: DogCreateData): Promise<Dog> {
+  async createDog(payload: DogCreateData): Promise<Dog> {
     await delay(500);
 
-    const shelter = _shelters.find((s) => s.id === data.refugioId);
+    const shelter = _shelters.find((s) => s.id === payload.refugioId);
+
+    const now = new Date().toISOString().split("T")[0];
 
     const newDog: Dog = {
-      // Campos proporcionados por el formulario
-      refugioId: data.refugioId,
-      nombre: data.nombre,
-      edad: data.edad,
-      raza: data.raza,
-      tamano: data.tamano,
-      nivelEnergia: data.nivelEnergia,
-      sexo: data.sexo,
-      descripcion: data.descripcion,
-      foto: data.foto,
-      fotos: data.fotos ?? [data.foto],
-      salud:
-        [
-          data.vacunado ? "Vacunado" : null,
-          data.desparasitado ? "Desparasitado" : null,
-          data.castrado ? "Castrado" : null,
-        ]
-          .filter(Boolean)
-          .join(", ") || "Sin información",
-      edadCategoria: data.edadCategoria ?? calcEdadCategoria(data.edad),
-      castrado: data.castrado ?? false,
-      microchip: data.microchip ?? false,
-      aptoNinos: data.aptoNinos ?? false,
-      aptoPerros: data.aptoPerros ?? false,
-      aptoGatos: data.aptoGatos ?? false,
-      necesitaJardin: data.necesitaJardin ?? false,
-      pesoKg: data.pesoKg,
-      personalidad: data.personalidad ?? [],
-      vacunas: data.vacunas ?? [],
-
-      // Generados por el servicio
       id: String(Math.random()),
-      estado: "no_disponible", // siempre borrador al crear
-      compatibilidad: 0, // sin calcular hasta publicar
-      fechaRegistro: new Date().toISOString().split("T")[0],
-
-      // Join con refugio
+      userOwnerId: "current-user",
+      refugioId: payload.refugioId,
+      nombre: payload.nombre,
+      raza: payload.raza,
+      raza2: payload.raza2,
+      edad: payload.edad,
+      pesoKg: payload.pesoKg,
+      sexo: payload.sexo,
+      tamano: payload.tamano,
+      nivelEnergia: payload.nivelEnergia,
+      descripcion: payload.descripcion,
+      estado: "no_disponible",
+      personalidad: payload.personalidad ?? [],
+      aptoNinos: payload.aptoNinos ?? false,
+      aptoPerros: payload.aptoPerros ?? false,
+      aptoGatos: payload.aptoGatos ?? false,
+      castrado: payload.castrado,
+      necesitaJardin: payload.necesitaJardin ?? false,
+      estaVacunado: payload.estaVacunado,
+      estaDesparasitado: payload.estaDesparasitado,
+      largoPelaje: payload.largoPelaje,
+      vacunas: payload.vacunas ?? [],
+      salud: payload.salud,
+      foto: payload.foto,
+      fotos: payload.fotos ?? (payload.foto ? [payload.foto] : []),
+      edadCategoria: calcularEdadCategoria(payload.edad),
+      compatibilidad: 0,
       refugioNombre: shelter?.nombre,
-      refugioSlug: shelter?.slug,
-      refugioCiudad: shelter?.ubicacion,
       refugioLogo: shelter?.logo,
+      fechaRegistro: now,
     };
 
     _dogs = [..._dogs, newDog];
@@ -260,15 +242,11 @@ export class MockShelterService implements IShelterService {
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`);
 
     const prev = _dogs[idx];
+    const edad = data.edad ?? prev.edad;
     const updated: Dog = {
       ...prev,
       ...data,
-      // Recalcular edadCategoria si cambió la edad y no se proporcionó categoría
-      edadCategoria:
-        data.edadCategoria ??
-        (data.edad !== undefined
-          ? calcEdadCategoria(data.edad)
-          : prev.edadCategoria),
+      edadCategoria: calcularEdadCategoria(edad),
       id: prev.id,
       refugioId: prev.refugioId,
     };

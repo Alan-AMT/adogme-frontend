@@ -72,7 +72,7 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
             <div className="dp-photo-panel">
               <div className="dp-photo-inner">
                 <Image
-                  src={dog.foto}
+                  src={dog.foto ?? ''}
                   alt={`Foto de ${dog.nombre}`}
                   fill
                   className="dp-photo-img"
@@ -104,19 +104,8 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
                 )}
                 <div>
                   <p className="dp-shelter-card__name">{dog.refugioNombre}</p>
-                  {dog.refugioCiudad && (
-                    <p className="dp-shelter-card__sub">{dog.refugioCiudad}</p>
-                  )}
                 </div>
               </div>
-              {dog.refugioSlug && (
-                <Link
-                  href={`/refugios/${dog.refugioSlug}`}
-                  className="dp-shelter-card__btn"
-                >
-                  Ver refugio
-                </Link>
-              )}
             </div>
           )}
 
@@ -205,9 +194,14 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
                 value={dog.castrado ? "Sí" : "No"}
               />
               <InfoRow
-                icon="qr_code_scanner"
-                label="Microchip"
-                value={dog.microchip ? "Sí" : "No"}
+                icon="vaccines"
+                label="Vacunado"
+                value={dog.estaVacunado ? "Sí" : "No"}
+              />
+              <InfoRow
+                icon="bug_report"
+                label="Desparasitado"
+                value={dog.estaDesparasitado ? "Sí" : "No"}
               />
               <InfoRow
                 icon={dog.aptoNinos ? "check_circle" : "cancel"}

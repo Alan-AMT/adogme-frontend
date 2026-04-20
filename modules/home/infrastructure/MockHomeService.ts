@@ -77,7 +77,7 @@ export class MockHomeService implements IHomeService {
         nivelEnergia: nivelEnergiaLabel(d.nivelEnergia),
         salud:      d.salud,
         estado:     estadoLabel(d.estado),
-        imageUrl:   d.foto,
+        imageUrl:   d.foto ?? '',
         tamanoRaw:  d.tamano,
         nivelEnergiaRaw: d.nivelEnergia,
         edadCat:    d.edadCategoria,

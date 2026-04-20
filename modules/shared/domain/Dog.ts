@@ -1,7 +1,5 @@
 // modules/shared/domain/Dog.ts
-// Entidad Perro — basada en tabla Perro del diagrama ER
-// Tabla: id, refugio_id, nombre, edad, raza, tamano, nivelEnergia,
-//        sexo, salud, estado, compatibilidad, descripcion, foto, fechaRegistro
+// Entidad Perro — sincronizada con el modelo Dog del microservicio dogs_service
 
 // ─── Tipos primitivos ────────────────────────────────────────────────────────
 
@@ -14,64 +12,91 @@ export type DogStatus =
   | "no_disponible";
 export type EnergyLevel = "baja" | "moderada" | "alta" | "muy_alta";
 export type AgeCategory = "cachorro" | "joven" | "adulto" | "senior";
+export type FurLength = "corto" | "mediano" | "largo";
+
+// ─── Función para calcular la categoría de edad ──────────────────────────────
+// Reutilizable: cachorro (<12m), joven (12-35m), adulto (36-83m), senior (84m+)
+
+export function calcularEdadCategoria(edadMeses: number): AgeCategory {
+  if (edadMeses < 12) return "cachorro";
+  if (edadMeses < 36) return "joven";
+  if (edadMeses < 84) return "adulto";
+  return "senior";
+}
 
 // ─── Sub-entidades ────────────────────────────────────────────────────────────
 
 export interface Vaccination {
-  id: number;
+  id: string;
   nombre: string;
   fecha: string; // ISO date
   proximaDosis?: string;
   verificada: boolean;
 }
 
+export enum PersonalityCategory {
+  caracter = "caracter",
+  socialización = "socialización",
+  actividad = "actividad",
+  entrenamiento = "entrenamiento",
+}
+
 export interface PersonalityTag {
-  id: number;
+  id: string;
   label: string; // ej: "Juguetón", "Tranquilo", "Protector"
-  icon: string; // emoji o nombre de icono
+  icon?: string; // solo frontend — para renderizado de UI
   categoria: "caracter" | "socialización" | "actividad" | "entrenamiento";
 }
 
 // ─── Entidad completa ─────────────────────────────────────────────────────────
-// Incluye todos los campos del diagrama más campos de UI calculados
 
 export interface Dog {
   id: string;
+  userOwnerId: string;
   refugioId: string;
 
-  // Datos básicos (del diagrama)
+  // Datos básicos
   nombre: string;
-  edad: number; // en meses
   raza: string;
+  raza2?: string;
+  edad: number; // en meses
+  pesoKg?: number;
+  sexo: DogSex;
   tamano: DogSize;
   nivelEnergia: EnergyLevel;
-  sexo: DogSex;
-  salud: string; // texto libre: "Vacunado, desparasitado"
-  estado: DogStatus;
-  // compatibilidad es float 0-1 en la BD; en el frontend lo usamos como porcentaje 0-100
-  compatibilidad?: number; // float del BE → 0-100 en FE
   descripcion: string;
-  foto: string; // URL principal
-  fechaRegistro: string; // ISO date
+  estado: DogStatus;
 
-  // Campos enriquecidos (calculados o del backend extendido)
-  fotos: string[]; // galería completa
-  edadCategoria: AgeCategory;
-  vacunas: Vaccination[];
+  // Personalidad y compatibilidad
   personalidad: PersonalityTag[];
-  castrado: boolean;
-  microchip: boolean;
   aptoNinos: boolean;
   aptoPerros: boolean;
   aptoGatos: boolean;
-  necesitaJardin: boolean;
-  pesoKg?: number;
 
-  // Datos del refugio (join — para cards públicas)
+  // Cuidados
+  castrado: boolean;
+  necesitaJardin: boolean;
+  estaVacunado: boolean;
+  estaDesparasitado: boolean;
+  largoPelaje: FurLength;
+  vacunas: Vaccination[];
+  salud: string;
+
+  // Multimedia
+  foto?: string;
+  fotos: string[];
+
+  // Campos calculados / solo frontend
+  edadCategoria: AgeCategory;
+  compatibilidad?: number;
+
+  // Datos del refugio (join)
   refugioNombre?: string;
-  refugioSlug?: string;
-  refugioCiudad?: string;
-  refugioLogo?: string; // URL del logo del refugio
+  refugioLogo?: string;
+
+  // Timestamps
+  fechaRegistro: string; // alias de createdAt
+  fechaActualizacion?: string; // alias de updatedAt
 }
 
 // ─── Versión reducida para cards y listas ────────────────────────────────────
@@ -94,8 +119,6 @@ export type DogListItem = Pick<
   | "aptoPerros"
   | "necesitaJardin"
   | "refugioNombre"
-  | "refugioSlug"
-  | "refugioCiudad"
 >;
 
 // ─── Filtros de búsqueda ──────────────────────────────────────────────────────
@@ -114,7 +137,6 @@ export interface DogFilters {
   necesitaJardin?: boolean;
   castrado?: boolean;
   refugioId?: string;
-  ciudad?: string;
   soloConCompatibilidad?: boolean;
   page?: number;
   limit?: number;

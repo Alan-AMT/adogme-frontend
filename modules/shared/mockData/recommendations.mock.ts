@@ -38,5 +38,4 @@ export const MOCK_RECOMMENDATIONS: DogRecommendation[] = MOCK_DOGS
     perroEdad:    dog.edad,
     perroTamano:  dog.tamano,
     refugioNombre: dog.refugioNombre,
-    refugioSlug:   dog.refugioSlug,
   }))

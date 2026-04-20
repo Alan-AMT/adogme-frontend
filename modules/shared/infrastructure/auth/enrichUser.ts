@@ -20,6 +20,11 @@ import {
 async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
   const res = await fetch(API_ENDPOINTS.SHELTERS.BY_OWNER(user.id), {
     credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
+      Authorization: `Bearer ${window.__authToken}`,
+    },
   });
 
   if (!res.ok) throw new Error(`Shelter fetch failed: ${res.status}`);
@@ -79,7 +84,10 @@ export async function enrichUser(user: AuthUser): Promise<AuthUser> {
       return await enrichApplicant(user as Adoptante);
     }
   } catch (err) {
-    console.warn("[enrichUser] Enrichment failed, continuing in degraded mode:", err);
+    console.warn(
+      "[enrichUser] Enrichment failed, continuing in degraded mode:",
+      err,
+    );
   }
 
   return user;

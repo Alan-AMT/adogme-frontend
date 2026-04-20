@@ -133,7 +133,7 @@ export default function ShelterPublicView({ slug }: Props) {
                   <Link key={dog.id} href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="sp-dog-card">
                     <div className="sp-dog-card__media">
                       <Image
-                        src={dog.foto}
+                        src={dog.foto ?? ''}
                         alt={dog.nombre}
                         fill
                         className="sp-dog-card__img"

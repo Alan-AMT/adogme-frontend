@@ -54,7 +54,7 @@ function FavoriteCard({ dog, onRemove }: { dog: Dog; onRemove: () => void }) {
       {/* ── Photo ── */}
       <Link href={`/perros/${slug}`} className="fv-card__photo">
         <Image
-          src={dog.foto}
+          src={dog.foto ?? ''}
           alt={dog.nombre}
           fill
           className="object-cover"

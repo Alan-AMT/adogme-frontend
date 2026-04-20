@@ -142,7 +142,6 @@ export interface DogRecommendation {
   perroEdad?: number
   perroTamano?: string
   refugioNombre?: string
-  refugioSlug?: string
 }
 
 export interface MatchReason {
