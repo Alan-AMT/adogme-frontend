@@ -59,9 +59,9 @@ apiClient.interceptors.response.use(
     const requestUrl: string = original.url ? original.url : "";
     const urlRequireToken = [
       String(API_ENDPOINTS.SHELTERS.UPDATE),
-      String(API_ENDPOINTS.DOGS.CREATE),
-      String(API_ENDPOINTS.DOGS.DELETE),
-      String(API_ENDPOINTS.DOGS.UPDATE),
+      // String(API_ENDPOINTS.DOGS.CREATE),
+      // String(API_ENDPOINTS.DOGS.DELETE),
+      // String(API_ENDPOINTS.DOGS.UPDATE),
     ].includes(requestUrl);
     if (error.response?.status === 401 && !original._retry && urlRequireToken) {
       if (isRefreshing) {
@@ -115,7 +115,7 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // 403 — Forbidden
+    // 403 — Forbidden (let the caller handle it)
     if (error.response?.status === 403) {
       if (typeof window !== "undefined") {
         window.location.href = "/";

@@ -36,7 +36,7 @@ export interface Vaccination {
 
 export enum PersonalityCategory {
   caracter = "caracter",
-  socialización = "socialización",
+  socialización = "socializacion",
   actividad = "actividad",
   entrenamiento = "entrenamiento",
 }
@@ -45,7 +45,7 @@ export interface PersonalityTag {
   id: string;
   label: string; // ej: "Juguetón", "Tranquilo", "Protector"
   icon?: string; // solo frontend — para renderizado de UI
-  categoria: "caracter" | "socialización" | "actividad" | "entrenamiento";
+  categoria: "caracter" | "socializacion" | "actividad" | "entrenamiento";
 }
 
 // ─── Entidad completa ─────────────────────────────────────────────────────────

@@ -98,7 +98,7 @@ export interface IShelterService {
   /** Crea un perro en borrador (estado = no_disponible) */
   createDog(payload: DogCreateData): Promise<Dog>;
   /** Actualiza campos editables de un perro existente */
-  updateDog(id: string, shelterUpdate: DogUpdateData): Promise<Dog>;
+  updateDog(id: string, payload: DogUpdateData): Promise<Dog>;
   /** Elimina permanentemente un perro del refugio */
   deleteDog(id: string): Promise<void>;
   /** Alterna publicación: no_disponible ↔ disponible */

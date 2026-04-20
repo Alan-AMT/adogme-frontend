@@ -29,13 +29,14 @@ export const API_ENDPOINTS = {
   },
 
   DOGS: {
-    LIST: `${BASE}/api/dogs`,
-    DETAIL: (id: number) => `${BASE}/api/dogs/${id}`,
-    BY_SLUG: (slug: string) => `${BASE}/api/dogs/slug/${slug}`,
-    BY_SHELTER: (id: number) => `${BASE}/api/dogs/shelter/${id}`,
-    CREATE: `${BASE}/api/dogs`,
-    UPDATE: (id: number) => `${BASE}/api/dogs/${id}`,
-    DELETE: (id: number) => `${BASE}/api/dogs/${id}`,
+    LIST: `${BASE}/dogs-ms/dogs`,
+    DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
+    BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    BY_SLUG: (slug: string) => `${BASE}/dogs-ms/dog/slug/${slug}`,
+    BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
+    CREATE: `${BASE}/dogs-ms/dog`,
+    UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    DELETE: (id: number) => `${BASE}/dogs-ms/dog/${id}`,
     UPLOAD_MEDIA: `${BASE}/api/media/upload`,
   },
 

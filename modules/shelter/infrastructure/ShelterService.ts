@@ -8,8 +8,6 @@ import {
   PaginatedDogs,
   RequestStatus,
   Shelter,
-  PersonalityTag,
-  Vaccination,
 } from "@/modules/shared/domain";
 import {
   DogCreateData,
@@ -18,11 +16,58 @@ import {
 } from "./IShelterService";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
+import { getPersonalityTagByLabel } from "@/modules/shared/utils/constants";
 import {
   CreateDogApiResponse,
+  // GetDogsApiResponse,
   GetShelterProfileApiResponse,
   UpdateShelterApiResponse,
 } from "./ApiResponses";
+
+function parseDog(data: CreateDogApiResponse): Dog {
+  return {
+    id: data.id,
+    userOwnerId: data.userOwnerId,
+    refugioId: data.shelterId,
+    nombre: data.name,
+    raza: data.breed,
+    raza2: data.breed2 ?? undefined,
+    edad: data.age,
+    sexo: data.sex,
+    tamano: data.size,
+    nivelEnergia: data.energyLevel,
+    descripcion: data.description,
+    estado: data.status,
+    personalidad: data.personality.flatMap((p) => {
+      const tag = getPersonalityTagByLabel(p.label);
+      return tag ? [tag] : [];
+    }),
+    aptoNinos: data.goodWithKids,
+    aptoPerros: data.goodWithDogs,
+    aptoGatos: data.goodWithCats,
+    castrado: data.sterilized,
+    necesitaJardin: data.needsYard,
+    estaVacunado: data.isVaccinated,
+    estaDesparasitado: data.isDewormed,
+    largoPelaje: data.furLength,
+    vacunas: data.vaccinations.map((v) => ({
+      id: v.id,
+      nombre: v.name,
+      fecha: new Date(v.date).toISOString(),
+      verificada: v.verified,
+      proximaDosis: v.nextDose ? new Date(v.nextDose).toISOString() : undefined,
+    })),
+    salud: data.health,
+    fotos: [],
+    edadCategoria: calcularEdadCategoria(data.age),
+    fechaRegistro: new Date(data.createdAt).toDateString(),
+    fechaActualizacion: new Date(data.updatedAt).toDateString(),
+    pesoKg: data.weightKg ?? undefined,
+    foto: data.photo ?? undefined,
+    refugioNombre: data.shelterName ?? undefined,
+    refugioLogo: data.shelterLogo ?? undefined,
+  };
+}
 
 export class ShelterService implements IShelterService {
   async getShelterProfile(refugioId: string): Promise<Shelter> {
@@ -127,130 +172,163 @@ export class ShelterService implements IShelterService {
 
   async createDog(payload: DogCreateData): Promise<Dog> {
     try {
-      console.log(payload);
-      // const { data } = await apiClient.post<CreateDogApiResponse>(
-      //   API_ENDPOINTS.DOGS.CREATE,
-      //   {
-      //     name: payload.nombre,
-      //     breed: payload.raza,
-      //     age: payload.edad,
-      //     shelterId: payload.refugioId,
-      //     weightKg: payload.pesoKg ?? null,
-      //     sex: payload.sexo,
-      //     size: payload.tamano,
-      //     energyLevel: payload.nivelEnergia,
-      //     description: payload.descripcion,
-      //     personality: payload.personalidad
-      //       ? payload.personalidad.map((p) => ({
-      //           label: p.label,
-      //           category: p.categoria,
-      //         }))
-      //       : [],
-      //     goodWithKids: payload.aptoNinos ?? false,
-      //     goodWithDogs: payload.aptoPerros ?? false,
-      //     goodWithCats: payload.aptoGatos ?? false,
-      //     sterilized: payload.castrado ?? false,
-      //     needsYard: payload.necesitaJardin ?? false,
-      //     isVaccinated: payload.estaVacunado ?? false,
-      //     isDewormed: payload.estaDesparasitado ?? false,
-      //     furLength: payload.largoPelaje,
-      //     vaccinations: payload.vacunas
-      //       ? payload.vacunas.map((v) => ({
-      //           name: v.nombre,
-      //           date: v.fecha,
-      //           nextDose: v.proximaDosis ?? null,
-      //           verified: v.verificada ?? false,
-      //         }))
-      //       : [],
-      //     health: payload.salud,
-      //     photo: "",
-      //     breed2: payload.raza2 ?? null,
-      //     shelterName: payload.refugioNombre,
-      //     shelterLogo: payload.refugioLogo,
-      //   },
-      // );
-      // const createdDog: Dog = {
-      //   id: data.id,
-      //   userOwnerId: data.userOwnerId,
-      //   refugioId: data.shelterId,
-      //   nombre: data.name,
-      //   raza: data.breed,
-      //   edad: data.age,
-      //   sexo: data.sex,
-      //   tamano: data.size,
-      //   nivelEnergia: data.energyLevel,
-      //   descripcion: data.description,
-      //   estado: data.status,
-      //   personalidad: data.personality.map((personality) => {
-      //     const p: PersonalityTag = {
-      //       id: personality.id,
-      //       label: personality.label,
-      //       icon: "string", // solo frontend — para renderizado de UI
-      //       categoria: personality.category,
-      //     };
-      //     return p;
-      //   }),
-      //   aptoNinos: data.goodWithKids,
-      //   aptoPerros: data.goodWithDogs,
-      //   aptoGatos: data.goodWithCats,
-      //   castrado: data.sterilized,
-      //   necesitaJardin: data.needsYard,
-      //   estaVacunado: data.isVaccinated,
-      //   estaDesparasitado: data.isDewormed,
-      //   largoPelaje: data.furLength,
-      //   // vacunas: data.vaccinations,
-      //   vacunas: data.vaccinations.map((vaccine) => {
-      //     const v: Vaccination = {
-      //       id: vaccine.id,
-      //       nombre: vaccine.name,
-      //       fecha: new Date(vaccine.date).toISOString(),
-      //       verificada: vaccine.verified,
-      //       proximaDosis: vaccine.nextDose
-      //         ? new Date(vaccine.nextDose).toISOString()
-      //         : undefined,
-      //     };
-      //     return v;
-      //   }),
-      //   salud: data.health,
-      //   fotos: [],
-      //   edadCategoria: calcularEdadCategoria(data.age),
-      //   fechaRegistro: new Date(data.createdAt).toDateString(),
-      //   fechaActualizacion: new Date(data.updatedAt).toDateString(),
-      //   pesoKg: data.weightKg ?? undefined,
-      //   foto: data.photo ?? undefined,
-      //   raza2: data.breed,
-      // };
-      return {} as Dog;
+      const { data } = await apiClient.post<CreateDogApiResponse>(
+        API_ENDPOINTS.DOGS.CREATE,
+        {
+          name: payload.nombre,
+          breed: payload.raza,
+          age: payload.edad,
+          shelterId: payload.refugioId,
+          weightKg: payload.pesoKg ?? null,
+          sex: payload.sexo,
+          size: payload.tamano,
+          energyLevel: payload.nivelEnergia,
+          description: payload.descripcion,
+          personality: payload.personalidad
+            ? payload.personalidad.map((p) => ({
+                label: p.label,
+                category: p.categoria,
+              }))
+            : [],
+          goodWithKids: payload.aptoNinos ?? false,
+          goodWithDogs: payload.aptoPerros ?? false,
+          goodWithCats: payload.aptoGatos ?? false,
+          sterilized: payload.castrado ?? false,
+          needsYard: payload.necesitaJardin ?? false,
+          isVaccinated: payload.estaVacunado ?? false,
+          isDewormed: payload.estaDesparasitado ?? false,
+          furLength: payload.largoPelaje,
+          vaccinations: payload.vacunas
+            ? payload.vacunas.map((v) => ({
+                name: v.nombre,
+                date: v.fecha,
+                nextDose: v.proximaDosis ?? null,
+                verified: v.verificada ?? false,
+              }))
+            : [],
+          health: payload.salud,
+          photo: "",
+          breed2: payload.raza2 ?? null,
+          shelterName: payload.refugioNombre,
+          shelterLogo: payload.refugioLogo,
+        },
+      );
+      return parseDog(data);
     } catch (e) {
+      console.log(e);
       throw Error("Error al crear perro");
     }
   }
 
-  updateDog(id: string, data: DogCreateData): Promise<Dog> {
-    throw Error("Not implemented");
+  async updateDog(id: string, payload: DogCreateData): Promise<Dog> {
+    try {
+      const { data } = await apiClient.put<CreateDogApiResponse>(
+        API_ENDPOINTS.DOGS.UPDATE(id),
+        {
+          name: payload.nombre,
+          breed: payload.raza,
+          age: payload.edad,
+          shelterId: payload.refugioId,
+          weightKg: payload.pesoKg ?? null,
+          sex: payload.sexo,
+          size: payload.tamano,
+          energyLevel: payload.nivelEnergia,
+          description: payload.descripcion,
+          personality: payload.personalidad
+            ? payload.personalidad.map((p) => ({
+                label: p.label,
+                category: p.categoria,
+              }))
+            : [],
+          goodWithKids: payload.aptoNinos ?? false,
+          goodWithDogs: payload.aptoPerros ?? false,
+          goodWithCats: payload.aptoGatos ?? false,
+          sterilized: payload.castrado ?? false,
+          needsYard: payload.necesitaJardin ?? false,
+          isVaccinated: payload.estaVacunado ?? false,
+          isDewormed: payload.estaDesparasitado ?? false,
+          furLength: payload.largoPelaje,
+          vaccinations: payload.vacunas
+            ? payload.vacunas.map((v) => ({
+                name: v.nombre,
+                date: v.fecha,
+                nextDose: v.proximaDosis ?? null,
+                verified: v.verificada ?? false,
+              }))
+            : [],
+          health: payload.salud,
+          photo: "",
+          breed2: payload.raza2 ?? null,
+          shelterName: payload.refugioNombre,
+          shelterLogo: payload.refugioLogo,
+        },
+      );
+      return parseDog(data);
+    } catch (e) {
+      throw Error("Error al actualizar perro");
+    }
   }
 
   deleteDog(id: string): Promise<void> {
     throw Error("Not implemented");
   }
 
-  getDogs(refugioId: string): Promise<Dog[]> {
+  async getDogs(refugioId: string): Promise<Dog[]> {
     try {
-      return Promise.resolve([]);
+      const { data } = await apiClient.get<CreateDogApiResponse[]>(
+        // const { data } = await apiClient.get<GetDogsApiResponse>(
+        API_ENDPOINTS.DOGS.BY_SHELTER(refugioId),
+      );
+      return data.map(parseDog);
     } catch (e) {
-      throw Error("Not implemented");
+      throw Error("Error al obtener los perros del refugio");
     }
   }
 
-  getDogById(id: string): Promise<Dog> {
-    throw Error("Not implemented");
+  async getDogById(id: string): Promise<Dog> {
+    try {
+      const { data } = await apiClient.get<CreateDogApiResponse>(
+        API_ENDPOINTS.DOGS.BY_ID(id),
+      );
+      return parseDog(data);
+    } catch (e) {
+      throw Error("Error al obtener los datos del perro");
+    }
   }
 
-  getShelterDogs(
+  async getShelterDogs(
     refugioId: string,
     filters?: DogFilters,
   ): Promise<PaginatedDogs> {
-    throw Error("Not implemented");
+    try {
+      const { data } = await apiClient.get<CreateDogApiResponse[]>(
+        API_ENDPOINTS.DOGS.BY_SHELTER(refugioId),
+        // {
+        //   params: {
+        //     status:    filters?.estado,
+        //     search:    filters?.search,
+        //     page:      filters?.page,
+        //     limit:     filters?.limit,
+        //     sortBy:    filters?.sortBy,
+        //     sortOrder: filters?.sortOrder,
+        //   },
+        // },
+      );
+      return {
+        data: data.map(parseDog),
+        total: data.length,
+        page: 1,
+        totalPages: 1,
+        limit: 10,
+        // data: data.data.map(parseDog),
+        // total: data.data.length,
+        // page: data.page,
+        // totalPages: data.totalPages,
+        // limit: data.limit,
+      };
+    } catch (e) {
+      throw Error("Error al obtener los perros del refugio");
+    }
   }
 
   togglePublish(id: string): Promise<Dog> {

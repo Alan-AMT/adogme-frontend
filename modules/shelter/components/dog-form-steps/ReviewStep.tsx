@@ -13,7 +13,7 @@ interface Props {
   isSubmitting: boolean
   submitError:  string | null
   isDraft:      boolean
-  submit:       () => Promise<void>
+  submit:       () => Promise<boolean>
   saveDraft:    () => void
 }
 
@@ -37,12 +37,8 @@ export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submi
   const router = useRouter()
 
   async function handlePublish() {
-    try {
-      await submit()
-      router.push('/refugio/perros')
-    } catch {
-      // submitError is set internally by the hook
-    }
+    const ok = await submit()
+    if (ok) router.push('/refugio/perros')
   }
 
   function handleDraft() {

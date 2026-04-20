@@ -37,15 +37,20 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
   useEffect(() => {
     if (user && user.role == "shelter") {
       if (user.shelterId) {
-        form.formData.refugioNombre = user.shelterName;
-        form.formData.refugioLogo = user.shelterLogo;
-        form.formData.refugioId = user.shelterId!;
-      } else
-        hydrate().then(() => {
-          form.formData.refugioNombre = user.shelterName;
-          form.formData.refugioLogo = user.shelterLogo;
-          form.formData.refugioId = user.shelterId!;
+        form.updateMany({
+          refugioNombre: user.shelterName,
+          refugioLogo:   user.shelterLogo,
+          refugioId:     user.shelterId!,
         });
+      } else {
+        hydrate().then(() => {
+          form.updateMany({
+            refugioNombre: user.shelterName,
+            refugioLogo:   user.shelterLogo,
+            refugioId:     user.shelterId!,
+          });
+        });
+      }
     }
   }, []);
   const isEdit = dogId !== undefined;

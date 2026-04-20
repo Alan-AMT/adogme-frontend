@@ -4,6 +4,8 @@
 "use client";
 
 import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import type { DogFormData } from "../../application/hooks/useDogForm";
 import type { Vaccination } from "@/modules/shared/domain/Dog";
 import "../../styles/shelterViews.css";
@@ -140,13 +142,19 @@ export function MedicalStep({ formData, errors, update }: Props) {
           {/* Salud */}
           <div className="sv-field">
             <label className="sv-field__label">Estado de salud</label>
-            <input
-              type="text"
-              className="sv-field__input"
+            <select
+              className="sv-field__select"
               value={formData.salud}
               onChange={(e) => update("salud", e.target.value)}
-              placeholder="Ej: Sano, vacunado, desparasitado"
-            />
+            >
+              <option value="Sano">Sano</option>
+              <option value="Lesión o condición leve">
+                Lesión o condición leve
+              </option>
+              <option value="Lesión o condición grave">
+                Lesión o condición grave
+              </option>
+            </select>
           </div>
 
           {/* Pelaje */}
@@ -338,24 +346,30 @@ export function MedicalStep({ formData, errors, update }: Props) {
               </div>
               <div className="sv-field">
                 <label className="sv-field__label">Fecha de aplicación</label>
-                <input
-                  type="date"
+                <DatePicker
+                  selected={newVac.fecha ? new Date(newVac.fecha) : null}
+                  onChange={(date: Date | null) =>
+                    updateNewVac("fecha", date ? date.toISOString().split("T")[0] : "")
+                  }
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="DD/MM/YYYY"
                   className="sv-field__input"
-                  value={newVac.fecha}
-                  onChange={(e) => updateNewVac("fecha", e.target.value)}
+                  wrapperClassName="sv-datepicker-wrapper"
                 />
               </div>
               <div className="sv-field">
                 <label className="sv-field__label">
                   Próxima dosis (opcional)
                 </label>
-                <input
-                  type="date"
-                  className="sv-field__input"
-                  value={newVac.proximaDosis ?? ""}
-                  onChange={(e) =>
-                    updateNewVac("proximaDosis", e.target.value || undefined)
+                <DatePicker
+                  selected={newVac.proximaDosis ? new Date(newVac.proximaDosis) : null}
+                  onChange={(date: Date | null) =>
+                    updateNewVac("proximaDosis", date ? date.toISOString().split("T")[0] : undefined)
                   }
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="DD/MM/YYYY (opcional)"
+                  className="sv-field__input"
+                  wrapperClassName="sv-datepicker-wrapper"
                 />
               </div>
               <div className="sv-field" style={{ justifyContent: "flex-end" }}>

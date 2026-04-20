@@ -10,7 +10,7 @@
 //   3 Salud           · 4 Fotos         · 5 Revisión
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type {
   DogSize,
@@ -101,7 +101,7 @@ const FORM_DEFAULTS: DogFormData = {
   estaVacunado: false,
   estaDesparasitado: false,
   largoPelaje: "corto",
-  salud: "",
+  salud: "Sano",
   vacunas: [],
   foto: "",
   fotos: [],
@@ -186,7 +186,7 @@ export interface UseDogFormReturn {
   clearDraft: () => void;
 
   // Submit
-  submit: () => Promise<void>;
+  submit: () => Promise<boolean>;
 }
 
 export function useDogForm(dogId?: string): UseDogFormReturn {
@@ -197,16 +197,11 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const initializedRef = useRef(false);
-
   // ── Inicialización ───────────────────────────────────────────────────────────
   // 1. Si hay draft en localStorage → usarlo
   // 2. Si es modo edición y no hay draft → cargar desde el servicio
 
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
     const draft = loadDraft(dogId);
     if (draft) {
       setFormData(draft);
@@ -214,43 +209,46 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
       return;
     }
 
-    if (dogId) {
-      shelterService
-        .getDogById(dogId)
-        .then((dog) => {
-          if (!dog) return;
-          setFormData({
-            nombre: dog.nombre,
-            refugioNombre: dog.refugioNombre,
-            refugioLogo: dog.refugioLogo,
-            refugioId: dog.refugioId,
-            edad: dog.edad,
-            raza: dog.raza,
-            raza2: dog.raza2 ?? "",
-            tamano: dog.tamano,
-            sexo: dog.sexo,
-            nivelEnergia: dog.nivelEnergia,
-            descripcion: dog.descripcion,
-            personalidad: dog.personalidad ?? [],
-            aptoNinos: dog.aptoNinos,
-            aptoPerros: dog.aptoPerros,
-            aptoGatos: dog.aptoGatos,
-            castrado: dog.castrado,
-            necesitaJardin: dog.necesitaJardin,
-            pesoKg: dog.pesoKg,
-            estaVacunado: dog.estaVacunado,
-            estaDesparasitado: dog.estaDesparasitado,
-            largoPelaje: dog.largoPelaje,
-            salud: dog.salud,
-            vacunas: dog.vacunas ?? [],
-            foto: dog.foto ?? "",
-            fotos: dog.fotos ?? (dog.foto ? [dog.foto] : []),
-          });
-        })
-        .catch(() => {
-          /* silencioso: usa defaults */
+    if (!dogId) return;
+
+    let cancelled = false;
+    shelterService
+      .getDogById(dogId)
+      .then((dog) => {
+        if (cancelled || !dog) return;
+        setFormData({
+          nombre:            dog.nombre,
+          refugioNombre:     dog.refugioNombre,
+          refugioLogo:       dog.refugioLogo,
+          refugioId:         dog.refugioId,
+          edad:              dog.edad,
+          raza:              dog.raza,
+          raza2:             dog.raza2 ?? "",
+          tamano:            dog.tamano,
+          sexo:              dog.sexo,
+          nivelEnergia:      dog.nivelEnergia,
+          descripcion:       dog.descripcion,
+          personalidad:      dog.personalidad ?? [],
+          aptoNinos:         dog.aptoNinos,
+          aptoPerros:        dog.aptoPerros,
+          aptoGatos:         dog.aptoGatos,
+          castrado:          dog.castrado,
+          necesitaJardin:    dog.necesitaJardin,
+          pesoKg:            dog.pesoKg,
+          estaVacunado:      dog.estaVacunado,
+          estaDesparasitado: dog.estaDesparasitado,
+          largoPelaje:       dog.largoPelaje,
+          salud:             dog.salud,
+          vacunas:           dog.vacunas ?? [],
+          foto:              dog.foto ?? "",
+          fotos:             dog.fotos ?? (dog.foto ? [dog.foto] : []),
         });
-    }
+      })
+      .catch((e) => {
+        if (!cancelled) setSubmitError((e as Error).message ?? 'Error al cargar el perro');
+      });
+
+    return () => { cancelled = true };
   }, [dogId]);
 
   // ── Actualizar un campo ───────────────────────────────────────────────────────
@@ -277,14 +275,9 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
 
   const updateMany = useCallback(
     (partial: Partial<DogFormData>) => {
-      setFormData((prev) => {
-        const next = { ...prev, ...partial };
-        saveDraftToStorage(dogId, next);
-        setIsDraft(true);
-        return next;
-      });
+      setFormData((prev) => ({ ...prev, ...partial }));
     },
-    [dogId],
+    [],
   );
 
   // ── Navegación ────────────────────────────────────────────────────────────────
@@ -329,7 +322,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
 
   // ── Submit ───────────────────────────────────────────────────────────────────
 
-  const submit = useCallback(async () => {
+  const submit = useCallback(async (): Promise<boolean> => {
     // Validar paso 0 (básicos) y paso 4 (fotos) como mínimo
     const step0Errors = validateStep(0, formData);
     const step4Errors = validateStep(4, formData);
@@ -339,7 +332,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
       // Llevar al primer paso con error
       if (Object.keys(step0Errors).length > 0) setCurrentStep(0);
       else setCurrentStep(4);
-      return;
+      return false;
     }
 
     setIsSubmitting(true);
@@ -410,9 +403,10 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
       // Limpiar draft tras submit exitoso
       removeDraft(dogId);
       setIsDraft(false);
+      return true;
     } catch (e: unknown) {
       setSubmitError((e as Error).message ?? "Error al guardar el perro");
-      throw e;
+      return false;
     } finally {
       setIsSubmitting(false);
     }
