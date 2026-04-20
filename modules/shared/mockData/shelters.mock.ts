@@ -59,7 +59,7 @@ export const MOCK_SHELTERS: Shelter[] = [
     id: SHELTER_IDS.PATITAS,
     nombre: 'Patitas Libres',
     ubicacion: 'Coyoacán, Ciudad de México',
-    descripcion: 'Refugio familiar con enfoque en rehabilitación de perros con trauma. Equipo de conductistas certificados en Coyoacán. Cada perro tiene un plan de socialización individual.',
+    descripcion: 'Refugio familiar con enfoque en rehabilitación de perros con trauma. Equipo de conductistas certificados en Coyoacán. Cada perro tiene un plan de socializacion individual.',
     correo: 'hola@patitaslibres.mx',
     telefono: '55 9876 5432',
     logo: '/assets/shelters/shelter2-logo.jpg',

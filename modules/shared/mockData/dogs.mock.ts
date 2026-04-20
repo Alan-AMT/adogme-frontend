@@ -68,9 +68,9 @@ const TAGS: Record<string, PersonalityTag> = {
     id: "8",
     label: "Sociable",
     icon: "pets",
-    categoria: "socialización",
+    categoria: "socializacion",
   },
-  timido: { id: "9", label: "Tímido", icon: "hide", categoria: "socialización" },
+  timido: { id: "9", label: "Tímido", icon: "hide", categoria: "socializacion" },
   independiente: {
     id: "10",
     label: "Independiente",

@@ -36,7 +36,7 @@ export interface Vaccination {
 
 export enum PersonalityCategory {
   caracter = "caracter",
-  socialización = "socializacion",
+  socializacion = "socializacion",
   actividad = "actividad",
   entrenamiento = "entrenamiento",
 }
