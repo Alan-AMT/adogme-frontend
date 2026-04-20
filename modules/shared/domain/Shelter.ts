@@ -13,9 +13,9 @@ export type { DonationConfig };
 // ─── Entidad completa ─────────────────────────────────────────────────────────
 
 export interface Shelter {
-  id: number;
+  id: string;
+  userOwnerId: string;
   nombre: string;
-  ubicacion: string; // ciudad/estado
   descripcion: string;
   correo: string;
   telefono: string;
@@ -23,14 +23,16 @@ export interface Shelter {
   imagenPortada: string; // URL de la imagen de portada
   fechaRegistro: string; // ISO date
   aprobado: boolean; // campo directo del diagrama
+  alcaldia: string | null;
+  direccionCompleta: string | null; // estado del país
+  schedule: string | null;
 
+  ubicacion: string; // ciudad/estado
   // Estado calculado (derivado de aprobado + campos admin)
   status: ShelterStatus;
 
   // Campos enriquecidos (del backend extendido o calculados)
   slug: string; // para URLs amigables: /refugios/huellitas-mx
-  ciudad: string;
-  estado: string; // estado del país
   redesSociales?: {
     facebook?: string;
     instagram?: string;
@@ -53,8 +55,8 @@ export type ShelterListItem = Pick<
   | "id"
   | "nombre"
   | "slug"
-  | "ciudad"
-  | "estado"
+  | "alcaldia"
+  | "ubicacion"
   | "logo"
   | "imagenPortada"
   | "status"

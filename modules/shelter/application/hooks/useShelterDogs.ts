@@ -8,8 +8,7 @@ import { useEffect, useState, useCallback } from 'react'
 import type { DogListItem, DogStatus } from '@/modules/shared/domain/Dog'
 import type { DogCreateData, DogUpdateData } from '../../infrastructure/IShelterService'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
-
-const CURRENT_SHELTER_ID = 1
+import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -34,14 +33,21 @@ export interface UseShelterDogsReturn {
 
   // Mutaciones
   createDog:     (data: DogCreateData) => Promise<void>
-  updateDog:     (id: number, data: DogUpdateData) => Promise<void>
-  deleteDog:     (id: number) => Promise<void>
-  togglePublish: (id: number) => Promise<void>
+  updateDog:     (id: string, data: DogUpdateData) => Promise<void>
+  deleteDog:     (id: string) => Promise<void>
+  togglePublish: (id: string) => Promise<void>
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useShelterDogs(): UseShelterDogsReturn {
+  const { user, hydrate } = useAuthStore()
+  const shelterId = user?.role === 'shelter' ? user.shelterId ?? '' : ''
+
+  useEffect(() => {
+    if (!shelterId) hydrate()
+  }, [])
+
   const [dogs,         setDogs]         = useState<DogListItem[]>([])
   const [isLoading,    setIsLoading]    = useState(true)
   const [error,        setError]        = useState<string | null>(null)
@@ -52,10 +58,11 @@ export function useShelterDogs(): UseShelterDogsReturn {
   // ── Carga (lectura) ──────────────────────────────────────────────────────────
 
   const load = useCallback(async () => {
+    if (!shelterId) return
     setIsLoading(true)
     setError(null)
     try {
-      const result = await shelterService.getShelterDogs(CURRENT_SHELTER_ID, {
+      const result = await shelterService.getShelterDogs(shelterId, {
         estado: statusFilter === 'all' ? undefined : statusFilter,
         search: search || undefined,
         limit:  100,
@@ -66,7 +73,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [statusFilter, search])
+  }, [shelterId, statusFilter, search])
 
   useEffect(() => { load() }, [load])
 
@@ -75,7 +82,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
   const createDog = useCallback(async (data: DogCreateData) => {
     setError(null)
     try {
-      await shelterService.createDog({ ...data, refugioId: CURRENT_SHELTER_ID })
+      await shelterService.createDog({ ...data, refugioId: shelterId })
       await load()
     } catch (e: unknown) {
       setError((e as Error).message ?? 'Error al crear el perro')
@@ -83,7 +90,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [load])
 
-  const updateDog = useCallback(async (id: number, data: DogUpdateData) => {
+  const updateDog = useCallback(async (id: string, data: DogUpdateData) => {
     setError(null)
     try {
       await shelterService.updateDog(id, data)
@@ -94,7 +101,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [load])
 
-  const deleteDog = useCallback(async (id: number) => {
+  const deleteDog = useCallback(async (id: string) => {
     setError(null)
     try {
       await shelterService.deleteDog(id)
@@ -106,7 +113,7 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [selectedDog, load])
 
-  const togglePublish = useCallback(async (id: number) => {
+  const togglePublish = useCallback(async (id: string) => {
     setError(null)
     try {
       await shelterService.togglePublish(id)

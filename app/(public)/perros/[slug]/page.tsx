@@ -22,9 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `${dog.nombre} — ${dog.raza} en adopción | aDOGme`;
   const description =
-    `Conoce a ${dog.nombre}, un ${dog.raza} de ${edadLabel}` +
-    (dog.refugioCiudad ? ` en ${dog.refugioCiudad}` : "") +
-    `. ${dog.descripcion.slice(0, 120)}…`;
+    `Conoce a ${dog.nombre}, un ${dog.raza} de ${edadLabel}. ${dog.descripcion.slice(0, 120)}…`;
 
   return {
     title,

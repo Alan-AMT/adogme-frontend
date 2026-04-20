@@ -42,19 +42,13 @@ export function parseDogsSearchParams(params: RawParams): DogFilters {
   const raza = str(params, 'raza')
   if (raza) filters.raza = raza
 
-  const ciudad = str(params, 'ciudad')
-  if (ciudad) filters.ciudad = ciudad
-
   const sortBy = str(params, 'sortBy')
   if (sortBy === 'fechaRegistro' || sortBy === 'compatibilidad' || sortBy === 'nombre') {
     filters.sortBy = sortBy
   }
 
   const refugioId = str(params, 'refugioId')
-  if (refugioId) {
-    const id = parseInt(refugioId, 10)
-    if (!isNaN(id)) filters.refugioId = id
-  }
+  if (refugioId) filters.refugioId = refugioId
 
   if (str(params, 'aptoNinos')  === 'true') filters.aptoNinos  = true
   if (str(params, 'aptoPerros') === 'true') filters.aptoPerros = true

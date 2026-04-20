@@ -89,7 +89,7 @@ export function ShelterBanner({ shelter, showContactInfo = false }: ShelterBanne
                 location_on
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
-                {shelter.ciudad}{shelter.estado !== shelter.ciudad ? `, ${shelter.estado}` : ''}
+                {shelter.alcaldia ?? shelter.ubicacion}
               </span>
             </div>
 

@@ -10,10 +10,15 @@
 import { create } from "zustand";
 import type { Adoptante, Administrador, ShelterUser } from "../../domain/User";
 import {
+  clearEnrichmentStorage,
+  clearShelterSessionCookie,
   clearTokenCookies,
   clearWindowTokens,
   decodeUserFromToken,
   getRefreshTokenFromCookie,
+  getShelterProfileCache,
+  getShelterSessionCookie,
+  getUserProfileCache,
   getTokenFromCookie,
   setRefreshTokenCookie,
   setTokenCookie,
@@ -34,12 +39,12 @@ interface AuthState {
   setUser: (user: AuthUser) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
-  hydrate: () => void;
+  hydrate: () => Promise<void>;
 }
 
 // ─── Store ───────────────────────────────────────────────────────────────────
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   refreshToken: null,
@@ -55,6 +60,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: () => {
+    const { user } = get();
+    if (user?.id) clearEnrichmentStorage(user.id);
+    clearShelterSessionCookie();
     clearTokenCookies();
     clearWindowTokens();
     set({
@@ -65,7 +73,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
 
-  hydrate: () => {
+  hydrate: async () => {
+    // Phase 1 — identity (always synchronous, no network)
     const token = getTokenFromCookie();
     if (!token) return;
 
@@ -77,6 +86,54 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     const refreshToken = getRefreshTokenFromCookie();
     setWindowTokens(token, refreshToken ?? undefined);
+
+    // Set base identity immediately so UI is not blocked
     set({ user, token, refreshToken, isAuthenticated: true });
+
+    // Phase 2 — restore enrichment from storage (no network)
+    let enriched: AuthUser = { ...user } as AuthUser;
+    // let enriched: AuthUser = { ...user, id: user.sub } as AuthUser;
+    let needsFetch = false;
+
+    if (user.role === "shelter") {
+      const shelterSession = getShelterSessionCookie();
+      const shelterProfile = getShelterProfileCache(user.id);
+
+      if (shelterSession && shelterProfile) {
+        enriched = {
+          ...enriched,
+          ...(shelterSession as Partial<ShelterUser>),
+          ...(shelterProfile as Partial<ShelterUser>),
+        } as ShelterUser;
+      } else {
+        needsFetch = true;
+      }
+    }
+
+    if (user.role === "applicant") {
+      const profile = getUserProfileCache(user.id);
+      if (profile) {
+        enriched = {
+          ...enriched,
+          ...(profile as Partial<Adoptante>),
+        } as Adoptante;
+      } else {
+        needsFetch = true;
+      }
+    }
+
+    if (!needsFetch) {
+      set({ user: enriched });
+      return;
+    }
+
+    // Phase 3 — fallback fetch (auth token is in cookie so request is authenticated)
+    try {
+      const { enrichUser } = await import("../auth/enrichUser");
+      const fullyEnriched = await enrichUser(enriched);
+      set({ user: fullyEnriched });
+    } catch {
+      // Silent failure — user is authenticated with base identity only
+    }
   },
 }));

@@ -12,16 +12,16 @@ const LS_KEY = 'adogme:favorites'
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
 interface FavoritesState {
-  favoriteIds:     number[]
-  toggleFavorite:  (dogId: number) => void
-  isFavorite:      (dogId: number) => boolean
+  favoriteIds:     string[]
+  toggleFavorite:  (dogId: string) => void
+  isFavorite:      (dogId: string) => boolean
   clearFavorites:  () => void
   hydrate:         () => void   // lee de localStorage al montar
 }
 
 // ─── Helpers de localStorage ──────────────────────────────────────────────────
 
-function readFromLS(): number[] {
+function readFromLS(): string[] {
   if (typeof window === 'undefined') return []
   try {
     return JSON.parse(localStorage.getItem(LS_KEY) ?? '[]')
@@ -30,7 +30,7 @@ function readFromLS(): number[] {
   }
 }
 
-function writeToLS(ids: number[]): void {
+function writeToLS(ids: string[]): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(LS_KEY, JSON.stringify(ids))
 }

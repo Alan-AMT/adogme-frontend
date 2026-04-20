@@ -12,7 +12,7 @@ import type { DogListItem }             from '@/modules/shared/domain/Dog'
 import { shelterService }               from '../infrastructure/ShelterServiceFactory'
 import '../styles/shelterDashboard.css'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 const STATUS_LABELS: Record<string, string> = {
   pending:   'Pendiente',

@@ -15,7 +15,7 @@ import { SHELTER_IDS } from "./shelters.mock";
 // ─── Adoptante ───────────────────────────────────────────────────────────────
 
 export const MOCK_ADOPTANTE: Adoptante = {
-  id: 101,
+  id: "101",
   name: "Ana García",
   email: "ana@test.com",
   role: "applicant",
@@ -24,7 +24,7 @@ export const MOCK_ADOPTANTE: Adoptante = {
 // ─── Shelter (approved) ──────────────────────────────────────────────────────
 
 export const MOCK_SHELTER_USER: ShelterUser = {
-  id: 201,
+  id: "201",
   name: "Refugio Huellitas MX",
   email: "refugio@huellitas.com",
   role: "shelter",
@@ -35,7 +35,7 @@ export const MOCK_SHELTER_USER: ShelterUser = {
 // ─── Shelter (pending) ───────────────────────────────────────────────────────
 
 export const MOCK_SHELTER_PENDING_USER: ShelterUser = {
-  id: 202,
+  id: "202",
   name: "Rescate Centro",
   email: "nuevo@refugio.com",
   role: "shelter",
@@ -46,7 +46,7 @@ export const MOCK_SHELTER_PENDING_USER: ShelterUser = {
 // ─── Admin ───────────────────────────────────────────────────────────────────
 
 export const MOCK_ADMIN: Administrador = {
-  id: 301,
+  id: "301",
   name: "Admin Plataforma",
   email: "admin@plataforma.com",
   role: "admin",

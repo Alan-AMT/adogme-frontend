@@ -439,7 +439,7 @@ function Skeleton() {
 
 // ─── View ─────────────────────────────────────────────────────────────────────
 
-export default function ShelterRequestDetailView({ requestId }: { requestId: number }) {
+export default function ShelterRequestDetailView({ requestId }: { requestId: string }) {
   const { request, isLoading, isSaving, error, updateStatus } = useShelterRequestDetail(requestId)
 
   if (isLoading) return <Skeleton />

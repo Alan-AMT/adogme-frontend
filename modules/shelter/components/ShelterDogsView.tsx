@@ -15,7 +15,7 @@ import { shelterService }      from '../infrastructure/ShelterServiceFactory'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -148,7 +148,7 @@ function DogRow({
   dog:              DogListItem
   solicitudesCount: number
   onDelete:         (dog: DogListItem) => void
-  onTogglePublish:  (id: number) => void
+  onTogglePublish:  (id: string) => void
   isToggling:       boolean
 }) {
   const statusStyle = DOG_STATUS_COLORS[dog.estado] ?? { bg: '#f4f4f5', color: '#71717a' }
@@ -311,10 +311,10 @@ export default function ShelterDogsView() {
   } = useShelterDogs()
 
   // Mapa perroId → cantidad de solicitudes
-  const [reqCountMap, setReqCountMap] = useState<Map<number, number>>(new Map())
+  const [reqCountMap, setReqCountMap] = useState<Map<string, number>>(new Map())
   useEffect(() => {
     shelterService.getShelterRequests(CURRENT_SHELTER_ID).then(reqs => {
-      const map = new Map<number, number>()
+      const map = new Map<string, number>()
       reqs.forEach(r => map.set(r.perroId, (map.get(r.perroId) ?? 0) + 1))
       setReqCountMap(map)
     }).catch(() => { /* silencioso */ })
@@ -323,7 +323,7 @@ export default function ShelterDogsView() {
   // Estado del ConfirmDialog
   const [confirmDog,  setConfirmDog]  = useState<DogListItem | null>(null)
   const [isDeleting,  setIsDeleting]  = useState(false)
-  const [togglingId,  setTogglingId]  = useState<number | null>(null)
+  const [togglingId,  setTogglingId]  = useState<string | null>(null)
 
   const handleDeleteRequest = (dog: DogListItem) => setConfirmDog(dog)
 
@@ -338,7 +338,7 @@ export default function ShelterDogsView() {
     }
   }
 
-  const handleTogglePublish = async (id: number) => {
+  const handleTogglePublish = async (id: string) => {
     setTogglingId(id)
     try {
       await togglePublish(id)

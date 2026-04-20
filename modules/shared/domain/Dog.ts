@@ -1,131 +1,155 @@
 // modules/shared/domain/Dog.ts
-// Entidad Perro — basada en tabla Perro del diagrama ER
-// Tabla: id, refugio_id, nombre, edad, raza, tamano, nivelEnergia,
-//        sexo, salud, estado, compatibilidad, descripcion, foto, fechaRegistro
+// Entidad Perro — sincronizada con el modelo Dog del microservicio dogs_service
 
 // ─── Tipos primitivos ────────────────────────────────────────────────────────
 
-export type DogSize     = 'pequeño' | 'mediano' | 'grande' | 'gigante'
-export type DogSex      = 'macho' | 'hembra'
-export type DogStatus   = 'disponible' | 'en_proceso' | 'adoptado' | 'no_disponible'
-export type EnergyLevel = 'baja' | 'moderada' | 'alta' | 'muy_alta'
-export type AgeCategory = 'cachorro' | 'joven' | 'adulto' | 'senior'
+export type DogSize = "pequeño" | "mediano" | "grande" | "gigante";
+export type DogSex = "macho" | "hembra";
+export type DogStatus =
+  | "disponible"
+  | "en_proceso"
+  | "adoptado"
+  | "no_disponible";
+export type EnergyLevel = "baja" | "moderada" | "alta" | "muy_alta";
+export type AgeCategory = "cachorro" | "joven" | "adulto" | "senior";
+export type FurLength = "corto" | "mediano" | "largo";
 
-// compatibilidad es float 0-1 en la BD; en el frontend lo usamos como porcentaje 0-100
-export type CompatibilityScore = number // 0–100
+// ─── Función para calcular la categoría de edad ──────────────────────────────
+// Reutilizable: cachorro (<12m), joven (12-35m), adulto (36-83m), senior (84m+)
+
+export function calcularEdadCategoria(edadMeses: number): AgeCategory {
+  if (edadMeses < 12) return "cachorro";
+  if (edadMeses < 36) return "joven";
+  if (edadMeses < 84) return "adulto";
+  return "senior";
+}
 
 // ─── Sub-entidades ────────────────────────────────────────────────────────────
 
 export interface Vaccination {
-  id: number
-  nombre: string
-  fecha: string       // ISO date
-  proximaDosis?: string
-  verificada: boolean
+  id: string;
+  nombre: string;
+  fecha: string; // ISO date
+  proximaDosis?: string;
+  verificada: boolean;
+}
+
+export enum PersonalityCategory {
+  caracter = "caracter",
+  socialización = "socializacion",
+  actividad = "actividad",
+  entrenamiento = "entrenamiento",
 }
 
 export interface PersonalityTag {
-  id: number
-  label: string       // ej: "Juguetón", "Tranquilo", "Protector"
-  icon: string        // emoji o nombre de icono
-  categoria: 'caracter' | 'socialización' | 'actividad' | 'entrenamiento'
+  id: string;
+  label: string; // ej: "Juguetón", "Tranquilo", "Protector"
+  icon?: string; // solo frontend — para renderizado de UI
+  categoria: "caracter" | "socializacion" | "actividad" | "entrenamiento";
 }
 
 // ─── Entidad completa ─────────────────────────────────────────────────────────
-// Incluye todos los campos del diagrama más campos de UI calculados
 
 export interface Dog {
-  id: number
-  refugioId: number
+  id: string;
+  userOwnerId: string;
+  refugioId: string;
 
-  // Datos básicos (del diagrama)
-  nombre: string
-  edad: number          // en meses
-  raza: string
-  tamano: DogSize
-  nivelEnergia: EnergyLevel
-  sexo: DogSex
-  salud: string         // texto libre: "Vacunado, desparasitado"
-  estado: DogStatus
-  compatibilidad: CompatibilityScore  // float del BE → 0-100 en FE
-  descripcion: string
-  foto: string          // URL principal
-  fechaRegistro: string // ISO date
+  // Datos básicos
+  nombre: string;
+  raza: string;
+  raza2?: string;
+  edad: number; // en meses
+  pesoKg?: number;
+  sexo: DogSex;
+  tamano: DogSize;
+  nivelEnergia: EnergyLevel;
+  descripcion: string;
+  estado: DogStatus;
 
-  // Campos enriquecidos (calculados o del backend extendido)
-  fotos: string[]       // galería completa
-  edadCategoria: AgeCategory
-  vacunas: Vaccination[]
-  personalidad: PersonalityTag[]
-  castrado: boolean
-  microchip: boolean
-  aptoNinos: boolean
-  aptoPerros: boolean
-  aptoGatos: boolean
-  necesitaJardin: boolean
-  pesoKg?: number
+  // Personalidad y compatibilidad
+  personalidad: PersonalityTag[];
+  aptoNinos: boolean;
+  aptoPerros: boolean;
+  aptoGatos: boolean;
 
-  // Datos del refugio (join — para cards públicas)
-  refugioNombre?: string
-  refugioSlug?: string
-  refugioCiudad?: string
-  refugioLogo?: string   // URL del logo del refugio
+  // Cuidados
+  castrado: boolean;
+  necesitaJardin: boolean;
+  estaVacunado: boolean;
+  estaDesparasitado: boolean;
+  largoPelaje: FurLength;
+  vacunas: Vaccination[];
+  salud: string;
+
+  // Multimedia
+  foto?: string;
+  fotos: string[];
+
+  // Campos calculados / solo frontend
+  edadCategoria: AgeCategory;
+  compatibilidad?: number;
+
+  // Datos del refugio (join)
+  refugioNombre?: string;
+  refugioLogo?: string;
+
+  // Timestamps
+  fechaRegistro: string; // alias de createdAt
+  fechaActualizacion?: string; // alias de updatedAt
 }
 
 // ─── Versión reducida para cards y listas ────────────────────────────────────
 
 export type DogListItem = Pick<
   Dog,
-  | 'id'
-  | 'refugioId'
-  | 'nombre'
-  | 'edad'
-  | 'edadCategoria'
-  | 'raza'
-  | 'tamano'
-  | 'sexo'
-  | 'nivelEnergia'
-  | 'estado'
-  | 'foto'
-  | 'compatibilidad'
-  | 'aptoNinos'
-  | 'aptoPerros'
-  | 'necesitaJardin'
-  | 'refugioNombre'
-  | 'refugioSlug'
-  | 'refugioCiudad'
->
+  | "id"
+  | "refugioId"
+  | "nombre"
+  | "edad"
+  | "edadCategoria"
+  | "raza"
+  | "tamano"
+  | "sexo"
+  | "nivelEnergia"
+  | "estado"
+  | "foto"
+  | "compatibilidad"
+  | "aptoNinos"
+  | "aptoPerros"
+  | "necesitaJardin"
+  | "refugioNombre"
+>;
 
 // ─── Filtros de búsqueda ──────────────────────────────────────────────────────
 
 export interface DogFilters {
-  search?: string
-  raza?: string
-  tamano?: DogSize | ''
-  sexo?: DogSex | ''
-  edadCategoria?: AgeCategory | ''
-  nivelEnergia?: EnergyLevel | ''
-  estado?: DogStatus | ''
-  aptoNinos?: boolean
-  aptoPerros?: boolean
-  aptoGatos?: boolean
-  necesitaJardin?: boolean
-  castrado?: boolean
-  refugioId?: number
-  ciudad?: string
-  soloConCompatibilidad?: boolean
-  page?: number
-  limit?: number
-  sortBy?: 'fechaRegistro' | 'compatibilidad' | 'nombre'
-  sortOrder?: 'asc' | 'desc'
+  search?: string;
+  raza?: string;
+  tamano?: DogSize | "";
+  sexo?: DogSex | "";
+  edadCategoria?: AgeCategory | "";
+  nivelEnergia?: EnergyLevel | "";
+  estado?: DogStatus | "";
+  aptoNinos?: boolean;
+  aptoPerros?: boolean;
+  aptoGatos?: boolean;
+  necesitaJardin?: boolean;
+  castrado?: boolean;
+  refugioId?: string;
+  soloConCompatibilidad?: boolean;
+  page?: number;
+  limit?: number;
+  sortBy?: "fechaRegistro" | "compatibilidad" | "nombre";
+  sortOrder?: "asc" | "desc";
 }
 
 // ─── Respuesta paginada ───────────────────────────────────────────────────────
 
 export interface PaginatedDogs {
-  data: DogListItem[]
-  total: number
-  page: number
-  totalPages: number
-  limit: number
+  data: DogListItem[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
 }

@@ -13,7 +13,6 @@ interface Props {
 
 export default async function SolicitudDetailPage({ params }: Props) {
   const { id } = await params
-  const requestId = parseInt(id, 10)
 
-  return <ShelterRequestDetailView requestId={isNaN(requestId) ? 0 : requestId} />
+  return <ShelterRequestDetailView requestId={id} />
 }

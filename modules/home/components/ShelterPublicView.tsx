@@ -70,7 +70,7 @@ export default function ShelterPublicView({ slug }: Props) {
               <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 location_on
               </span>
-              {shelter.ciudad}, {shelter.estado}
+              {shelter.alcaldia ?? shelter.ubicacion}
             </p>
 
             <div className="sp-banner__stats">
@@ -133,7 +133,7 @@ export default function ShelterPublicView({ slug }: Props) {
                   <Link key={dog.id} href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="sp-dog-card">
                     <div className="sp-dog-card__media">
                       <Image
-                        src={dog.foto}
+                        src={dog.foto ?? ''}
                         alt={dog.nombre}
                         fill
                         className="sp-dog-card__img"

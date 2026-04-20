@@ -10,7 +10,7 @@ export type AccountStatus = "active" | "suspended" | "pending_verification";
 // ─── Base entity ─────────────────────────────────────────────────────────────
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: UserRole;
@@ -20,6 +20,9 @@ export interface User {
 
 export interface Adoptante extends User {
   role: "applicant";
+  phone?: string;
+  address?: string;
+  avatarUrl?: string;
 }
 
 // ─── Administrador ───────────────────────────────────────────────────────────
@@ -32,8 +35,10 @@ export interface Administrador extends User {
 
 export interface ShelterUser extends User {
   role: "shelter";
-  shelterId?: number;
+  shelterId?: string;
   shelterStatus?: "pending" | "approved" | "rejected" | "suspended";
+  shelterName?: string;
+  shelterLogo?: string;
 }
 
 // ─── Auth ────────────────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ import type {
   DogSex,
   DogStatus,
   EnergyLevel,
-  AgeCategory,
+  FurLength,
   PaginatedDogs,
   PersonalityTag,
   Vaccination,
@@ -16,27 +16,22 @@ import type {
 
 /** Campos necesarios para crear un perro nuevo (el refugio no puede setear estado ni compatibilidad) */
 export interface DogCreateData {
-  refugioId: number
+  refugioId: string
   nombre: string
-  edad: number            // en meses — ML: Age
-  raza: string            // ML: Breed1 (el backend resuelve el código numérico)
-  razaMezclada?: boolean  // ML: Breed2 != 0 — mezcla de razas
-  tamano: DogSize         // ML: MaturitySize (pequeño=1, mediano=2, grande=3, gigante=4)
+  edad: number
+  raza: string
+  raza2?: string
+  tamano: DogSize
   nivelEnergia: EnergyLevel
-  sexo: DogSex            // ML: Gender (macho=1, hembra=2)
-  descripcion: string     // ML: Description
-  foto: string            // URL principal — ML: PhotoAmt derivado de fotos.length
+  sexo: DogSex
+  descripcion: string
+  foto?: string
   fotos?: string[]
-  videoUrl?: string       // ML: VideoAmt (0 o 1)
-  // Salud — campos separados para que el backend construya el DogEntity del ML
-  vacunado: boolean       // ML: Vaccinated (true=1, false=2)
-  desparasitado: boolean  // ML: Dewormed (true=1, false=2)
-  castrado: boolean       // ML: Sterilized (true=1, false=2)
-  nivelSalud: 1 | 2 | 3  // ML: Health (1=Sano, 2=Lesión leve, 3=Lesión grave)
-  pelaje: 1 | 2 | 3       // ML: FurLength (1=Corto, 2=Mediano, 3=Largo)
-  cuotaAdopcion?: number  // ML: Fee (0 = sin costo)
-  edadCategoria?: AgeCategory
-  microchip?: boolean
+  estaVacunado: boolean
+  estaDesparasitado: boolean
+  castrado: boolean
+  largoPelaje: FurLength
+  salud: string
   aptoNinos?: boolean
   aptoPerros?: boolean
   aptoGatos?: boolean
@@ -44,7 +39,6 @@ export interface DogCreateData {
   pesoKg?: number
   personalidad?: PersonalityTag[]
   vacunas?: Vaccination[]
-  // salud removido — reemplazado por vacunado + desparasitado + nivelSalud
 }
 
 /** Campos editables en una actualización parcial (no se puede cambiar el refugio dueño) */
@@ -62,20 +56,20 @@ export interface MediaValidationResult {
 export interface IDogService {
   // ── Lectura pública ──────────────────────────────────────────────────────
   getDogs(filters?: DogFilters): Promise<PaginatedDogs>
-  getDogById(id: number): Promise<Dog | null>
+  getDogById(id: string): Promise<Dog | null>
   getDogBySlug(slug: string): Promise<Dog | null>
 
   // ── Escritura (shelter / admin) ──────────────────────────────────────────
   /** Crea un perro en estado no_disponible (borrador) */
   createDog(data: DogCreateData): Promise<Dog>
   /** Actualiza campos editables de un perro existente */
-  updateDog(id: number, data: DogUpdateData): Promise<Dog>
+  updateDog(id: string, data: DogUpdateData): Promise<Dog>
   /** Elimina un perro permanentemente */
-  deleteDog(id: number): Promise<void>
+  deleteDog(id: string): Promise<void>
   /** Publica un perro: cambia estado a disponible */
-  publishDog(id: number): Promise<Dog>
+  publishDog(id: string): Promise<Dog>
   /** Despublica un perro: cambia estado a no_disponible */
-  unpublishDog(id: number): Promise<Dog>
+  unpublishDog(id: string): Promise<Dog>
 
   // ── Media ────────────────────────────────────────────────────────────────
   /** Valida que las URLs de imagen sean accesibles y tengan formato correcto */

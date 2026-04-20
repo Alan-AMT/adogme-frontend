@@ -51,12 +51,12 @@ export class MockAdminService implements IAdminService {
     return [..._shelters]
   }
 
-  async getShelterById(id: number): Promise<Shelter | null> {
+  async getShelterById(id: string): Promise<Shelter | null> {
     await delay(200)
     return _shelters.find(s => s.id === id) ?? null
   }
 
-  async approveShelter(id: number, _nota?: string): Promise<Shelter> {
+  async approveShelter(id: string, _nota?: string): Promise<Shelter> {
     await delay()
     const idx = _shelters.findIndex(s => s.id === id)
     if (idx === -1) throw new Error(`Refugio ${id} no encontrado`)
@@ -64,7 +64,7 @@ export class MockAdminService implements IAdminService {
     return _shelters[idx]
   }
 
-  async rejectShelter(id: number, _nota?: string): Promise<Shelter> {
+  async rejectShelter(id: string, _nota?: string): Promise<Shelter> {
     await delay()
     const idx = _shelters.findIndex(s => s.id === id)
     if (idx === -1) throw new Error(`Refugio ${id} no encontrado`)
@@ -72,7 +72,7 @@ export class MockAdminService implements IAdminService {
     return _shelters[idx]
   }
 
-  async suspendShelter(id: number, _nota?: string): Promise<Shelter> {
+  async suspendShelter(id: string, _nota?: string): Promise<Shelter> {
     await delay()
     const idx = _shelters.findIndex(s => s.id === id)
     if (idx === -1) throw new Error(`Refugio ${id} no encontrado`)
@@ -87,7 +87,7 @@ export class MockAdminService implements IAdminService {
     return [..._dogs]
   }
 
-  async updateDogStatus(id: number, status: DogStatus): Promise<Dog> {
+  async updateDogStatus(id: string, status: DogStatus): Promise<Dog> {
     await delay()
     const idx = _dogs.findIndex(d => d.id === id)
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`)

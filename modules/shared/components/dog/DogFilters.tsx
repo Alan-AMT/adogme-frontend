@@ -20,7 +20,6 @@ export interface DogFiltersState {
   nivelEnergia?: EnergyLevel | null
   estado?:       DogStatus | null
   raza?:         string | null
-  ciudad?:       string | null
   compatKids?:   CompatibilityAnswer | null
   compatCats?:   CompatibilityAnswer | null
   compatDogs?:   CompatibilityAnswer | null
@@ -31,7 +30,6 @@ interface DogFiltersProps {
   onChange:        (filters: DogFiltersState) => void
   onReset:         () => void
   availableBreeds: string[]
-  availableCities: string[]
   activeCount?:    number
 }
 
@@ -56,7 +54,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 export function DogFilters({
-  filters, onChange, onReset, availableBreeds, availableCities, activeCount = 0,
+  filters, onChange, onReset, availableBreeds, activeCount = 0,
 }: DogFiltersProps) {
 
   function toggle<K extends keyof DogFiltersState>(key: K, val: DogFiltersState[K]) {
@@ -180,21 +178,6 @@ export function DogFilters({
           >
             <option value="">Todas las razas</option>
             {availableBreeds.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-        </div>
-      )}
-
-      {/* ── Ciudad / Alcaldía ── */}
-      {availableCities.length > 0 && (
-        <div className="cat-select-wrap" style={{ marginTop: '1.1rem' }}>
-          <label className="cat-select-label">Ciudad / Alcaldía</label>
-          <select
-            className="cat-select"
-            value={filters.ciudad ?? ''}
-            onChange={e => onChange({ ...filters, ciudad: e.target.value || null })}
-          >
-            <option value="">Todas las ciudades</option>
-            {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
       )}

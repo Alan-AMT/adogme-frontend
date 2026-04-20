@@ -110,7 +110,7 @@ export interface LifestyleQuizAnswers {
 
 export interface Cuestionario {
   id: number
-  adoptanteId: number
+  adoptanteId: string
   fecha: string           // ISO date
   descripcion: string     // descripción o título del cuestionario
   version: string         // versión del formulario (para migraciones futuras)
@@ -125,8 +125,8 @@ export interface Cuestionario {
 
 export interface DogRecommendation {
   id: number
-  adoptanteId: number     // FK → Adoptante
-  perroId: number         // FK → Perro
+  adoptanteId: string     // FK → Adoptante
+  perroId: string         // FK → Perro
   cuestionarioId: number  // FK → Cuestionario
   fecha: string           // ISO date
   compatibilidad: number  // float 0-1 en BD → usamos 0-100 en FE
@@ -142,7 +142,6 @@ export interface DogRecommendation {
   perroEdad?: number
   perroTamano?: string
   refugioNombre?: string
-  refugioSlug?: string
 }
 
 export interface MatchReason {
@@ -154,7 +153,7 @@ export interface MatchReason {
 // ─── Respuesta del servicio ML ────────────────────────────────────────────────
 
 export interface MLRecommendationResponse {
-  adoptanteId: number
+  adoptanteId: string
   cuestionarioId: number
   recomendaciones: DogRecommendation[]
   resumen: string         // texto generado: "Basado en tu perfil, priorizamos perros medianos..."

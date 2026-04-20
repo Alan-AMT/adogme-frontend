@@ -8,5 +8,5 @@ interface Props {
 
 export default async function AdminDogEditPage({ params }: Props) {
   const { id } = await params
-  return <AdminDogEditView id={parseInt(id, 10)} />
+  return <AdminDogEditView id={id} />
 }

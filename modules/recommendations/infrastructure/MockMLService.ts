@@ -56,11 +56,11 @@ function computeDogVector(dog: Dog): [number, number, number, number] {
   const spaceReq: Record<string, number> = { pequeño: 1.5, mediano: 2.5, grande: 3.5, gigante: 5 }
 
   const ageTrain = age <= 6 ? 5 : age <= 12 ? 4 : age <= 48 ? 3 : 2
-  const healthTrain = dog.castrado ? 2 : 3  // simplificado
+  const healthTrain = dog.castrado ? 2 : 3
   const trainingDiff = (ageTrain + healthTrain) / 2
 
   const healthBase  = dog.castrado ? 1 : 3
-  const healthScore = (dog.vacunas?.length ?? 0) > 0 ? 1 : 0
+  const healthScore = dog.estaVacunado ? 1 : 0
   const medicalNeed = 5 - healthScore * (4 / 3)
   const careReq     = (healthBase + medicalNeed) / 2
 
@@ -81,7 +81,7 @@ function euclideanSimilarity(u: number[], d: number[]): number {
 function mockMlScore(dog: Dog): number {
   let score = 0.5
   if (dog.edad <= 12) score += 0.1        // cachorro → adopción rápida
-  if (dog.vacunas && dog.vacunas.length > 0) score += 0.1
+  if (dog.estaVacunado) score += 0.1
   if (dog.castrado) score += 0.05
   if (dog.fotos && dog.fotos.length > 2)  score += 0.1
   if (dog.descripcion && dog.descripcion.length > 100) score += 0.05
@@ -123,7 +123,7 @@ function buildResumen(score: number): string {
 
 export class MockMLService implements IMLService {
   async generateRecommendations(
-    adoptanteId: number,
+    adoptanteId: string,
     answers:     LifestyleQuizAnswers,
   ): Promise<MLRecommendationResponse> {
     await delay(DELAY_MS)
@@ -169,7 +169,6 @@ export class MockMLService implements IMLService {
       perroEdad:       s.dog.edad,
       perroTamano:     s.dog.tamano,
       refugioNombre:   s.dog.refugioNombre,
-      refugioSlug:     s.dog.refugioSlug,
     }))
 
     const topScore = recomendaciones[0]?.compatibilidad ?? 0

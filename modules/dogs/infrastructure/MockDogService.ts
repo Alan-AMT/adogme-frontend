@@ -3,6 +3,7 @@
 // Las operaciones de escritura actúan sobre una copia en memoria local.
 
 import type { Dog, DogFilters, DogListItem, PaginatedDogs } from "../domain/dog";
+import { calcularEdadCategoria } from "../domain/dog";
 import {
   MOCK_DOGS,
   getDogById as sharedGetById,
@@ -23,14 +24,7 @@ const delay = (min = 500, max = 800) =>
 
 // ─── Copia mutable en memoria (create / update / delete) ──────────────────────
 let _dogs: Dog[] = [...MOCK_DOGS];
-let _nextId = Math.max(...MOCK_DOGS.map((d) => d.id)) + 1;
-
-function computeEdadCategoria(edadMeses: number): Dog["edadCategoria"] {
-  if (edadMeses < 12) return "cachorro";
-  if (edadMeses < 36) return "joven";
-  if (edadMeses < 96) return "adulto";
-  return "senior";
-}
+let _nextId = Math.max(...MOCK_DOGS.map((d) => Number(d.id))) + 1;
 
 function toListItem(d: Dog): DogListItem {
   return {
@@ -40,8 +34,7 @@ function toListItem(d: Dog): DogListItem {
     estado: d.estado, foto: d.foto, compatibilidad: d.compatibilidad,
     aptoNinos: d.aptoNinos, aptoPerros: d.aptoPerros,
     necesitaJardin: d.necesitaJardin,
-    refugioNombre: d.refugioNombre, refugioSlug: d.refugioSlug,
-    refugioCiudad: d.refugioCiudad,
+    refugioNombre: d.refugioNombre,
   };
 }
 
@@ -70,7 +63,7 @@ function applyFilters(filters: DogFilters = {}): DogListItem[] {
   if (filters.estado)        dogs = dogs.filter((d) => d.estado === filters.estado);
   if (filters.edadCategoria) dogs = dogs.filter((d) => d.edadCategoria === filters.edadCategoria);
   if (filters.raza)          dogs = dogs.filter((d) => d.raza.toLowerCase() === filters.raza!.toLowerCase());
-  if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === filters.refugioId);
+  if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === String(filters.refugioId));
 
   // ── Compatibilidad ───────────────────────────────────────────────────────
   if (filters.aptoNinos  === true) dogs = dogs.filter((d) => d.aptoNinos);
@@ -81,14 +74,8 @@ function applyFilters(filters: DogFilters = {}): DogListItem[] {
   if (filters.necesitaJardin === true) dogs = dogs.filter((d) => d.necesitaJardin);
   if (filters.castrado       === true) dogs = dogs.filter((d) => d.castrado);
 
-  // ── Ciudad del refugio ───────────────────────────────────────────────────
-  if (filters.ciudad) {
-    const city = filters.ciudad.toLowerCase();
-    dogs = dogs.filter((d) => (d.refugioCiudad ?? "").toLowerCase().includes(city));
-  }
-
   // ── Solo con puntuación de compatibilidad calculada ──────────────────────
-  if (filters.soloConCompatibilidad) dogs = dogs.filter((d) => d.compatibilidad > 0);
+  if (filters.soloConCompatibilidad) dogs = dogs.filter((d) => (d.compatibilidad ?? 0) > 0);
 
   // ── Convertir a DogListItem antes de ordenar ─────────────────────────────
   let result = dogs.map(toListItem);
@@ -102,7 +89,7 @@ function applyFilters(filters: DogFilters = {}): DogListItem[] {
     );
   } else if (filters.sortBy === "compatibilidad") {
     result.sort((a, b) =>
-      asc ? a.compatibilidad - b.compatibilidad : b.compatibilidad - a.compatibilidad,
+      asc ? (a.compatibilidad ?? 0) - (b.compatibilidad ?? 0) : (b.compatibilidad ?? 0) - (a.compatibilidad ?? 0),
     );
   }
   // "fechaRegistro" requiere acceso al Dog completo; ordenamos antes de convertir
@@ -142,17 +129,13 @@ function applyFiltersWithDateSort(filters: DogFilters = {}): DogListItem[] {
     if (filters.estado)        dogs = dogs.filter((d) => d.estado === filters.estado);
     if (filters.edadCategoria) dogs = dogs.filter((d) => d.edadCategoria === filters.edadCategoria);
     if (filters.raza)          dogs = dogs.filter((d) => d.raza.toLowerCase() === filters.raza!.toLowerCase());
-    if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === filters.refugioId);
+    if (filters.refugioId)     dogs = dogs.filter((d) => d.refugioId === String(filters.refugioId));
     if (filters.aptoNinos  === true) dogs = dogs.filter((d) => d.aptoNinos);
     if (filters.aptoPerros === true) dogs = dogs.filter((d) => d.aptoPerros);
     if (filters.aptoGatos  === true) dogs = dogs.filter((d) => d.aptoGatos);
     if (filters.necesitaJardin === true) dogs = dogs.filter((d) => d.necesitaJardin);
     if (filters.castrado       === true) dogs = dogs.filter((d) => d.castrado);
-    if (filters.ciudad) {
-      const city = filters.ciudad.toLowerCase();
-      dogs = dogs.filter((d) => (d.refugioCiudad ?? "").toLowerCase().includes(city));
-    }
-    if (filters.soloConCompatibilidad) dogs = dogs.filter((d) => d.compatibilidad > 0);
+    if (filters.soloConCompatibilidad) dogs = dogs.filter((d) => (d.compatibilidad ?? 0) > 0);
 
     return sortByFechaRegistro(dogs, asc).map(toListItem);
   }
@@ -177,7 +160,7 @@ export class MockDogService implements IDogService {
     return { data, total, page, totalPages: Math.ceil(total / limit), limit };
   }
 
-  async getDogById(id: number): Promise<Dog | null> {
+  async getDogById(id: string): Promise<Dog | null> {
     await delay(200, 400);
     return _dogs.find((d) => d.id === id) ?? sharedGetById(id) ?? null;
   }
@@ -192,66 +175,64 @@ export class MockDogService implements IDogService {
   async createDog(data: DogCreateData): Promise<Dog> {
     await delay(500, 800);
     const newDog: Dog = {
-      id:             _nextId++,
-      refugioId:      data.refugioId,
-      nombre:         data.nombre,
-      edad:           data.edad,
-      edadCategoria:  data.edadCategoria ?? computeEdadCategoria(data.edad),
-      raza:           data.raza,
-      tamano:         data.tamano,
-      nivelEnergia:   data.nivelEnergia,
-      sexo:           data.sexo,
-      descripcion:    data.descripcion,
-      foto:           data.foto,
-      fotos:          data.fotos ?? [data.foto],
-      salud:          [
-        data.vacunado      ? 'Vacunado'      : null,
-        data.desparasitado ? 'Desparasitado' : null,
-        data.castrado      ? 'Castrado'      : null,
-      ].filter(Boolean).join(', ') || 'Sin información',
-      estado:         "no_disponible",  // borrador hasta publishDog
-      compatibilidad: 0,
-      fechaRegistro:  new Date().toISOString().slice(0, 10),
-      castrado:       data.castrado       ?? false,
-      microchip:      data.microchip      ?? false,
-      aptoNinos:      data.aptoNinos      ?? false,
-      aptoPerros:     data.aptoPerros     ?? false,
-      aptoGatos:      data.aptoGatos      ?? false,
-      necesitaJardin: data.necesitaJardin ?? false,
-      pesoKg:         data.pesoKg,
-      personalidad:   data.personalidad   ?? [],
-      vacunas:        data.vacunas        ?? [],
+      id:                String(_nextId++),
+      userOwnerId:       "current-user",
+      refugioId:         data.refugioId,
+      nombre:            data.nombre,
+      raza:              data.raza,
+      raza2:             data.raza2,
+      edad:              data.edad,
+      pesoKg:            data.pesoKg,
+      sexo:              data.sexo,
+      tamano:            data.tamano,
+      nivelEnergia:      data.nivelEnergia,
+      descripcion:       data.descripcion,
+      estado:            "no_disponible",
+      personalidad:      data.personalidad   ?? [],
+      aptoNinos:         data.aptoNinos      ?? false,
+      aptoPerros:        data.aptoPerros     ?? false,
+      aptoGatos:         data.aptoGatos      ?? false,
+      castrado:          data.castrado,
+      necesitaJardin:    data.necesitaJardin ?? false,
+      estaVacunado:      data.estaVacunado,
+      estaDesparasitado: data.estaDesparasitado,
+      largoPelaje:       data.largoPelaje,
+      vacunas:           data.vacunas        ?? [],
+      salud:             data.salud,
+      foto:              data.foto,
+      fotos:             data.fotos ?? (data.foto ? [data.foto] : []),
+      edadCategoria:     calcularEdadCategoria(data.edad),
+      compatibilidad:    0,
+      fechaRegistro:     new Date().toISOString().slice(0, 10),
     };
     _dogs = [..._dogs, newDog];
     return newDog;
   }
 
-  async updateDog(id: number, data: DogUpdateData): Promise<Dog> {
+  async updateDog(id: string, data: DogUpdateData): Promise<Dog> {
     await delay(500, 700);
     const idx = _dogs.findIndex((d) => d.id === id);
     if (idx === -1) throw new Error(`Dog ${id} not found`);
+    const edad = data.edad ?? _dogs[idx].edad;
     const updated: Dog = {
       ..._dogs[idx],
       ...data,
-      edadCategoria:
-        data.edad !== undefined
-          ? (data.edadCategoria ?? computeEdadCategoria(data.edad))
-          : _dogs[idx].edadCategoria,
+      edadCategoria: calcularEdadCategoria(edad),
     };
     _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
     return updated;
   }
 
-  async deleteDog(id: number): Promise<void> {
+  async deleteDog(id: string): Promise<void> {
     await delay(500, 700);
     _dogs = _dogs.filter((d) => d.id !== id);
   }
 
-  async publishDog(id: number): Promise<Dog> {
+  async publishDog(id: string): Promise<Dog> {
     return this.updateDog(id, { estado: "disponible" });
   }
 
-  async unpublishDog(id: number): Promise<Dog> {
+  async unpublishDog(id: string): Promise<Dog> {
     return this.updateDog(id, { estado: "no_disponible" });
   }
 

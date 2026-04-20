@@ -82,11 +82,11 @@ function DogCard({ dog }: { dog: Dog }) {
         {/* Info rows */}
         {[
           { label: 'Refugio',      value: dog.refugioNombre ?? '—' },
-          { label: 'Ciudad',       value: dog.refugioCiudad ?? '—' },
           { label: 'Descripción',  value: dog.descripcion },
           { label: 'Salud',        value: dog.salud },
           { label: 'Castrado',     value: dog.castrado ? 'Sí' : 'No' },
-          { label: 'Microchip',    value: dog.microchip ? 'Sí' : 'No' },
+          { label: 'Vacunado',     value: dog.estaVacunado ? 'Sí' : 'No' },
+          { label: 'Desparasitado', value: dog.estaDesparasitado ? 'Sí' : 'No' },
           { label: 'Apto niños',   value: dog.aptoNinos ? 'Sí' : 'No' },
           { label: 'Apto perros',  value: dog.aptoPerros ? 'Sí' : 'No' },
           { label: 'Apto gatos',   value: dog.aptoGatos ? 'Sí' : 'No' },
@@ -230,7 +230,7 @@ function ModerationPanel({
 
 // ─── Vista principal ──────────────────────────────────────────────────────────
 
-export default function AdminDogEditView({ id }: { id: number }) {
+export default function AdminDogEditView({ id }: { id: string }) {
   const { dogs, isLoading, isUpdating, updateStatus } = useAdminDogs()
   const dog = useMemo(() => dogs.find(d => d.id === id) ?? null, [dogs, id])
 

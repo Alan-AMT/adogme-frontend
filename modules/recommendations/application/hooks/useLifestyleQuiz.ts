@@ -22,8 +22,8 @@ import type { OnChangeQuiz } from '../../components/quiz-steps/types'
 
 export const TOTAL_STEPS = 4
 
-const DRAFT_KEY   = (id: number) => `quiz-draft-${id}`
-const RESULTS_KEY = (id: number) => `ml-results-${id}`
+const DRAFT_KEY   = (id: string | number) => `quiz-draft-${id}`
+const RESULTS_KEY = (id: string | number) => `ml-results-${id}`
 
 /** Valor neutro (3) para todas las preguntas al iniciar */
 const DEFAULTS: LifestyleQuizAnswers = {
@@ -77,7 +77,7 @@ export interface UseLifestyleQuizReturn {
 
 export function useLifestyleQuiz(): UseLifestyleQuizReturn {
   const { user } = useAuthStore()
-  const userId   = user?.id ?? 0
+  const userId   = user?.id ?? ""
 
   const [currentStep,  setCurrentStep]  = useState(0)
   const [direction,    setDirection]    = useState<QuizDirection>('forward')

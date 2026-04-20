@@ -14,13 +14,33 @@
 import type { AuthResponse, ShelterUser } from "@/modules/shared/domain/User";
 import { MOCK_CREDENTIALS } from "@/modules/shared/mockData/users.mock";
 import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
-import { buildMockToken } from "@/modules/shared/infrastructure/auth/tokenManager";
+import {
+  buildMockToken,
+  setShelterSessionCookie,
+  setShelterProfileCache,
+} from "@/modules/shared/infrastructure/auth/tokenManager";
 import type {
   IAuthService,
   LoginCredentials,
   RegisterData,
   ShelterRegisterData,
 } from "./IAuthService";
+
+// ─── Mock enrichment (no API calls) ──────────────────────────────────────────
+
+function mockEnrichAndPersist(user: typeof MOCK_CREDENTIALS[string]["user"]): void {
+  if (user.role !== "shelter") return;
+  const shelter = user as ShelterUser;
+  if (shelter.shelterId == null) return;
+  setShelterSessionCookie({
+    shelterId: shelter.shelterId,
+    shelterStatus: shelter.shelterStatus ?? "pending",
+  });
+  setShelterProfileCache(user.id, {
+    shelterName: user.name,
+    shelterLogo: undefined,
+  });
+}
 
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -50,6 +70,8 @@ export class MockAuthService implements IAuthService {
     const accessToken = buildMockToken(user);
     const refreshToken = `refresh-${user.id}-${Date.now()}`;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    mockEnrichAndPersist(user);
 
     const store = useAuthStore.getState();
     store.setUser(user);
