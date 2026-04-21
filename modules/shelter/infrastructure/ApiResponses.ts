@@ -81,6 +81,7 @@ export type GetShelterProfileApiResponse = {
   status: "pending" | "approved" | "rejected" | "suspended";
   logo: string | null;
   imageUrl: string | null;
+  adoptionFee: number | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -103,6 +104,7 @@ export type UpdateShelterApiResponse = {
   status: "pending" | "approved" | "rejected" | "suspended";
   logo: string | null;
   imageUrl: string | null;
+  adoptionFee: number | null;
   createdAt: Date;
   updatedAt: Date;
 };

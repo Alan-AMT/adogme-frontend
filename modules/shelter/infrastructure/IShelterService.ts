@@ -62,6 +62,7 @@ export interface DogCreateData {
   pesoKg?: number;
   personalidad?: PersonalityTag[];
   vacunas?: Vaccination[];
+  cuotaAdopcion?: number;
 }
 
 /** Campos editables en una actualización parcial */

@@ -48,6 +48,7 @@ export interface DogFormData {
   refugioNombre?: string;
   refugioId: string;
   refugioLogo?: string;
+  cuotaAdopcion?: number;
   edad: number;
   raza: string;
   raza2: string;
@@ -84,6 +85,7 @@ const FORM_DEFAULTS: DogFormData = {
   refugioId: "",
   refugioLogo: "",
   refugioNombre: "",
+  cuotaAdopcion: 0,
   edad: 0,
   raza: "",
   raza2: "",
@@ -216,39 +218,41 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
       .getDogById(dogId)
       .then((dog) => {
         if (cancelled || !dog) return;
-        setFormData({
-          nombre:            dog.nombre,
-          refugioNombre:     dog.refugioNombre,
-          refugioLogo:       dog.refugioLogo,
-          refugioId:         dog.refugioId,
-          edad:              dog.edad,
-          raza:              dog.raza,
-          raza2:             dog.raza2 ?? "",
-          tamano:            dog.tamano,
-          sexo:              dog.sexo,
-          nivelEnergia:      dog.nivelEnergia,
-          descripcion:       dog.descripcion,
-          personalidad:      dog.personalidad ?? [],
-          aptoNinos:         dog.aptoNinos,
-          aptoPerros:        dog.aptoPerros,
-          aptoGatos:         dog.aptoGatos,
-          castrado:          dog.castrado,
-          necesitaJardin:    dog.necesitaJardin,
-          pesoKg:            dog.pesoKg,
-          estaVacunado:      dog.estaVacunado,
+        updateMany({
+          nombre: dog.nombre,
+          refugioNombre: dog.refugioNombre,
+          refugioId: dog.refugioId,
+          edad: dog.edad,
+          raza: dog.raza,
+          raza2: dog.raza2 ?? "",
+          tamano: dog.tamano,
+          sexo: dog.sexo,
+          nivelEnergia: dog.nivelEnergia,
+          descripcion: dog.descripcion,
+          personalidad: dog.personalidad ?? [],
+          aptoNinos: dog.aptoNinos,
+          aptoPerros: dog.aptoPerros,
+          aptoGatos: dog.aptoGatos,
+          castrado: dog.castrado,
+          necesitaJardin: dog.necesitaJardin,
+          pesoKg: dog.pesoKg,
+          estaVacunado: dog.estaVacunado,
           estaDesparasitado: dog.estaDesparasitado,
-          largoPelaje:       dog.largoPelaje,
-          salud:             dog.salud,
-          vacunas:           dog.vacunas ?? [],
-          foto:              dog.foto ?? "",
-          fotos:             dog.fotos ?? (dog.foto ? [dog.foto] : []),
+          largoPelaje: dog.largoPelaje,
+          salud: dog.salud,
+          vacunas: dog.vacunas ?? [],
+          foto: dog.foto ?? "",
+          fotos: dog.fotos ?? (dog.foto ? [dog.foto] : []),
         });
       })
       .catch((e) => {
-        if (!cancelled) setSubmitError((e as Error).message ?? 'Error al cargar el perro');
+        if (!cancelled)
+          setSubmitError((e as Error).message ?? "Error al cargar el perro");
       });
 
-    return () => { cancelled = true };
+    return () => {
+      cancelled = true;
+    };
   }, [dogId]);
 
   // ── Actualizar un campo ───────────────────────────────────────────────────────
@@ -273,12 +277,9 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
     [dogId],
   );
 
-  const updateMany = useCallback(
-    (partial: Partial<DogFormData>) => {
-      setFormData((prev) => ({ ...prev, ...partial }));
-    },
-    [],
-  );
+  const updateMany = useCallback((partial: Partial<DogFormData>) => {
+    setFormData((prev) => ({ ...prev, ...partial }));
+  }, []);
 
   // ── Navegación ────────────────────────────────────────────────────────────────
 
@@ -366,6 +367,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           pesoKg: formData.pesoKg,
           vacunas: formData.vacunas,
           refugioId: formData.refugioId,
+          cuotaAdopcion: formData.cuotaAdopcion ?? 0,
         };
         await shelterService.updateDog(dogId, updateData);
       } else {
@@ -396,6 +398,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           vacunas: formData.vacunas,
           refugioNombre: formData.refugioNombre,
           refugioLogo: formData.refugioLogo,
+          cuotaAdopcion: formData.cuotaAdopcion ?? 0,
         };
         await shelterService.createDog(createData);
       }

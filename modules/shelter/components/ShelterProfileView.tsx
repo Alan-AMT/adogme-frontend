@@ -26,6 +26,7 @@ interface FormState {
   logo:          string
   imagenPortada: string
   socialLinks:   SocialLink[]
+  cuotaAdopcion: string
   // Donaciones
   aceptaDonaciones: boolean
   descripcionCausa: string
@@ -47,6 +48,7 @@ function shelterToForm(s: Shelter): FormState {
     ubicacion: s.ubicacion, alcaldia: s.alcaldia ?? '', direccionCompleta: s.direccionCompleta ?? '', schedule: s.schedule ?? '',
     logo: s.logo, imagenPortada: s.imagenPortada,
     socialLinks: links,
+    cuotaAdopcion: s.cuotaAdopcion != null ? String(s.cuotaAdopcion) : '',
     aceptaDonaciones: s.donationConfig?.aceptaDonaciones ?? false,
     descripcionCausa: s.donationConfig?.descripcionCausa ?? '',
     cuentaClabe:      s.donationConfig?.cuentaClabe ?? '',
@@ -61,6 +63,7 @@ const EMPTY_FORM: FormState = {
   nombre: '', descripcion: '', correo: '', telefono: '',
   ubicacion: '', alcaldia: '', direccionCompleta: '', schedule: '', logo: '', imagenPortada: '',
   socialLinks: [],
+  cuotaAdopcion: '',
   aceptaDonaciones: false, descripcionCausa: '', cuentaClabe: '',
   banco: '', titularCuenta: '', paypalLink: '', mercadoPagoLink: '',
 }
@@ -173,6 +176,7 @@ export default function ShelterProfileView() {
       logo:          form.logo.trim(),
       imagenPortada: form.imagenPortada.trim(),
       redesSociales,
+      cuotaAdopcion: form.cuotaAdopcion ? Number(form.cuotaAdopcion) : 0,
       donationConfig: {
         aceptaDonaciones: form.aceptaDonaciones,
         descripcionCausa: form.descripcionCausa.trim() || undefined,
@@ -293,6 +297,18 @@ export default function ShelterProfileView() {
                       placeholder="Ej: Lun-Vie 9:00-17:00"
                     />
                   </div>
+                </div>
+
+                <div className="sv-field">
+                  <label className="sv-field__label">Cuota de adopción (opcional)</label>
+                  <input
+                    type="number"
+                    className="sv-field__input"
+                    value={form.cuotaAdopcion}
+                    onChange={e => update('cuotaAdopcion', e.target.value)}
+                    min={0}
+                    placeholder="Ej. 500 — deja vacío si es gratuita"
+                  />
                 </div>
 
                 <div className="sv-field">

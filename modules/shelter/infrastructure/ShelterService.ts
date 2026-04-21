@@ -98,6 +98,7 @@ export class ShelterService implements IShelterService {
         imagenPortada: data.imageUrl ?? "",
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
         slug: "",
+        cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
           aceptaDonaciones: true,
         } as DonationConfig,
@@ -130,6 +131,7 @@ export class ShelterService implements IShelterService {
           twitter: shelterUpdate.redesSociales?.twitter,
           logo: shelterUpdate.logo,
           imageUrl: shelterUpdate.imagenPortada,
+          adoptionFee: shelterUpdate.cuotaAdopcion ?? 0,
         },
       );
       const updated: Shelter = {
@@ -155,6 +157,7 @@ export class ShelterService implements IShelterService {
         imagenPortada: data.imageUrl ?? "",
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
         slug: "",
+        cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
           aceptaDonaciones: true,
         } as DonationConfig,
@@ -211,6 +214,7 @@ export class ShelterService implements IShelterService {
           breed2: payload.raza2 ?? null,
           shelterName: payload.refugioNombre,
           shelterLogo: payload.refugioLogo,
+          adoptionFee: payload.cuotaAdopcion,
         },
       );
       return parseDog(data);
@@ -261,6 +265,7 @@ export class ShelterService implements IShelterService {
           breed2: payload.raza2 ?? null,
           shelterName: payload.refugioNombre,
           shelterLogo: payload.refugioLogo,
+          adoptionFee: payload.cuotaAdopcion,
         },
       );
       return parseDog(data);

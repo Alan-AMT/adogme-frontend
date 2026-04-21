@@ -39,6 +39,7 @@ export interface ShelterUser extends User {
   shelterStatus?: "pending" | "approved" | "rejected" | "suspended";
   shelterName?: string;
   shelterLogo?: string;
+  shelterAdoptionFee?: number;
 }
 
 // ─── Auth ────────────────────────────────────────────────────────────────────

@@ -40,6 +40,7 @@ export interface Shelter {
     web?: string;
   };
   donationConfig: DonationConfig;
+  cuotaAdopcion?: number;
 
   // Contadores (joins del backend)
   totalPerros?: number;

@@ -77,7 +77,8 @@ export class MockShelterService implements IShelterService {
 
   async getShelterProfile(refugioId: string): Promise<Shelter> {
     await delay(200);
-    const shelter = _shelters.find((s) => s.id === refugioId);
+    const shelter = _shelters[0];
+    // const shelter = _shelters.find((s) => s.id === refugioId);
     if (!shelter) throw new Error(`Refugio ${refugioId} no encontrado`);
     return { ...shelter };
   }

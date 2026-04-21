@@ -129,6 +129,7 @@ export function clearShelterSessionCookie(): void {
 export interface ShelterProfileCache {
   shelterName: string;
   shelterLogo?: string;
+  shelterAdoptionFee: number;
 }
 
 export function setShelterProfileCache(

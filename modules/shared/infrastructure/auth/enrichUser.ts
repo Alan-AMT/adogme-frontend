@@ -35,12 +35,17 @@ async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
   const shelterStatus: string = shelter.status ?? shelter.shelterStatus;
   const shelterName: string = shelter.name ?? shelter.shelterName;
   const shelterLogo: string | undefined = shelter.logo ?? shelter.shelterLogo;
+  const shelterAdoptionFee: number = shelter.adoptionFee ?? 0;
 
   // Persist to cookie so server layouts can read it
   setShelterSessionCookie({ shelterId, shelterStatus });
 
   // Persist to Web Storage API for fast hydration on refresh
-  setShelterProfileCache(user.id, { shelterName, shelterLogo });
+  setShelterProfileCache(user.id, {
+    shelterName,
+    shelterLogo,
+    shelterAdoptionFee,
+  });
 
   return {
     ...user,
@@ -48,6 +53,7 @@ async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
     shelterStatus: shelterStatus as ShelterUser["shelterStatus"],
     shelterName,
     shelterLogo,
+    shelterAdoptionFee,
   };
 }
 

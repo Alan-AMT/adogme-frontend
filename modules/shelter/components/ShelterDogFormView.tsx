@@ -39,15 +39,17 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
       if (user.shelterId) {
         form.updateMany({
           refugioNombre: user.shelterName,
-          refugioLogo:   user.shelterLogo,
-          refugioId:     user.shelterId!,
+          refugioLogo: user.shelterLogo,
+          refugioId: user.shelterId!,
+          cuotaAdopcion: user.shelterAdoptionFee,
         });
       } else {
         hydrate().then(() => {
           form.updateMany({
             refugioNombre: user.shelterName,
-            refugioLogo:   user.shelterLogo,
-            refugioId:     user.shelterId!,
+            refugioLogo: user.shelterLogo,
+            refugioId: user.shelterId!,
+            cuotaAdopcion: user.shelterAdoptionFee,
           });
         });
       }
