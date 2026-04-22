@@ -28,7 +28,9 @@ import type {
 
 // ─── Mock enrichment (no API calls) ──────────────────────────────────────────
 
-function mockEnrichAndPersist(user: typeof MOCK_CREDENTIALS[string]["user"]): void {
+function mockEnrichAndPersist(
+  user: (typeof MOCK_CREDENTIALS)[string]["user"],
+): void {
   if (user.role !== "shelter") return;
   const shelter = user as ShelterUser;
   if (shelter.shelterId == null) return;
@@ -39,6 +41,7 @@ function mockEnrichAndPersist(user: typeof MOCK_CREDENTIALS[string]["user"]): vo
   setShelterProfileCache(user.id, {
     shelterName: user.name,
     shelterLogo: undefined,
+    shelterAdoptionFee: 0,
   });
 }
 

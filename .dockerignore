@@ -1,0 +1,67 @@
+# git
+.git
+.gitignore
+.github
+
+# dependencies
+node_modules
+.pnp
+.pnp.*
+.yarn
+
+# next.js build output
+.next
+out
+build
+
+# testing
+coverage
+
+# env files
+.env
+.env.*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# editor / os
+.DS_Store
+.vscode
+.idea
+*.pem
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# vercel
+.vercel
+
+# docker
+Dockerfile
+.dockerignore
+
+# claude / local tooling
+.claude
+
+# project docs / local analysis
+README.md
+CLAUDE.md
+SERVICE_INTERACTION_MAP.md
+PR_PLAN*
+analisis_diagramas*
+project-tree.txt
+ApiGateway.yml
+.claude
+
+# ML microservice (separate repo)
+adogme-ml-main/
+
+# Local documentation
+Docu/
+
+# data files not needed at runtime
+modules/shared/data/BreedLabels.csv

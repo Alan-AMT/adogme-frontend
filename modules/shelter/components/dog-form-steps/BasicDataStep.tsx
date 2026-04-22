@@ -5,6 +5,7 @@
 import type { CSSProperties } from "react";
 import type { DogFormData } from "../../application/hooks/useDogForm";
 import type { DogSize, DogSex, EnergyLevel } from "@/modules/shared/domain/Dog";
+import { BreedSelect } from "@/modules/shared/components/ui/BreedSelect";
 import "../../styles/shelterViews.css";
 
 type UpdateFn = <K extends keyof DogFormData>(
@@ -98,13 +99,11 @@ export function BasicDataStep({ formData, errors, update }: Props) {
               <label className="sv-field__label">
                 Raza <span className="sv-field__required">*</span>
               </label>
-              <input
-                type="text"
-                className="sv-field__input"
+              <BreedSelect
+                id="raza"
                 value={formData.raza}
-                onChange={(e) => update("raza", e.target.value)}
+                onChange={(v) => update("raza", v)}
                 placeholder="Ej: Labrador Retriever"
-                maxLength={100}
               />
               {errors.raza && <p className="sv-field__error">{errors.raza}</p>}
             </div>
@@ -113,13 +112,11 @@ export function BasicDataStep({ formData, errors, update }: Props) {
           <div className="sv-form-row">
             <div className="sv-field sv-field--span-2">
               <label className="sv-field__label">Segunda raza</label>
-              <input
-                type="text"
-                className="sv-field__input"
+              <BreedSelect
+                id="raza2"
                 value={formData.raza2}
-                onChange={(e) => update("raza2", e.target.value)}
+                onChange={(v) => update("raza2", v)}
                 placeholder="Ej: Golden Retriever"
-                maxLength={100}
               />
               <p className="sv-field__helper">
                 Si es un perro mestizo, indicá las razas con las que más se

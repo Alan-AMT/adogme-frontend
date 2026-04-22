@@ -269,6 +269,7 @@ export class ShelterService implements IShelterService {
         },
       );
       return parseDog(data);
+      return {} as Dog;
     } catch (e) {
       throw Error("Error al actualizar perro");
     }
