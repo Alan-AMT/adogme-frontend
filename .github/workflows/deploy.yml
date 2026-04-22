@@ -49,4 +49,5 @@ jobs:
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           secrets: |
             NEXT_PUBLIC_API_URL=API_GATEWAY_URL:latest
+            NEXT_PUBLIC_API_KEY=NEXT_PUBLIC_API_KEY:latest
           flags: "--allow-unauthenticated" # Opcional: para que sea público
