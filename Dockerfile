@@ -9,6 +9,15 @@ RUN npm ci
 # Etapa de construcción
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# --- IMPORTANT: Build-time Variables ---
+# Define ARGs for variables used in client-side code (NEXT_PUBLIC_)
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_KEY
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
