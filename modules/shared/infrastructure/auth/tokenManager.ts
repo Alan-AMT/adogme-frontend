@@ -163,6 +163,7 @@ export interface UserProfileCache {
   applicantId?: string;
   address?: string;
   avatarUrl?: string;
+  postalCode?: string;
 }
 
 export function setUserProfileCache(

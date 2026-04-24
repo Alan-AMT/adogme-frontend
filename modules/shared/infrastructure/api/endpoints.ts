@@ -25,7 +25,6 @@ export const API_ENDPOINTS = {
     LOGOUT: `${BASE}/api/auth/logout`,
     FORGOT: `${BASE}/api/auth/forgot-password`,
     RESET: `${BASE}/api/auth/reset-password`,
-    ME: `${BASE}/api/auth/me`,
   },
 
   DOGS: {
@@ -101,8 +100,9 @@ export const API_ENDPOINTS = {
   },
 
   APPLICANTS: {
-    // REGISTER_APPLICANT: `${BASE}/applicants-ms/applicant`,
-    REGISTER: `http://localhost:3001/applicants-ms/applicant`,
+    REGISTER: `${BASE}/applicants-ms/applicant`,
+    ME: `${BASE}/applicants-ms/applicant/me`,
+    // REGISTER: `http://localhost:3001/applicants-ms/applicant`,
     UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
   },
 

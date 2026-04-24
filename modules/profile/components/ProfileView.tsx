@@ -116,10 +116,13 @@ function TabData() {
     e.preventDefault();
     clearStatus("data");
     await updateProfile({
-      nombre:    nombre    !== user?.name          ? nombre    : undefined,
-      telefono:  telefono  !== (applicant?.phone      ?? "") ? telefono  : undefined,
-      direccion: isApplicant && direccion !== (applicant?.address    ?? "") ? direccion : undefined,
-      cp:        isApplicant && cp        !== (applicant?.postalCode ?? "") ? cp        : undefined,
+      nombre: nombre !== user?.name ? nombre : undefined,
+      telefono: telefono !== (applicant?.phone ?? "") ? telefono : undefined,
+      direccion:
+        isApplicant && direccion !== (applicant?.address ?? "")
+          ? direccion
+          : undefined,
+      cp: isApplicant && cp !== (applicant?.postalCode ?? "") ? cp : undefined,
     });
   }
 
@@ -184,7 +187,9 @@ function TabData() {
             <Input
               label="Código postal"
               value={cp}
-              onChange={(e) => setCp(e.target.value.replace(/\D/g, "").slice(0, 5))}
+              onChange={(e) =>
+                setCp(e.target.value.replace(/\D/g, "").slice(0, 5))
+              }
               leftIcon={
                 <span
                   className="material-symbols-outlined"
@@ -832,7 +837,7 @@ export default function ProfileView() {
   return (
     <div className="pf-page">
       {/* ── Columna izquierda: sidebar ── */}
-      <div className="pf-sidebar-card">
+      <div className="pf-sidebar-card z-10">
         <div className="pf-cover" />
         <div className="pf-cover-body">
           <div className="pf-header__avatar-wrap">

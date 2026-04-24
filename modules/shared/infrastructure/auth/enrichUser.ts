@@ -60,8 +60,13 @@ async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
 // ─── Applicant enrichment ─────────────────────────────────────────────────────
 
 async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
-  const res = await fetch(API_ENDPOINTS.AUTH.ME, {
+  const res = await fetch(API_ENDPOINTS.APPLICANTS.ME, {
     credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
+      Authorization: `Bearer ${window.__authToken}`,
+    },
   });
 
   if (!res.ok) throw new Error(`Auth me fetch failed: ${res.status}`);
@@ -71,12 +76,19 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
   const phone: string | undefined = profile.phone;
   const address: string | undefined = profile.address;
   const applicantId: string = profile.id;
+  const postalCode: string | undefined = profile.address;
   const avatarUrl: string | undefined = profile.avatarUrl ?? profile.avatar;
 
   // Persist to Web Storage API for fast hydration on refresh
-  setUserProfileCache(user.id, { phone, address, avatarUrl, applicantId });
+  setUserProfileCache(user.id, {
+    phone,
+    address,
+    avatarUrl,
+    applicantId,
+    postalCode,
+  });
 
-  return { ...user, phone, address, avatarUrl, applicantId };
+  return { ...user, phone, address, avatarUrl, applicantId, postalCode };
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
