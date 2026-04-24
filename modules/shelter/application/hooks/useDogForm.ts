@@ -76,8 +76,9 @@ export interface DogFormData {
   vacunas: Vaccination[];
 
   // Step 4 — Fotos
-  foto: string; // URL principal
-  fotos: string[]; // galería completa
+  foto: string; // URL principal (blob URL, solo para display)
+  fotos: string[]; // galería completa (blob URLs, solo para display)
+  fotosExtensiones: string[]; // extensiones correspondientes a fotos[], ej: [".jpg", ".png"]
 }
 
 const FORM_DEFAULTS: DogFormData = {
@@ -107,6 +108,7 @@ const FORM_DEFAULTS: DogFormData = {
   vacunas: [],
   foto: "",
   fotos: [],
+  fotosExtensiones: [],
 };
 
 // ─── Validadores por paso ────────────────────────────────────────────────────
@@ -384,6 +386,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           descripcion: formData.descripcion,
           foto: formData.foto || undefined,
           fotos: formData.fotos,
+          fotosExtensiones: formData.fotosExtensiones,
           estaVacunado: formData.estaVacunado,
           estaDesparasitado: formData.estaDesparasitado,
           largoPelaje: formData.largoPelaje,

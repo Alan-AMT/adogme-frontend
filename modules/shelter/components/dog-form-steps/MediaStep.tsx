@@ -27,11 +27,18 @@ export function MediaStep({ formData, errors, update }: Props) {
     if (arr.length === 0) return
 
     const newUrls = arr.map(f => URL.createObjectURL(f))
+    const newExts = arr.map(f => {
+      const dot = f.name.lastIndexOf('.')
+      return dot !== -1 ? `.${f.name.slice(dot + 1).toLowerCase()}` : `.${f.type.split('/').pop()!.toLowerCase()}`
+    })
+
     const allUrls = [...formData.fotos, ...newUrls]
+    const allExts = [...formData.fotosExtensiones, ...newExts]
 
     update('fotos', allUrls)
+    update('fotosExtensiones', allExts)
     update('foto',  allUrls[0] ?? '')
-  }, [formData.fotos, update])
+  }, [formData.fotos, formData.fotosExtensiones, update])
 
   const onDrop = (e: DragEvent) => {
     e.preventDefault()
@@ -44,15 +51,20 @@ export function MediaStep({ formData, errors, update }: Props) {
   }
 
   function removePhoto(idx: number) {
-    const next = formData.fotos.filter((_, i) => i !== idx)
+    const next     = formData.fotos.filter((_, i) => i !== idx)
+    const nextExts = formData.fotosExtensiones.filter((_, i) => i !== idx)
     update('fotos', next)
+    update('fotosExtensiones', nextExts)
     update('foto',  next[0] ?? '')
   }
 
   function setMain(url: string) {
     if (url === formData.foto) return
+    const idx  = formData.fotos.indexOf(url)
+    const exts = formData.fotosExtensiones
     update('foto', url)
     update('fotos', [url, ...formData.fotos.filter(u => u !== url)])
+    update('fotosExtensiones', [exts[idx], ...exts.filter((_, i) => i !== idx)])
   }
 
   const canAdd = formData.fotos.length < MAX_PHOTOS

@@ -50,6 +50,7 @@ export interface DogCreateData {
   descripcion: string;
   foto?: string;
   fotos?: string[];
+  fotosExtensiones?: string[];
   estaVacunado: boolean;
   estaDesparasitado: boolean;
   castrado: boolean;

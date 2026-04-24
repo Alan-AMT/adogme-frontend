@@ -175,49 +175,51 @@ export class ShelterService implements IShelterService {
 
   async createDog(payload: DogCreateData): Promise<Dog> {
     try {
-      const { data } = await apiClient.post<CreateDogApiResponse>(
-        API_ENDPOINTS.DOGS.CREATE,
-        {
-          name: payload.nombre,
-          breed: payload.raza,
-          age: payload.edad,
-          shelterId: payload.refugioId,
-          weightKg: payload.pesoKg ?? null,
-          sex: payload.sexo,
-          size: payload.tamano,
-          energyLevel: payload.nivelEnergia,
-          description: payload.descripcion,
-          personality: payload.personalidad
-            ? payload.personalidad.map((p) => ({
-                label: p.label,
-                category: p.categoria,
-              }))
-            : [],
-          goodWithKids: payload.aptoNinos ?? false,
-          goodWithDogs: payload.aptoPerros ?? false,
-          goodWithCats: payload.aptoGatos ?? false,
-          sterilized: payload.castrado ?? false,
-          needsYard: payload.necesitaJardin ?? false,
-          isVaccinated: payload.estaVacunado ?? false,
-          isDewormed: payload.estaDesparasitado ?? false,
-          furLength: payload.largoPelaje,
-          vaccinations: payload.vacunas
-            ? payload.vacunas.map((v) => ({
-                name: v.nombre,
-                date: v.fecha,
-                nextDose: v.proximaDosis ?? null,
-                verified: v.verificada ?? false,
-              }))
-            : [],
-          health: payload.salud,
-          photo: "",
-          breed2: payload.raza2 ?? null,
-          shelterName: payload.refugioNombre,
-          shelterLogo: payload.refugioLogo,
-          adoptionFee: payload.cuotaAdopcion,
-        },
-      );
-      return parseDog(data);
+      console.log(payload.fotosExtensiones);
+      // const { data } = await apiClient.post<CreateDogApiResponse>(
+      //   API_ENDPOINTS.DOGS.CREATE,
+      //   {
+      //     name: payload.nombre,
+      //     breed: payload.raza,
+      //     age: payload.edad,
+      //     shelterId: payload.refugioId,
+      //     weightKg: payload.pesoKg ?? null,
+      //     sex: payload.sexo,
+      //     size: payload.tamano,
+      //     energyLevel: payload.nivelEnergia,
+      //     description: payload.descripcion,
+      //     personality: payload.personalidad
+      //       ? payload.personalidad.map((p) => ({
+      //           label: p.label,
+      //           category: p.categoria,
+      //         }))
+      //       : [],
+      //     goodWithKids: payload.aptoNinos ?? false,
+      //     goodWithDogs: payload.aptoPerros ?? false,
+      //     goodWithCats: payload.aptoGatos ?? false,
+      //     sterilized: payload.castrado ?? false,
+      //     needsYard: payload.necesitaJardin ?? false,
+      //     isVaccinated: payload.estaVacunado ?? false,
+      //     isDewormed: payload.estaDesparasitado ?? false,
+      //     furLength: payload.largoPelaje,
+      //     vaccinations: payload.vacunas
+      //       ? payload.vacunas.map((v) => ({
+      //           name: v.nombre,
+      //           date: v.fecha,
+      //           nextDose: v.proximaDosis ?? null,
+      //           verified: v.verificada ?? false,
+      //         }))
+      //       : [],
+      //     health: payload.salud,
+      //     images: payload.fotosExtensiones ?? [],
+      //     breed2: payload.raza2 ?? null,
+      //     shelterName: payload.refugioNombre,
+      //     shelterLogo: payload.refugioLogo,
+      //     adoptionFee: payload.cuotaAdopcion,
+      //   },
+      // );
+      // return parseDog(data);
+      return {} as Dog;
     } catch (e) {
       console.log(e);
       throw Error("Error al crear perro");
