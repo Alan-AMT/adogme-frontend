@@ -38,11 +38,7 @@ export interface RegisterFormData {
   confirmar: string;
 
   // Step 3 — adoptante
-  alcaldia: string;
-  colonia: string;
-  calle: string;
-  numExt: string;
-  numInt: string;
+  direccion: string;
   cp: string;
 
   // Step 3 — refugio
@@ -62,11 +58,7 @@ const INITIAL_DATA: RegisterFormData = {
   telefono: "",
   password: "",
   confirmar: "",
-  alcaldia: "",
-  colonia: "",
-  calle: "",
-  numExt: "",
-  numInt: "",
+  direccion: "",
   cp: "",
   refNombre: "",
   refAlcaldia: "",
@@ -158,10 +150,7 @@ function validateStep2(d: RegisterFormData): string {
 }
 
 function validateStep3Adoptante(d: RegisterFormData): string {
-  if (!d.alcaldia) return "Selecciona tu alcaldía.";
-  if (!d.colonia.trim()) return "La colonia es requerida.";
-  if (!d.calle.trim()) return "La calle es requerida.";
-  if (!d.numExt.trim()) return "El número exterior es requerido.";
+  if (!d.direccion.trim()) return "La dirección es requerida.";
   if (!d.cp.trim() || d.cp.trim().length !== 5)
     return "El código postal debe tener 5 dígitos.";
   return "";
@@ -247,11 +236,7 @@ export function useRegister(): UseRegisterReturn {
           email: data.correo,
           phone: data.telefono,
           password: data.password,
-          municipality: data.alcaldia,
-          neighborhood: data.colonia,
-          street: data.calle,
-          exteriorNumber: data.numExt,
-          interiorNumber: data.numInt || undefined,
+          address: data.direccion,
           postalCode: data.cp,
         });
         router.push("mi-match");

@@ -100,6 +100,12 @@ export const API_ENDPOINTS = {
     REMOVE: (dogId: number) => `${BASE}/api/favorites/${dogId}`,
   },
 
+  APPLICANTS: {
+    // REGISTER_APPLICANT: `${BASE}/applicants-ms/applicant`,
+    REGISTER: `http://localhost:3001/applicants-ms/applicant`,
+    UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
+  },
+
   ADMIN: {
     STATS: `${BASE}/api/admin/stats`,
     SHELTERS: `${BASE}/api/admin/shelters`,

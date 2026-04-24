@@ -605,58 +605,15 @@ export default function RegisterView() {
                 Tu dirección
               </p>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] font-[900] text-[#1f2937]">
-                  Alcaldía <span className="text-[#ff6b6b]">*</span>
-                </label>
-                <AuthSelect
-                  id="reg-alcaldia"
-                  value={data.alcaldia}
-                  onChange={(v) => update("alcaldia", v)}
-                  icon="location_city"
-                  options={ALCALDIAS_CDMX}
-                  placeholder="Selecciona tu alcaldía"
-                />
-              </div>
-
               <Input
-                id="reg-colonia"
-                label="Colonia"
-                placeholder="Ej. Guadalupe Tepeyac"
-                value={data.colonia}
-                onChange={(e) => update("colonia", e.target.value)}
-                leftIcon={<MIcon name="holiday_village" />}
-                required
-              />
-              <Input
-                id="reg-calle"
-                label="Calle"
-                placeholder="Nombre de la calle"
-                value={data.calle}
-                onChange={(e) => update("calle", e.target.value)}
+                id="reg-direccion"
+                label="Dirección"
+                placeholder="Ej. Calle Roble 45, Col. Guadalupe Tepeyac"
+                value={data.direccion}
+                onChange={(e) => update("direccion", e.target.value)}
                 leftIcon={<MIcon name="signpost" />}
                 required
               />
-
-              <div className="grid grid-cols-2 gap-3">
-                <Input
-                  id="reg-ext"
-                  label="Núm. exterior"
-                  placeholder="123"
-                  value={data.numExt}
-                  onChange={(e) => update("numExt", e.target.value)}
-                  leftIcon={<MIcon name="home" />}
-                  required
-                />
-                <Input
-                  id="reg-int"
-                  label="Núm. interior"
-                  placeholder="Depto (opc.)"
-                  value={data.numInt}
-                  onChange={(e) => update("numInt", e.target.value)}
-                  leftIcon={<MIcon name="apartment" />}
-                />
-              </div>
 
               <Input
                 id="reg-cp"

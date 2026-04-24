@@ -160,6 +160,7 @@ export function getShelterProfileCache(
 
 export interface UserProfileCache {
   phone?: string;
+  applicantId?: string;
   address?: string;
   avatarUrl?: string;
 }

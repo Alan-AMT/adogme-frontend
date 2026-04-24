@@ -19,7 +19,7 @@ export interface RegisterData {
 
   municipality?: string;
   neighborhood?: string;
-  street?: string;
+  address?: string;
   exteriorNumber?: string;
   interiorNumber?: string;
   postalCode?: string;

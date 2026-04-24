@@ -29,9 +29,13 @@ export class MockProfileService implements IProfileService {
       ...(data.nombre    !== undefined ? { nombre:    data.nombre    } : {}),
       ...(data.telefono  !== undefined ? { telefono:  data.telefono  } : {}),
       ...(data.avatarUrl !== undefined ? { avatarUrl: data.avatarUrl } : {}),
-      // direccion solo aplica a adoptante
+      // direccion y cp solo aplican a adoptante
       ...(data.direccion !== undefined && entry.user.role === 'applicant'
-        ? { direccion: data.direccion }
+        ? { address: data.direccion }
+        : {}
+      ),
+      ...(data.cp !== undefined && entry.user.role === 'applicant'
+        ? { postalCode: data.cp }
         : {}
       ),
     }

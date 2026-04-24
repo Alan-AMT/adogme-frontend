@@ -70,12 +70,13 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
 
   const phone: string | undefined = profile.phone;
   const address: string | undefined = profile.address;
+  const applicantId: string = profile.id;
   const avatarUrl: string | undefined = profile.avatarUrl ?? profile.avatar;
 
   // Persist to Web Storage API for fast hydration on refresh
-  setUserProfileCache(user.id, { phone, address, avatarUrl });
+  setUserProfileCache(user.id, { phone, address, avatarUrl, applicantId });
 
-  return { ...user, phone, address, avatarUrl };
+  return { ...user, phone, address, avatarUrl, applicantId };
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

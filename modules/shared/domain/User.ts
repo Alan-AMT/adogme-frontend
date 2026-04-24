@@ -20,8 +20,10 @@ export interface User {
 
 export interface Adoptante extends User {
   role: "applicant";
+  applicantId?: string;
   phone?: string;
   address?: string;
+  postalCode?: string;
   avatarUrl?: string;
 }
 

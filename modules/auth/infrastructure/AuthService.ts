@@ -3,6 +3,7 @@ import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
 import { enrichUser } from "@/modules/shared/infrastructure/auth/enrichUser";
+import type { Adoptante } from "@/modules/shared/domain/User";
 import type {
   IAuthService,
   RegisterData,
@@ -39,22 +40,59 @@ export class AuthService implements IAuthService {
   }
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    const payload = {
+    const userPayload = {
       email: data.email,
       name: data.name,
       password: data.password,
     };
-    const res = await apiClient.post<{
+
+    const { data: resData } = await apiClient.post<{
       user: AuthResponse["user"];
       accessToken: string;
       refreshToken: string;
-    }>(API_ENDPOINTS.AUTH.REGISTER, payload);
+    }>(API_ENDPOINTS.AUTH.REGISTER, userPayload);
 
-    const { user, accessToken, refreshToken } = res.data;
-
+    const { user, accessToken, refreshToken } = resData;
     const store = useAuthStore.getState();
     store.setTokens(accessToken, refreshToken);
-    const enriched = await enrichUser(user);
+
+    if (!user.id) {
+      throw new Error("No se pudo obtener el ID del usuario creado.");
+    }
+
+    const profilePayload = {
+      userId: String(user.id),
+      userName: data.name,
+      address: data.address ?? "",
+      postalCode: data.postalCode ?? "",
+      phone: data.phone,
+      email: data.email,
+    };
+
+    const { data: profile } = await apiClient.post<{
+      id: string;
+      userId: string;
+      userName: string;
+      address: string;
+      postalCode: string;
+      phone: string | null;
+      email: string | null;
+      avatarUrl: string | null;
+      vector: number[];
+    }>(API_ENDPOINTS.APPLICANTS.REGISTER, profilePayload, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const adoptante: Adoptante = {
+      ...user,
+      role: "applicant",
+      email: profile.email ?? user.email,
+      phone: profile.phone ?? undefined,
+      address: profile.address,
+      avatarUrl: profile.avatarUrl ?? undefined,
+      applicantId: profile.id,
+    };
+    const enriched = await enrichUser(adoptante);
     store.setUser(enriched);
 
     return {
