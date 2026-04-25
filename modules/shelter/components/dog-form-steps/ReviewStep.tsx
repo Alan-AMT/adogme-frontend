@@ -5,16 +5,17 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import type { DogFormData } from '../../application/hooks/useDogForm'
+import type { DogFormData, UploadProgress } from '../../application/hooks/useDogForm'
 import '../../styles/shelterViews.css'
 
 interface Props {
-  formData:     DogFormData
-  isSubmitting: boolean
-  submitError:  string | null
-  isDraft:      boolean
-  submit:       () => Promise<boolean>
-  saveDraft:    () => void
+  formData:       DogFormData
+  isSubmitting:   boolean
+  submitError:    string | null
+  uploadProgress: UploadProgress | null
+  isDraft:        boolean
+  submit:         () => Promise<boolean>
+  saveDraft:      () => void
 }
 
 const SIZE_LABELS: Record<string, string> = {
@@ -33,7 +34,7 @@ function formatAge(m: number): string {
   return `${y} año${y !== 1 ? 's' : ''}`
 }
 
-export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submit, saveDraft }: Props) {
+export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress, isDraft, submit, saveDraft }: Props) {
   const router = useRouter()
 
   async function handlePublish() {
@@ -192,7 +193,9 @@ export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submi
           {isSubmitting ? (
             <>
               <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 1s linear infinite' }}>progress_activity</span>
-              Publicando...
+              {uploadProgress
+                ? `Subiendo ${uploadProgress.current}/${uploadProgress.total} fotos...`
+                : 'Publicando...'}
             </>
           ) : (
             <>

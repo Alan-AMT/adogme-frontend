@@ -170,6 +170,7 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
           formData={form.formData}
           isSubmitting={form.isSubmitting}
           submitError={form.submitError}
+          uploadProgress={form.uploadProgress}
           isDraft={form.isDraft}
           submit={form.submit}
           saveDraft={form.saveDraft}

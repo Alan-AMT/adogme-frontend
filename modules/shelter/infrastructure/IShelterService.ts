@@ -50,7 +50,6 @@ export interface DogCreateData {
   descripcion: string;
   foto?: string;
   fotos?: string[];
-  fotosExtensiones?: string[];
   estaVacunado: boolean;
   estaDesparasitado: boolean;
   castrado: boolean;
@@ -97,8 +96,25 @@ export interface IShelterService {
   getDogById(id: string): Promise<Dog | null>;
 
   // ── Perros — escritura (CRUD) ──────────────────────────────────────────────
-  /** Crea un perro en borrador (estado = no_disponible) */
-  createDog(payload: DogCreateData): Promise<Dog>;
+  /**
+   * Crea un perro en borrador (estado = no_disponible).
+   * Devuelve el perro creado y un arreglo de signed URLs (una por cada
+   * extensión enviada en `fotosExtensiones`, en el mismo orden) para subir
+   * las imágenes directamente a GCS con `uploadDogImages`.
+   */
+  createDog(payload: DogCreateData): Promise<{ dog: Dog; uploadUrls: string[] }>;
+  /**
+   * Sube cada archivo a su signed URL correspondiente (index-matched) con PUT
+   * y Content-Type `application/octet-stream`. Reintenta cada PUT 1 vez ante
+   * fallo; si después de reintentar sigue fallando, lanza Error indicando los
+   * índices que no pudieron subirse. `onProgress` se dispara tras cada archivo
+   * (exitoso o fallido).
+   */
+  uploadDogImages(
+    files: File[],
+    uploadUrls: string[],
+    onProgress?: (current: number, total: number) => void,
+  ): Promise<void>;
   /** Actualiza campos editables de un perro existente */
   updateDog(id: string, payload: DogUpdateData): Promise<Dog>;
   /** Elimina permanentemente un perro del refugio */

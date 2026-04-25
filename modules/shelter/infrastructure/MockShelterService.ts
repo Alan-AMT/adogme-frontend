@@ -192,7 +192,9 @@ export class MockShelterService implements IShelterService {
 
   // ── Perros — escritura (CRUD) ────────────────────────────────────────────────
 
-  async createDog(payload: DogCreateData): Promise<Dog> {
+  async createDog(
+    payload: DogCreateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }> {
     await delay(500);
 
     const shelter = _shelters.find((s) => s.id === payload.refugioId);
@@ -234,7 +236,24 @@ export class MockShelterService implements IShelterService {
     };
 
     _dogs = [..._dogs, newDog];
-    return { ...newDog };
+    const uploadUrls = (payload.fotos ?? []).map(
+      (_url, i) => `https://mock-gcs/upload/${newDog.id}/${i}`,
+    );
+    return { dog: { ...newDog }, uploadUrls };
+  }
+
+  async uploadDogImages(
+    files: File[],
+    uploadUrls: string[],
+    onProgress?: (current: number, total: number) => void,
+  ): Promise<void> {
+    const total = uploadUrls.length;
+    for (let i = 0; i < total; i += 1) {
+      await delay(200);
+      onProgress?.(i + 1, total);
+    }
+    // Mock: no hace PUT real; asumimos éxito. `files` no se usa.
+    void files;
   }
 
   async updateDog(id: string, data: DogUpdateData): Promise<Dog> {

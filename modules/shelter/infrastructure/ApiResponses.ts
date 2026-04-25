@@ -55,6 +55,11 @@ export type CreateDogApiResponse = {
   shelterLogo: string | null;
 };
 
+export type CreateDogWithUploadUrlsApiResponse = {
+  dog: CreateDogApiResponse;
+  uploadUrls: string[];
+};
+
 // export type GetDogsApiResponse = {
 //   data:       CreateDogApiResponse[];
 //   total:      number;

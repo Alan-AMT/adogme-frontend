@@ -78,7 +78,7 @@ export interface DogFormData {
   // Step 4 — Fotos
   foto: string; // URL principal (blob URL, solo para display)
   fotos: string[]; // galería completa (blob URLs, solo para display)
-  fotosExtensiones: string[]; // extensiones correspondientes a fotos[], ej: [".jpg", ".png"]
+  fotosFiles: File[]; // archivos crudos para subir a GCS (no se persiste en draft)
 }
 
 const FORM_DEFAULTS: DogFormData = {
@@ -108,7 +108,7 @@ const FORM_DEFAULTS: DogFormData = {
   vacunas: [],
   foto: "",
   fotos: [],
-  fotosExtensiones: [],
+  fotosFiles: [],
 };
 
 // ─── Validadores por paso ────────────────────────────────────────────────────
@@ -140,7 +140,16 @@ function loadDraft(dogId: string | undefined): DogFormData | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(draftKey(dogId));
-    return raw ? (JSON.parse(raw) as DogFormData) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as DogFormData;
+    // Los blob URLs y los File no sobreviven a un reload del browser.
+    // Forzamos al usuario a volver a cargar las fotos al retomar el draft.
+    return {
+      ...parsed,
+      foto: "",
+      fotos: [],
+      fotosFiles: [],
+    };
   } catch {
     return null;
   }
@@ -149,7 +158,9 @@ function loadDraft(dogId: string | undefined): DogFormData | null {
 function saveDraftToStorage(dogId: string | undefined, data: DogFormData) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(draftKey(dogId), JSON.stringify(data));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { fotosFiles: _files, ...serializable } = data;
+    localStorage.setItem(draftKey(dogId), JSON.stringify(serializable));
   } catch {
     /* ignore */
   }
@@ -166,6 +177,11 @@ function removeDraft(dogId: string | undefined) {
 
 // ─── Hook principal ───────────────────────────────────────────────────────────
 
+export interface UploadProgress {
+  current: number;
+  total: number;
+}
+
 export interface UseDogFormReturn {
   // Estado
   currentStep: DogFormStep;
@@ -174,6 +190,7 @@ export interface UseDogFormReturn {
   isDraft: boolean;
   isSubmitting: boolean;
   submitError: string | null;
+  uploadProgress: UploadProgress | null;
 
   // Acciones de navegación
   nextStep: () => boolean; // retorna false si hay errores de validación
@@ -200,6 +217,9 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
   const [isDraft, setIsDraft] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
+    null,
+  );
 
   // ── Inicialización ───────────────────────────────────────────────────────────
   // 1. Si hay draft en localStorage → usarlo
@@ -386,7 +406,6 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           descripcion: formData.descripcion,
           foto: formData.foto || undefined,
           fotos: formData.fotos,
-          fotosExtensiones: formData.fotosExtensiones,
           estaVacunado: formData.estaVacunado,
           estaDesparasitado: formData.estaDesparasitado,
           largoPelaje: formData.largoPelaje,
@@ -403,7 +422,19 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           refugioLogo: formData.refugioLogo,
           cuotaAdopcion: formData.cuotaAdopcion ?? 0,
         };
-        await shelterService.createDog(createData);
+        const { uploadUrls } = await shelterService.createDog(createData);
+
+        // Subida de imágenes a GCS usando las signed URLs del backend.
+        // El orden de fotosFiles coincide con el orden de fotos y de uploadUrls.
+        const totalFiles = formData.fotosFiles.length;
+        if (totalFiles > 0) {
+          setUploadProgress({ current: 0, total: totalFiles });
+          await shelterService.uploadDogImages(
+            formData.fotosFiles,
+            uploadUrls,
+            (current, total) => setUploadProgress({ current, total }),
+          );
+        }
       }
 
       // Limpiar draft tras submit exitoso
@@ -414,6 +445,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
       setSubmitError((e as Error).message ?? "Error al guardar el perro");
       return false;
     } finally {
+      setUploadProgress(null);
       setIsSubmitting(false);
     }
   }, [dogId, formData]);
@@ -425,6 +457,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
     isDraft,
     isSubmitting,
     submitError,
+    uploadProgress,
     nextStep,
     prevStep,
     goToStep,
