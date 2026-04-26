@@ -1,14 +1,26 @@
 // modules/chatbot/application/hooks/useChatbot.ts
-// Estado del chatbot: historial de mensajes, envío, detección de intent.
-// C3: pasa sessionId y userId al servicio.
-// C4: persiste historial en localStorage por sessionId.
-// Latencia simulada 800–1400 ms para naturalidad.
+// Estado del chatbot: historial de mensajes, envío, manejo de errores.
+//
+// Estrategia de resiliencia:
+//  - Respuesta degradada (HTTP 200 + meta.degraded): se renderiza con badge,
+//    flujo normal sigue.
+//  - Error puntual (red, 5xx, timeout): el último mensaje del usuario queda
+//    marcado 'failed' con botón Reintentar.
+//  - Servicio caído (3 errores consecutivos): isServiceDown=true, banner
+//    persistente, input deshabilitado, polling a /api/health cada 30s para
+//    detectar recuperación.
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { chatbotService } from '../../infrastructure/ChatbotServiceFactory'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 import type { UIMessage } from '../../domain/Chatbot'
+
+// ─── Constantes de resiliencia ────────────────────────────────────────────────
+
+const FAILURE_THRESHOLD     = 3       // errores consecutivos para marcar caído
+const HEALTH_POLL_MS        = 30_000  // polling de health mientras está caído
+const SLOW_RESPONSE_MS      = 5_000   // mostrar "tardando un poco más" tras 5s
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -38,15 +50,19 @@ export interface UseChatbotReturn {
   messages:           UIMessage[]
   input:              string
   isLoading:          boolean         // true mientras el bot responde
+  isSlowResponse:     boolean         // true si llevamos > 5s esperando
+  isServiceDown:      boolean         // true tras N errores consecutivos
   unreadCount:        number          // mensajes del bot no leídos (badge)
   sessionId:          string          // UUID de la sesión actual
   currentSuggestions: string[]        // chips del último mensaje bot
 
   // Acciones
-  setInput:      (v: string) => void
-  sendMessage:   (text: string) => void
-  clearHistory:  () => void           // reinicia historial + sesión
-  markRead:      () => void           // resetea unreadCount a 0
+  setInput:        (v: string) => void
+  sendMessage:     (text: string) => void
+  retryLastFailed: () => void          // reenvía el último mensaje del usuario que falló
+  retryConnection: () => void          // fuerza un health check para salir del estado caído
+  clearHistory:    () => void          // reinicia historial + sesión
+  markRead:        () => void          // resetea unreadCount a 0
 }
 
 // ─── Helpers de localStorage ──────────────────────────────────────────────────
@@ -69,10 +85,9 @@ function saveHistory(sid: string, msgs: UIMessage[]): void {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useChatbot(): UseChatbotReturn {
-  // C3 — leer userId del store para pasarlo al servicio
   const user = useAuthStore(s => s.user)
 
-  // C4 — sessionId estable por sesión de browser; persiste mientras no se limpia
+  // sessionId estable por sesión de browser; persiste mientras no se limpia
   const [sessionId, setSessionId] = useState<string>(() => {
     if (typeof window === 'undefined') return crypto.randomUUID()
     return sessionStorage.getItem('chatbot-sid') ?? (() => {
@@ -82,7 +97,7 @@ export function useChatbot(): UseChatbotReturn {
     })()
   })
 
-  // C4 — Inicializar mensajes desde localStorage si existe el historial
+  // Inicializar mensajes desde localStorage si existe el historial
   const [messages, setMessages] = useState<UIMessage[]>(() => {
     if (typeof window === 'undefined') return [buildWelcome()]
     const cached = loadHistory(
@@ -91,53 +106,149 @@ export function useChatbot(): UseChatbotReturn {
     return cached ?? [buildWelcome()]
   })
 
-  const [input,       setInput]       = useState('')
-  const [isLoading,   setIsLoading]   = useState(false)
-  const [unreadCount, setUnreadCount] = useState(1)   // 1 = bienvenida no leída
+  const [input,          setInput]          = useState('')
+  const [isLoading,      setIsLoading]      = useState(false)
+  const [isSlowResponse, setIsSlowResponse] = useState(false)
+  const [isServiceDown,  setIsServiceDown]  = useState(false)
+  const [unreadCount,    setUnreadCount]    = useState(1)
 
-  // C4 — Persistir historial cada vez que cambian los mensajes
+  const consecutiveErrors = useRef(0)
+  const slowTimer         = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const healthTimer       = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Persistir historial cada vez que cambian los mensajes
   useEffect(() => {
     saveHistory(sessionId, messages)
   }, [messages, sessionId])
 
-  // ── sendMessage ─────────────────────────────────────────────────────────────
-  const sendMessage = useCallback((text: string) => {
-    const trimmed = text.trim()
-    if (!trimmed || isLoading) return
+  // ── Polling de health mientras isServiceDown ────────────────────────────────
+  useEffect(() => {
+    if (!isServiceDown) return
 
-    const userMsg: UIMessage = {
-      id:   nextId(),
-      role: 'user',
-      text: trimmed,
-      time: getTime(),
+    const ping = async () => {
+      try {
+        const h = await chatbotService.healthCheck()
+        // 'ok' o 'degraded' → el servicio responde, salimos del estado caído.
+        // 'down' → seguimos esperando.
+        if (h.status !== 'down') {
+          consecutiveErrors.current = 0
+          setIsServiceDown(false)
+        }
+      } catch { /* sigue caído */ }
     }
 
-    setMessages(prev => [...prev, userMsg])
-    setInput('')
-    setIsLoading(true)
+    healthTimer.current = setInterval(ping, HEALTH_POLL_MS)
+    return () => {
+      if (healthTimer.current) clearInterval(healthTimer.current)
+    }
+  }, [isServiceDown])
 
-    const delay = 800 + Math.random() * 600
-    setTimeout(async () => {
-      // C3 — pasar sessionId y userId al servicio
-      const response = await chatbotService.getResponse(trimmed, sessionId, user?.id)
+  // ── Cleanup del timer de slow-response al desmontar ─────────────────────────
+  useEffect(() => {
+    return () => {
+      if (slowTimer.current) clearTimeout(slowTimer.current)
+    }
+  }, [])
+
+  // ── Núcleo: enviar un texto del usuario ya colocado en el historial ────────
+  const submitToBot = useCallback(async (userMsgId: number, text: string) => {
+    setIsLoading(true)
+    setIsSlowResponse(false)
+    if (slowTimer.current) clearTimeout(slowTimer.current)
+    slowTimer.current = setTimeout(() => setIsSlowResponse(true), SLOW_RESPONSE_MS)
+
+    try {
+      const response = await chatbotService.getResponse(text, sessionId, user?.id)
+
+      consecutiveErrors.current = 0
+
       const botMsg: UIMessage = {
         id:          nextId(),
         role:        'bot',
         text:        response.text,
         time:        getTime(),
         links:       response.links,
+        cards:       response.cards,
         suggestions: response.suggestions,
+        meta:        response.meta,
       }
-      setMessages(prev => [...prev, botMsg])
-      setIsLoading(false)
-      // Solo incrementa si el panel está cerrado (el wrapper maneja markRead al abrir)
+
+      // Marcar el mensaje del usuario como entregado y agregar respuesta del bot
+      setMessages(prev => [
+        ...prev.map(m => m.id === userMsgId ? { ...m, status: 'sent' as const } : m),
+        botMsg,
+      ])
       setUnreadCount(prev => prev + 1)
-    }, delay)
-  }, [isLoading])
+    } catch {
+      consecutiveErrors.current += 1
+
+      // Marcar el mensaje del usuario como fallido (habilita botón Reintentar)
+      setMessages(prev =>
+        prev.map(m => m.id === userMsgId ? { ...m, status: 'failed' as const } : m),
+      )
+
+      if (consecutiveErrors.current >= FAILURE_THRESHOLD) {
+        setIsServiceDown(true)
+      }
+    } finally {
+      setIsLoading(false)
+      setIsSlowResponse(false)
+      if (slowTimer.current) {
+        clearTimeout(slowTimer.current)
+        slowTimer.current = null
+      }
+    }
+  }, [sessionId, user?.id])
+
+  // ── sendMessage ─────────────────────────────────────────────────────────────
+  const sendMessage = useCallback((text: string) => {
+    const trimmed = text.trim()
+    if (!trimmed || isLoading || isServiceDown) return
+
+    const userMsg: UIMessage = {
+      id:     nextId(),
+      role:   'user',
+      text:   trimmed,
+      time:   getTime(),
+      status: 'sent',
+    }
+
+    setMessages(prev => [...prev, userMsg])
+    setInput('')
+    submitToBot(userMsg.id, trimmed)
+  }, [isLoading, isServiceDown, submitToBot])
+
+  // ── retryLastFailed ─────────────────────────────────────────────────────────
+  // Busca el último mensaje del usuario marcado 'failed' y lo reenvía.
+  // No crea un nuevo mensaje: actualiza el existente al estado 'sent' tentativo.
+  const retryLastFailed = useCallback(() => {
+    if (isLoading || isServiceDown) return
+
+    const lastFailed = [...messages].reverse().find(
+      m => m.role === 'user' && m.status === 'failed',
+    )
+    if (!lastFailed) return
+
+    setMessages(prev =>
+      prev.map(m => m.id === lastFailed.id ? { ...m, status: 'sent' as const } : m),
+    )
+    submitToBot(lastFailed.id, lastFailed.text)
+  }, [messages, isLoading, isServiceDown, submitToBot])
+
+  // ── retryConnection ─────────────────────────────────────────────────────────
+  // Llamado desde el banner "servicio caído". Hace un health check inmediato.
+  const retryConnection = useCallback(async () => {
+    try {
+      const h = await chatbotService.healthCheck()
+      if (h.status !== 'down') {
+        consecutiveErrors.current = 0
+        setIsServiceDown(false)
+      }
+    } catch { /* sigue caído */ }
+  }, [])
 
   // ── clearHistory ────────────────────────────────────────────────────────────
   const clearHistory = useCallback(() => {
-    // C4 — limpiar historial en localStorage y generar nueva sesión
     try { localStorage.removeItem(historyKey(sessionId)) } catch { /* noop */ }
     const newSid = crypto.randomUUID()
     sessionStorage.setItem('chatbot-sid', newSid)
@@ -145,13 +256,14 @@ export function useChatbot(): UseChatbotReturn {
     setMessages([buildWelcome()])
     setInput('')
     setIsLoading(false)
+    setIsSlowResponse(false)
     setUnreadCount(0)
+    consecutiveErrors.current = 0
+    setIsServiceDown(false)
   }, [sessionId])
 
   // ── markRead ────────────────────────────────────────────────────────────────
-  const markRead = useCallback(() => {
-    setUnreadCount(0)
-  }, [])
+  const markRead = useCallback(() => setUnreadCount(0), [])
 
   // ── Sugerencias actuales (del último mensaje bot) ───────────────────────────
   const lastBotMsg         = [...messages].reverse().find(m => m.role === 'bot')
@@ -161,11 +273,15 @@ export function useChatbot(): UseChatbotReturn {
     messages,
     input,
     isLoading,
+    isSlowResponse,
+    isServiceDown,
     unreadCount,
     sessionId,
     currentSuggestions,
     setInput,
     sendMessage,
+    retryLastFailed,
+    retryConnection,
     clearHistory,
     markRead,
   }

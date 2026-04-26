@@ -472,3 +472,226 @@
   background: #ff6b6b;
   color: #fff;
 }
+
+/* ── Markdown dentro de la burbuja del bot ── */
+.cb-msg__md > :first-child { margin-top: 0; }
+.cb-msg__md > :last-child  { margin-bottom: 0; }
+
+.cb-msg__md p {
+  margin: 0 0 0.4rem;
+}
+
+.cb-msg__md p:last-child {
+  margin-bottom: 0;
+}
+
+.cb-msg__md strong {
+  font-weight: 700;
+  color: #18181b;
+}
+
+.cb-msg__md em {
+  font-style: italic;
+}
+
+.cb-msg__md ul,
+.cb-msg__md ol {
+  margin: 0.25rem 0 0.4rem;
+  padding-left: 1.25rem;
+}
+
+.cb-msg__md li {
+  margin: 0.15rem 0;
+}
+
+.cb-msg__md code {
+  background: #f4f4f5;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── Tarjetas embebidas (perros / refugios) ── */
+.cb-msg__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.cb-card {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.cb-card:hover {
+  border-color: #ff6b6b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.15);
+}
+
+.cb-card__media {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cb-card__placeholder {
+  font-size: 1.6rem;
+}
+
+.cb-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cb-card__title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #18181b;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cb-card__meta {
+  font-size: 0.72rem;
+  color: #52525b;
+  margin-top: 0.15rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cb-card__sub {
+  font-size: 0.7rem;
+  color: #71717a;
+  margin-top: 0.1rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Estado: servicio caído ── */
+.cb-header__dot--down {
+  background: #ef4444;
+  animation: none;
+}
+
+.cb-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.78rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border-bottom: 1px solid #fecaca;
+}
+
+.cb-banner__text {
+  flex: 1;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.cb-banner__btn {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease;
+}
+
+.cb-banner__btn:hover {
+  background: #dc2626;
+}
+
+/* ── Indicador "tardando un poco más" ── */
+.cb-typing__slow {
+  font-size: 0.7rem;
+  color: #71717a;
+  margin-top: 0.35rem;
+  font-style: italic;
+}
+
+/* ── Mensajes con respuesta degradada ── */
+.cb-msg__degraded {
+  font-size: 0.68rem;
+  color: #b45309;
+  margin-top: 0.3rem;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.3;
+}
+
+/* ── Mensaje del usuario fallido ── */
+.cb-msg--failed .cb-msg__bubble {
+  opacity: 0.65;
+}
+
+.cb-msg__failed-hint {
+  font-size: 0.68rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ── Botón Reintentar ── */
+.cb-retry-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.cb-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid #ff6b6b;
+  background: #fff;
+  color: #ff6b6b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.cb-retry-btn:hover {
+  background: #ff6b6b;
+  color: #fff;
+}

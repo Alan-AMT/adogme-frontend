@@ -42,10 +42,14 @@ export default function ChatbotWrapper() {
           messages={chatbot.messages}
           input={chatbot.input}
           isLoading={chatbot.isLoading}
+          isSlowResponse={chatbot.isSlowResponse}
+          isServiceDown={chatbot.isServiceDown}
           currentSuggestions={chatbot.currentSuggestions}
           onClose={closeChatbot}
           setInput={chatbot.setInput}
           sendMessage={chatbot.sendMessage}
+          retryLastFailed={chatbot.retryLastFailed}
+          retryConnection={chatbot.retryConnection}
           clearHistory={chatbot.clearHistory}
         />
       )}

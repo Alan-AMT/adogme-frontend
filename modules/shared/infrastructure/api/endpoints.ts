@@ -7,6 +7,8 @@
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 const ML = process.env.NEXT_PUBLIC_ML_API_URL ?? "";
+const CHATBOT_BASE =
+  process.env.NEXT_PUBLIC_CHATBOT_API_URL ?? "http://localhost:8006";
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -89,8 +91,9 @@ export const API_ENDPOINTS = {
   },
 
   CHATBOT: {
-    MESSAGE: `${BASE}/api/chatbot/message`,
-    HISTORY: `${BASE}/api/chatbot/history`,
+    MESSAGE: `${CHATBOT_BASE}/api/chat`,
+    HEALTH: `${CHATBOT_BASE}/api/health`,
+    INTENTS: `${CHATBOT_BASE}/api/intents`,
   },
 
   FAVORITES: {
