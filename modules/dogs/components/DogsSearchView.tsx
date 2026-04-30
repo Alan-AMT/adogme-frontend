@@ -85,7 +85,7 @@ function FilterSelect({ label, value, options, onChange }: SelectProps) {
 /* ── Dog Card ── */
 function DogCard({ dog }: { dog: DogListItem }) {
   return (
-    <Link href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, "-")}`} className="cat-dog-frame group">
+    <Link href={`/perros/${dog.id}`} className="cat-dog-frame group">
       <div className="cat-dog-panel">
         {/* Imagen */}
         <div className="cat-dog-media">

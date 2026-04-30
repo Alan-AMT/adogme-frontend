@@ -38,7 +38,6 @@ export default function AdoptionFormView({ dog }: Props) {
 
   const form = useAdoptionForm({
     perroId:     dog.id,
-    perroSlug:   dog.nombre.toLowerCase().replace(/\s+/g, '-'),
     perroNombre: dog.nombre,
     refugioId:   dog.refugioId,
   })
@@ -99,7 +98,7 @@ export default function AdoptionFormView({ dog }: Props) {
           </p>
         </div>
         <Link
-          href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`}
+          href={`/perros/${dog.id}`}
           className="af-dog-bar__back"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>

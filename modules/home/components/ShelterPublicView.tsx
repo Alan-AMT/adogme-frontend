@@ -130,7 +130,7 @@ export default function ShelterPublicView({ slug }: Props) {
               </div>
               <div className="sp-dogs-grid">
                 {dogs.map((dog) => (
-                  <Link key={dog.id} href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="sp-dog-card">
+                  <Link key={dog.id} href={`/perros/${dog.id}`} className="sp-dog-card">
                     <div className="sp-dog-card__media">
                       <Image
                         src={dog.foto ?? ''}

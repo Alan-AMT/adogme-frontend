@@ -33,7 +33,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
       { id: 1, solicitudId: "1001", estadoAnterior: 'pending', estadoNuevo: 'pending',
         cambiadoPor: ADOPTANTE_ID, rol: 'shelter', fecha: '2025-01-20T10:00:00Z' },
     ],
-    perroNombre: 'Max', perroFoto: '/assets/dogs/dog1.jpg', perroSlug: 'max',
+    perroNombre: 'Max', perroFoto: '/assets/dogs/dog1.jpg',
     refugioNombre: 'Huellitas MX', adoptanteNombre: 'Ana García', adoptanteCorreo: 'ana@test.com',
   },
 
@@ -62,7 +62,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         cambiadoPor: "201", rol: 'shelter', comentario: 'Revisando documentos.',
         fecha: '2025-01-12T09:30:00Z' },
     ],
-    perroNombre: 'Kira', perroFoto: '/assets/dogs/dog4.jpg', perroSlug: 'kira',
+    perroNombre: 'Kira', perroFoto: '/assets/dogs/dog4.jpg',
     refugioNombre: 'Refugio Esperanza', adoptanteNombre: 'Ana García', adoptanteCorreo: 'ana@test.com',
   },
 
@@ -94,7 +94,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         cambiadoPor: "201", rol: 'shelter', comentario: '¡Excelente perfil! Aprobada.',
         fecha: '2024-12-10T14:00:00Z' },
     ],
-    perroNombre: 'Churro', perroFoto: '/assets/dogs/dog7.jpg', perroSlug: 'churro',
+    perroNombre: 'Churro', perroFoto: '/assets/dogs/dog7.jpg',
     refugioNombre: 'Patitas Libres', adoptanteNombre: 'Ana García', adoptanteCorreo: 'ana@test.com',
   },
 
@@ -124,7 +124,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         comentario: 'Thor necesita dueño con experiencia en la raza y espacio para ejercicio intenso.',
         fecha: '2024-11-22T11:00:00Z' },
     ],
-    perroNombre: 'Thor', perroFoto: '/assets/dogs/dog3.jpg', perroSlug: 'thor',
+    perroNombre: 'Thor', perroFoto: '/assets/dogs/dog3.jpg',
     refugioNombre: 'Huellitas MX', adoptanteNombre: 'Ana García', adoptanteCorreo: 'ana@test.com',
   },
 
@@ -154,7 +154,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         comentario: 'El adoptante canceló por cambio de situación personal.',
         fecha: '2024-10-18T08:00:00Z' },
     ],
-    perroNombre: 'Nala', perroFoto: '/assets/dogs/dog8.jpg', perroSlug: 'nala',
+    perroNombre: 'Nala', perroFoto: '/assets/dogs/dog8.jpg',
     refugioNombre: 'Patitas Libres', adoptanteNombre: 'Ana García', adoptanteCorreo: 'ana@test.com',
   },
 

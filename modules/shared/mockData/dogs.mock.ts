@@ -1206,9 +1206,6 @@ export const MOCK_DOGS: Dog[] = [
 export const getDogById = (id: string): Dog | undefined =>
   MOCK_DOGS.find((d) => d.id === id);
 
-export const getDogBySlug = (slug: string): Dog | undefined =>
-  MOCK_DOGS.find((d) => d.nombre.toLowerCase().replace(/\s+/g, "-") === slug);
-
 export const getDogsByShelterId = (refugioId: string): Dog[] =>
   MOCK_DOGS.filter((d) => d.refugioId === refugioId);
 

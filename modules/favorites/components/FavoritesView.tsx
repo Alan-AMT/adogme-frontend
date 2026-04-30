@@ -28,14 +28,9 @@ function edadLabel(meses: number): string {
   return `${a} ${a === 1 ? 'año' : 'años'}`
 }
 
-function dogSlug(nombre: string): string {
-  return nombre.toLowerCase().replace(/\s+/g, '-')
-}
-
 // ─── FavoriteCard ─────────────────────────────────────────────────────────────
 
 function FavoriteCard({ dog, onRemove }: { dog: Dog; onRemove: () => void }) {
-  const slug  = dogSlug(dog.nombre)
   const badge = STATUS_BADGE[dog.estado] ?? STATUS_BADGE.no_disponible
 
   return (
@@ -52,7 +47,7 @@ function FavoriteCard({ dog, onRemove }: { dog: Dog; onRemove: () => void }) {
       </button>
 
       {/* ── Photo ── */}
-      <Link href={`/perros/${slug}`} className="fv-card__photo">
+      <Link href={`/perros/${dog.id}`} className="fv-card__photo">
         <Image
           src={dog.foto ?? ''}
           alt={dog.nombre}
@@ -70,7 +65,7 @@ function FavoriteCard({ dog, onRemove }: { dog: Dog; onRemove: () => void }) {
 
       {/* ── Body ── */}
       <div className="fv-card__body">
-        <Link href={`/perros/${slug}`} className="fv-card__name">
+        <Link href={`/perros/${dog.id}`} className="fv-card__name">
           {dog.nombre}
         </Link>
         <p className="fv-card__breed">

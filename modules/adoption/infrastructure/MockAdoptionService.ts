@@ -12,6 +12,7 @@ import {
 } from '../../shared/mockData/adoptions.mock'
 import { getDogById } from '../../shared/mockData/dogs.mock'
 import { dogService } from '../../dogs/infrastructure/DogServiceFactory'
+import { _setDogStatusForMocks } from '../../dogs/infrastructure/MockDogService'
 
 // ─── Copia mutable en memoria ─────────────────────────────────────────────────
 // Partimos del mock estático y cualquier submit/update opera aquí.
@@ -87,14 +88,13 @@ export class MockAdoptionService implements IAdoptionService {
       // Datos enriquecidos del perro (join simulado)
       perroNombre:   dog?.nombre,
       perroFoto:     dog?.foto,
-      perroSlug:     dog ? dog.nombre.toLowerCase().replace(/\s+/g, '-') : undefined,
       refugioNombre: dog?.refugioNombre,
     }
 
     _requests = [newRequest, ..._requests]
 
     // A1 — Actualizar estado del perro a "en_proceso" tras crear la solicitud
-    await dogService.updateDog(payload.perroId, { estado: 'en_proceso' })
+    _setDogStatusForMocks(payload.perroId, 'en_proceso')
 
     return newRequest
   }
@@ -176,9 +176,9 @@ export class MockAdoptionService implements IAdoptionService {
 
     // A2 — Actualizar estado del perro según la resolución de la solicitud
     if (newStatus === 'approved') {
-      await dogService.updateDog(req.perroId, { estado: 'adoptado' })
+      _setDogStatusForMocks(req.perroId, 'adoptado')
     } else if (newStatus === 'rejected' || newStatus === 'cancelled') {
-      await dogService.updateDog(req.perroId, { estado: 'disponible' })
+      _setDogStatusForMocks(req.perroId, 'disponible')
     }
 
     return updated

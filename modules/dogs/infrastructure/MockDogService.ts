@@ -2,19 +2,12 @@
 // Fuente de datos: modules/shared/mockData/dogs.mock.ts
 // Las operaciones de escritura actúan sobre una copia en memoria local.
 
-import type { Dog, DogFilters, DogImage, DogListItem, PaginatedDogs } from "../domain/dog";
-import { calcularEdadCategoria } from "../domain/dog";
+import type { Dog, DogFilters, DogListItem, DogStatus, PaginatedDogs } from "../domain/dog";
 import {
   MOCK_DOGS,
   getDogById as sharedGetById,
-  getDogBySlug as sharedGetBySlug,
 } from "../../shared/mockData/dogs.mock";
-import type {
-  IDogService,
-  DogCreateData,
-  DogUpdateData,
-  MediaValidationResult,
-} from "./IDogService";
+import type { IDogService } from "./IDogService";
 
 const DEFAULT_LIMIT = 30;
 
@@ -22,19 +15,7 @@ const DEFAULT_LIMIT = 30;
 const delay = (min = 500, max = 800) =>
   new Promise<void>((r) => setTimeout(r, min + Math.random() * (max - min)));
 
-/** Envuelve URLs sueltas en DogImage[] para el read model del Dog */
-function urlsToDogImages(urls: string[], dogId: string): DogImage[] {
-  return urls.map((url, i) => ({
-    id: `${dogId}-img-${i}`,
-    dogId,
-    url,
-    status: "pending" as const,
-  }));
-}
-
-// ─── Copia mutable en memoria (create / update / delete) ──────────────────────
 let _dogs: Dog[] = [...MOCK_DOGS];
-let _nextId = Math.max(...MOCK_DOGS.map((d) => Number(d.id))) + 1;
 
 function toListItem(d: Dog): DogListItem {
   return {
@@ -156,9 +137,6 @@ function applyFiltersWithDateSort(filters: DogFilters = {}): DogListItem[] {
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export class MockDogService implements IDogService {
-
-  // ── Lectura pública ────────────────────────────────────────────────────────
-
   async getDogs(filters: DogFilters = {}): Promise<PaginatedDogs> {
     await delay(500, 800);
     const page     = filters.page  ?? 1;
@@ -174,101 +152,15 @@ export class MockDogService implements IDogService {
     await delay(200, 400);
     return _dogs.find((d) => d.id === id) ?? sharedGetById(id) ?? null;
   }
-
-  async getDogBySlug(slug: string): Promise<Dog | null> {
-    await delay(200, 400);
-    return sharedGetBySlug(slug) ?? null;
-  }
-
-  // ── Escritura ──────────────────────────────────────────────────────────────
-
-  async createDog(data: DogCreateData): Promise<Dog> {
-    await delay(500, 800);
-    const newDogId = String(_nextId++);
-    const fotosUrls = data.fotos ?? (data.foto ? [data.foto] : []);
-    const newDog: Dog = {
-      id:                newDogId,
-      userOwnerId:       "current-user",
-      refugioId:         data.refugioId,
-      nombre:            data.nombre,
-      raza:              data.raza,
-      raza2:             data.raza2,
-      edad:              data.edad,
-      pesoKg:            data.pesoKg,
-      sexo:              data.sexo,
-      tamano:            data.tamano,
-      nivelEnergia:      data.nivelEnergia,
-      descripcion:       data.descripcion,
-      estado:            "no_disponible",
-      personalidad:      data.personalidad   ?? [],
-      aptoNinos:         data.aptoNinos      ?? false,
-      aptoPerros:        data.aptoPerros     ?? false,
-      aptoGatos:         data.aptoGatos      ?? false,
-      castrado:          data.castrado,
-      necesitaJardin:    data.necesitaJardin ?? false,
-      estaVacunado:      data.estaVacunado,
-      estaDesparasitado: data.estaDesparasitado,
-      largoPelaje:       data.largoPelaje,
-      vacunas:           data.vacunas        ?? [],
-      salud:             data.salud,
-      foto:              data.foto,
-      fotos:             urlsToDogImages(fotosUrls, newDogId),
-      edadCategoria:     calcularEdadCategoria(data.edad),
-      compatibilidad:    0,
-      fechaRegistro:     new Date().toISOString().slice(0, 10),
-    };
-    _dogs = [..._dogs, newDog];
-    return newDog;
-  }
-
-  async updateDog(id: string, data: DogUpdateData): Promise<Dog> {
-    await delay(500, 700);
-    const idx = _dogs.findIndex((d) => d.id === id);
-    if (idx === -1) throw new Error(`Dog ${id} not found`);
-    const prev = _dogs[idx];
-    const edad = data.edad ?? prev.edad;
-    const { fotos: fotosUrls, ...rest } = data;
-    const updated: Dog = {
-      ...prev,
-      ...rest,
-      fotos: fotosUrls ? urlsToDogImages(fotosUrls, prev.id) : prev.fotos,
-      edadCategoria: calcularEdadCategoria(edad),
-    };
-    _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
-    return updated;
-  }
-
-  async deleteDog(id: string): Promise<void> {
-    await delay(500, 700);
-    _dogs = _dogs.filter((d) => d.id !== id);
-  }
-
-  async publishDog(id: string): Promise<Dog> {
-    return this.updateDog(id, { estado: "disponible" });
-  }
-
-  async unpublishDog(id: string): Promise<Dog> {
-    return this.updateDog(id, { estado: "no_disponible" });
-  }
-
-  // ── Media ──────────────────────────────────────────────────────────────────
-
-  async validateMedia(urls: string[]): Promise<MediaValidationResult[]> {
-    await delay(300, 600);
-    const VALID_EXTS = [".jpg", ".jpeg", ".png", ".webp", ".avif"];
-    return urls.map((url): MediaValidationResult => {
-      if (!url?.trim()) return { url, valid: false, error: "not_found" };
-      const lower = url.toLowerCase();
-      if (!VALID_EXTS.some((ext) => lower.includes(ext))) {
-        return { url, valid: false, error: "invalid_format" };
-      }
-      if (!lower.startsWith("/") && !lower.startsWith("http")) {
-        return { url, valid: false, error: "unreachable" };
-      }
-      return { url, valid: true };
-    });
-  }
 }
 
-// Exports for convenience
+// Mock-only helper: lets sibling mock services (e.g. MockAdoptionService) mutate
+// dog status without exposing a write surface on IDogService. Real implementations
+// won't expose this — backend owns adoption→dog status side effects.
+export function _setDogStatusForMocks(id: string, estado: DogStatus): void {
+  const idx = _dogs.findIndex((d) => d.id === id);
+  if (idx === -1) return;
+  _dogs = [..._dogs.slice(0, idx), { ..._dogs[idx], estado }, ..._dogs.slice(idx + 1)];
+}
+
 export { MOCK_DOGS };
