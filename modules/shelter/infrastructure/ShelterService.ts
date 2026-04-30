@@ -59,7 +59,7 @@ function parseDog(data: CreateDogApiResponse): Dog {
       proximaDosis: v.nextDose ? new Date(v.nextDose).toISOString() : undefined,
     })),
     salud: data.health,
-    fotos: [],
+    fotos: data.images,
     edadCategoria: calcularEdadCategoria(data.age),
     fechaRegistro: new Date(data.createdAt).toDateString(),
     fechaActualizacion: new Date(data.updatedAt).toDateString(),
@@ -223,7 +223,6 @@ export class ShelterService implements IShelterService {
         { timeout: 60_000 },
       );
       return { dog: parseDog(data.dog), uploadUrls: data.uploadUrls };
-      // return { dog: parseDog(data.dog), uploadUrls: data.uploadUrls };
     } catch (e) {
       console.log(e);
       throw Error("Error al crear perro");
@@ -320,7 +319,6 @@ export class ShelterService implements IShelterService {
         },
       );
       return parseDog(data);
-      return {} as Dog;
     } catch (e) {
       throw Error("Error al actualizar perro");
     }

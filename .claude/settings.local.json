@@ -6,7 +6,9 @@
       "Bash(\"c:/Users/orteg/OneDrive/Escritorio/adogme-frontend/app/\\(auth\\)/layout.tsx\")",
       "Bash(ls \"c:\\\\Users\\\\orteg\\\\OneDrive\\\\Escritorio\\\\adogme-frontend\\\\app\\\\\\(auth\\)\")",
       "Bash(ls \"c:\\\\Users\\\\orteg\\\\OneDrive\\\\Escritorio\\\\adogme-frontend\\\\app\\\\\\(auth\\)\\\\registro\")",
-      "Bash(wc -l \"c:/Users/orteg/OneDrive/Escritorio/adogme-frontend/app/\\(public\\)/page.tsx\")"
+      "Bash(wc -l \"c:/Users/orteg/OneDrive/Escritorio/adogme-frontend/app/\\(public\\)/page.tsx\")",
+      "Bash(npx tsc *)",
+      "Bash(awk -F'[\\(\\):]' '{print $1}')"
     ]
   }
 }

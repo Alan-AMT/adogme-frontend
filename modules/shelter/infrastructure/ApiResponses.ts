@@ -50,6 +50,12 @@ export type CreateDogApiResponse = {
   createdAt: Date;
   weightKg: number | null;
   photo: string | null; // URL principal
+  images: {
+    id: string;
+    dogId: string;
+    url: string;
+    status: "pending" | "accepted" | "rejected";
+  }[];
   breed2: string | null;
   shelterName: string | null;
   shelterLogo: string | null;

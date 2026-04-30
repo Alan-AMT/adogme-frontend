@@ -264,7 +264,11 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           salud: dog.salud,
           vacunas: dog.vacunas ?? [],
           foto: dog.foto ?? "",
-          fotos: dog.fotos ?? (dog.foto ? [dog.foto] : []),
+          fotos: dog.fotos?.length
+            ? dog.fotos.map((img) => img.url)
+            : dog.foto
+              ? [dog.foto]
+              : [],
         });
       })
       .catch((e) => {

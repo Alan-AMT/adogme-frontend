@@ -2,7 +2,7 @@
 // Fuente de datos: modules/shared/mockData/dogs.mock.ts
 // Las operaciones de escritura actúan sobre una copia en memoria local.
 
-import type { Dog, DogFilters, DogListItem, PaginatedDogs } from "../domain/dog";
+import type { Dog, DogFilters, DogImage, DogListItem, PaginatedDogs } from "../domain/dog";
 import { calcularEdadCategoria } from "../domain/dog";
 import {
   MOCK_DOGS,
@@ -21,6 +21,16 @@ const DEFAULT_LIMIT = 30;
 /** Latencia aleatoria en el rango [min, max] ms */
 const delay = (min = 500, max = 800) =>
   new Promise<void>((r) => setTimeout(r, min + Math.random() * (max - min)));
+
+/** Envuelve URLs sueltas en DogImage[] para el read model del Dog */
+function urlsToDogImages(urls: string[], dogId: string): DogImage[] {
+  return urls.map((url, i) => ({
+    id: `${dogId}-img-${i}`,
+    dogId,
+    url,
+    status: "pending" as const,
+  }));
+}
 
 // ─── Copia mutable en memoria (create / update / delete) ──────────────────────
 let _dogs: Dog[] = [...MOCK_DOGS];
@@ -174,8 +184,10 @@ export class MockDogService implements IDogService {
 
   async createDog(data: DogCreateData): Promise<Dog> {
     await delay(500, 800);
+    const newDogId = String(_nextId++);
+    const fotosUrls = data.fotos ?? (data.foto ? [data.foto] : []);
     const newDog: Dog = {
-      id:                String(_nextId++),
+      id:                newDogId,
       userOwnerId:       "current-user",
       refugioId:         data.refugioId,
       nombre:            data.nombre,
@@ -200,7 +212,7 @@ export class MockDogService implements IDogService {
       vacunas:           data.vacunas        ?? [],
       salud:             data.salud,
       foto:              data.foto,
-      fotos:             data.fotos ?? (data.foto ? [data.foto] : []),
+      fotos:             urlsToDogImages(fotosUrls, newDogId),
       edadCategoria:     calcularEdadCategoria(data.edad),
       compatibilidad:    0,
       fechaRegistro:     new Date().toISOString().slice(0, 10),
@@ -213,10 +225,13 @@ export class MockDogService implements IDogService {
     await delay(500, 700);
     const idx = _dogs.findIndex((d) => d.id === id);
     if (idx === -1) throw new Error(`Dog ${id} not found`);
-    const edad = data.edad ?? _dogs[idx].edad;
+    const prev = _dogs[idx];
+    const edad = data.edad ?? prev.edad;
+    const { fotos: fotosUrls, ...rest } = data;
     const updated: Dog = {
-      ..._dogs[idx],
-      ...data,
+      ...prev,
+      ...rest,
+      fotos: fotosUrls ? urlsToDogImages(fotosUrls, prev.id) : prev.fotos,
       edadCategoria: calcularEdadCategoria(edad),
     };
     _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];

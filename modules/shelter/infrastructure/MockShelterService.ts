@@ -15,6 +15,7 @@ import type { Shelter } from "../../shared/domain/Shelter";
 import type {
   Dog,
   DogFilters,
+  DogImage,
   DogListItem,
   PaginatedDogs,
 } from "../../shared/domain/Dog";
@@ -33,6 +34,16 @@ import { MOCK_ADOPTION_REQUESTS } from "../../shared/mockData/adoptions.mock";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const delay = (ms = 300) => new Promise<void>((r) => setTimeout(r, ms));
+
+/** Envuelve URLs sueltas en DogImage[] para el read model del Dog */
+function urlsToDogImages(urls: string[], dogId: string): DogImage[] {
+  return urls.map((url, i) => ({
+    id: `${dogId}-img-${i}`,
+    dogId,
+    url,
+    status: "pending" as const,
+  }));
+}
 
 /** Convierte un Dog completo al shape DogListItem para getShelterDogs */
 function toDogListItem(d: Dog): DogListItem {
@@ -201,8 +212,10 @@ export class MockShelterService implements IShelterService {
 
     const now = new Date().toISOString().split("T")[0];
 
+    const newDogId = String(Math.random());
+    const fotosUrls = payload.fotos ?? (payload.foto ? [payload.foto] : []);
     const newDog: Dog = {
-      id: String(Math.random()),
+      id: newDogId,
       userOwnerId: "current-user",
       refugioId: payload.refugioId,
       nombre: payload.nombre,
@@ -227,7 +240,7 @@ export class MockShelterService implements IShelterService {
       vacunas: payload.vacunas ?? [],
       salud: payload.salud,
       foto: payload.foto,
-      fotos: payload.fotos ?? (payload.foto ? [payload.foto] : []),
+      fotos: urlsToDogImages(fotosUrls, newDogId),
       edadCategoria: calcularEdadCategoria(payload.edad),
       compatibilidad: 0,
       refugioNombre: shelter?.nombre,
@@ -263,9 +276,11 @@ export class MockShelterService implements IShelterService {
 
     const prev = _dogs[idx];
     const edad = data.edad ?? prev.edad;
+    const { fotos: fotosUrls, ...rest } = data;
     const updated: Dog = {
       ...prev,
-      ...data,
+      ...rest,
+      fotos: fotosUrls ? urlsToDogImages(fotosUrls, prev.id) : prev.fotos,
       edadCategoria: calcularEdadCategoria(edad),
       id: prev.id,
       refugioId: prev.refugioId,
