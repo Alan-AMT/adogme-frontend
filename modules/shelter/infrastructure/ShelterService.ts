@@ -326,8 +326,15 @@ export class ShelterService implements IShelterService {
     }
   }
 
-  deleteDog(id: string): Promise<void> {
-    throw Error("Not implemented");
+  async deleteDog(id: string): Promise<void> {
+    try {
+      await apiClient.delete(API_ENDPOINTS.DOGS.DELETE(id), {
+        timeout: 30_000,
+      });
+    } catch (e) {
+      console.log(e);
+      throw Error("Error al eliminar perro");
+    }
   }
 
   async getDogs(refugioId: string): Promise<Dog[]> {

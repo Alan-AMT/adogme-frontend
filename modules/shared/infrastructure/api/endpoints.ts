@@ -45,7 +45,7 @@ export const API_ENDPOINTS = {
     BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
     CREATE: `${BASE}/dogs-ms/dog`,
     UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    DELETE: (id: number) => `${BASE}/dogs-ms/dog/${id}`,
+    DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     UPLOAD_MEDIA: `${BASE}/api/media/upload`,
   },
 

@@ -16,6 +16,7 @@ interface Props {
   isDraft:        boolean
   submit:         () => Promise<boolean>
   saveDraft:      () => void
+  prevStep:       () => void
 }
 
 const SIZE_LABELS: Record<string, string> = {
@@ -34,7 +35,7 @@ function formatAge(m: number): string {
   return `${y} año${y !== 1 ? 's' : ''}`
 }
 
-export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress, isDraft, submit, saveDraft }: Props) {
+export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress, isDraft, submit, saveDraft, prevStep }: Props) {
   const router = useRouter()
 
   async function handlePublish() {
@@ -175,6 +176,15 @@ export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress
 
       {/* ── Barra de acciones ── */}
       <div className="sv-submit-bar">
+        <button
+          type="button"
+          className="sv-submit-bar__btn sv-submit-bar__btn--ghost"
+          onClick={prevStep}
+          disabled={isSubmitting}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
+          Anterior
+        </button>
         <button
           type="button"
           className="sv-submit-bar__btn sv-submit-bar__btn--ghost"

@@ -8,7 +8,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import ChatbotWrapper from '@/modules/chatbot/components/ChatbotWrapper'
-import { ToastContainer } from '@/modules/shared/components/ui/ToastContainer'
+import { Toaster } from 'sonner'
 import { useAuthStore }      from '@/modules/shared/infrastructure/store/authStore'
 import { useFavoritesStore } from '@/modules/shared/infrastructure/store/favoritesStore'
 import { useEffect, type ReactNode } from 'react'
@@ -38,7 +38,7 @@ export default function Providers({ children }: ProvidersProps) {
       {children}
 
       {/* ── UI global — visible en todas las páginas ── */}
-      <ToastContainer />
+      <Toaster position="bottom-right" richColors duration={4000} />
       <ChatbotWrapper />
     </>
   )
