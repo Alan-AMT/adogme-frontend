@@ -35,7 +35,7 @@ export default function ShelterPublicView({ slug }: Props) {
   }
 
   const dogs = MOCK_DOGS.filter(
-    (d) => d.refugioId === shelter.id && d.estado === "disponible"
+    (d) => d.refugioId === String(shelter.id) && d.estado === "disponible"
   );
 
   return (

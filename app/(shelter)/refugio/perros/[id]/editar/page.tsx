@@ -13,7 +13,5 @@ interface Props {
 
 export default async function EditarPerroPage({ params }: Props) {
   const { id } = await params
-  const dogId = parseInt(id, 10)
-
-  return <ShelterDogFormView dogId={isNaN(dogId) ? undefined : dogId} />
+  return <ShelterDogFormView dogId={id} />
 }

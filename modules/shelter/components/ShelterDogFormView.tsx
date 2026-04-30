@@ -2,7 +2,7 @@
 // Archivo 183 — Orquestador multi-paso del formulario de perro.
 //
 // Modo crear: dogId = undefined  → useDogForm() → shelterService.createDog
-// Modo editar: dogId = number   → useDogForm(dogId) → shelterService.updateDog
+// Modo editar: dogId = string   → useDogForm(dogId) → shelterService.updateDog
 //
 // Pasos (0-based):
 //   0 Datos básicos · 1 Personalidad · 2 Cuidados
@@ -26,7 +26,7 @@ const STEPPER_STEPS = DOG_FORM_STEPS.map(s => ({ id: String(s.id), label: s.labe
 
 // ─── Componente ───────────────────────────────────────────────────────────────
 
-export default function ShelterDogFormView({ dogId }: { dogId?: number }) {
+export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
   const form    = useDogForm(dogId)
   const isEdit  = dogId !== undefined
   const isLast  = form.currentStep === DOG_FORM_STEPS.length - 1

@@ -23,7 +23,7 @@ function BtnContent({ nombre }: { nombre: string }) {
 }
 
 interface Props {
-  dogId:     number
+  dogId:     string
   dogNombre: string
   className?: string
 }

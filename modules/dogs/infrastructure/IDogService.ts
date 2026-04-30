@@ -16,7 +16,7 @@ import type {
 
 /** Campos necesarios para crear un perro nuevo (el refugio no puede setear estado ni compatibilidad) */
 export interface DogCreateData {
-  refugioId: number
+  refugioId: string
   nombre: string
   edad: number            // en meses — ML: Age
   raza: string            // ML: Breed1 (el backend resuelve el código numérico)
@@ -62,20 +62,20 @@ export interface MediaValidationResult {
 export interface IDogService {
   // ── Lectura pública ──────────────────────────────────────────────────────
   getDogs(filters?: DogFilters): Promise<PaginatedDogs>
-  getDogById(id: number): Promise<Dog | null>
+  getDogById(id: string): Promise<Dog | null>
   getDogBySlug(slug: string): Promise<Dog | null>
 
   // ── Escritura (shelter / admin) ──────────────────────────────────────────
   /** Crea un perro en estado no_disponible (borrador) */
   createDog(data: DogCreateData): Promise<Dog>
   /** Actualiza campos editables de un perro existente */
-  updateDog(id: number, data: DogUpdateData): Promise<Dog>
+  updateDog(id: string, data: DogUpdateData): Promise<Dog>
   /** Elimina un perro permanentemente */
-  deleteDog(id: number): Promise<void>
+  deleteDog(id: string): Promise<void>
   /** Publica un perro: cambia estado a disponible */
-  publishDog(id: number): Promise<Dog>
+  publishDog(id: string): Promise<Dog>
   /** Despublica un perro: cambia estado a no_disponible */
-  unpublishDog(id: number): Promise<Dog>
+  unpublishDog(id: string): Promise<Dog>
 
   // ── Media ────────────────────────────────────────────────────────────────
   /** Valida que las URLs de imagen sean accesibles y tengan formato correcto */

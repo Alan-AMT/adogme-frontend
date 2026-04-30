@@ -5,8 +5,9 @@
 // Cuando NEXT_PUBLIC_USE_MOCK=false, SOLO este archivo cambia las rutas.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? ''
-const ML   = process.env.NEXT_PUBLIC_ML_API_URL ?? ''
+const BASE     = process.env.NEXT_PUBLIC_API_URL ?? ''
+const MS_DOGS  = process.env.NEXT_PUBLIC_MS_DOGS_URL ?? ''
+const ML       = process.env.NEXT_PUBLIC_ML_API_URL ?? ''
 
 export const API_ENDPOINTS = {
 
@@ -22,14 +23,11 @@ export const API_ENDPOINTS = {
   },
 
   DOGS: {
-    LIST:            `${BASE}/api/dogs`,
-    DETAIL:          (id: number)    => `${BASE}/api/dogs/${id}`,
-    BY_SLUG:         (slug: string)  => `${BASE}/api/dogs/slug/${slug}`,
-    BY_SHELTER:      (id: number)    => `${BASE}/api/dogs/shelter/${id}`,
-    CREATE:          `${BASE}/api/dogs`,
-    UPDATE:          (id: number)    => `${BASE}/api/dogs/${id}`,
-    DELETE:          (id: number)    => `${BASE}/api/dogs/${id}`,
-    UPLOAD_MEDIA:    `${BASE}/api/media/upload`,
+    LIST:        `${MS_DOGS}/dogs-ms/dogs`,
+    DETAIL:      (id: string) => `${MS_DOGS}/dogs-ms/dog/${id}`,
+    BY_SHELTER:  (id: string) => `${MS_DOGS}/dogs-ms/dogs/shelter/${id}`,
+    CREATE:      `${MS_DOGS}/dogs-ms/dog`,
+    UPDATE:      (id: string) => `${MS_DOGS}/dogs-ms/dog/${id}`,
   },
 
   SHELTERS: {

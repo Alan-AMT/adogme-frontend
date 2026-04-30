@@ -80,17 +80,17 @@ export interface IShelterService {
 
   // ── Perros — lectura ───────────────────────────────────────────────────────
   getShelterDogs(refugioId: number, filters?: DogFilters): Promise<PaginatedDogs>
-  getDogById(id: number): Promise<Dog | null>
+  getDogById(id: string): Promise<Dog | null>
 
   // ── Perros — escritura (CRUD) ──────────────────────────────────────────────
   /** Crea un perro en borrador (estado = no_disponible) */
   createDog(data: DogCreateData): Promise<Dog>
   /** Actualiza campos editables de un perro existente */
-  updateDog(id: number, data: DogUpdateData): Promise<Dog>
+  updateDog(id: string, data: DogUpdateData): Promise<Dog>
   /** Elimina permanentemente un perro del refugio */
-  deleteDog(id: number): Promise<void>
+  deleteDog(id: string): Promise<void>
   /** Alterna publicación: no_disponible ↔ disponible */
-  togglePublish(id: number): Promise<Dog>
+  togglePublish(id: string): Promise<Dog>
 
   // ── Solicitudes ────────────────────────────────────────────────────────────
   getShelterRequests(refugioId: number): Promise<AdoptionRequestListItem[]>

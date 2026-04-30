@@ -61,7 +61,7 @@ let _dogs:     Dog[]            = MOCK_DOGS.map((d) => ({ ...d }))
 let _requests: AdoptionRequest[] = MOCK_ADOPTION_REQUESTS.map((r) => ({ ...r, historial: [...r.historial] }))
 
 // Contador para IDs autoincrement de perros nuevos
-let _nextDogId = Math.max(...MOCK_DOGS.map((d) => d.id)) + 1
+let _nextDogId = MOCK_DOGS.length + 1
 
 // ─── Implementación ───────────────────────────────────────────────────────────
 
@@ -91,7 +91,7 @@ export class MockShelterService implements IShelterService {
   async getDashboardStats(refugioId: number): Promise<ShelterDashboardStats> {
     await delay(250)
 
-    const dogs    = _dogs.filter((d) => d.refugioId === refugioId)
+    const dogs    = _dogs.filter((d) => d.refugioId === String(refugioId))
     const shelter = _shelters.find((s) => s.id === refugioId)
     const reqs    = _requests.filter((r) => r.refugioId === refugioId)
 
@@ -127,7 +127,7 @@ export class MockShelterService implements IShelterService {
     const page  = filters.page  ?? 1
     const limit = filters.limit ?? 30
 
-    let data = _dogs.filter((d) => d.refugioId === refugioId)
+    let data = _dogs.filter((d) => d.refugioId === String(refugioId))
 
     if (filters.estado) {
       data = data.filter((d) => d.estado === filters.estado)
@@ -151,7 +151,7 @@ export class MockShelterService implements IShelterService {
     }
   }
 
-  async getDogById(id: number): Promise<Dog | null> {
+  async getDogById(id: string): Promise<Dog | null> {
     await delay(200)
     const dog = _dogs.find((d) => d.id === id)
     return dog ? { ...dog } : null
@@ -166,7 +166,7 @@ export class MockShelterService implements IShelterService {
 
     const newDog: Dog = {
       // Campos proporcionados por el formulario
-      refugioId:     data.refugioId,
+      refugioId:     String(data.refugioId),
       nombre:        data.nombre,
       edad:          data.edad,
       raza:          data.raza,
@@ -193,7 +193,7 @@ export class MockShelterService implements IShelterService {
       vacunas:       data.vacunas      ?? [],
 
       // Generados por el servicio
-      id:            _nextDogId++,
+      id:            String(_nextDogId++),
       estado:        'no_disponible',    // siempre borrador al crear
       compatibilidad: 0,                 // sin calcular hasta publicar
       fechaRegistro: new Date().toISOString().split('T')[0],
@@ -209,7 +209,7 @@ export class MockShelterService implements IShelterService {
     return { ...newDog }
   }
 
-  async updateDog(id: number, data: DogUpdateData): Promise<Dog> {
+  async updateDog(id: string, data: DogUpdateData): Promise<Dog> {
     await delay(400)
     const idx = _dogs.findIndex((d) => d.id === id)
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`)
@@ -229,14 +229,14 @@ export class MockShelterService implements IShelterService {
     return { ...updated }
   }
 
-  async deleteDog(id: number): Promise<void> {
+  async deleteDog(id: string): Promise<void> {
     await delay(400)
     const idx = _dogs.findIndex((d) => d.id === id)
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`)
     _dogs = _dogs.filter((d) => d.id !== id)
   }
 
-  async togglePublish(id: number): Promise<Dog> {
+  async togglePublish(id: string): Promise<Dog> {
     await delay(350)
     const idx = _dogs.findIndex((d) => d.id === id)
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`)

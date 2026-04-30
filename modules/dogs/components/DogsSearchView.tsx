@@ -391,13 +391,13 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
       <div className="cat-filter-group">
         <FilterSelect
           label="Refugio"
-          value={filters.refugioId?.toString() ?? ""}
+          value={filters.refugioId ?? ""}
           options={refugios.map((r) => ({
-            value: r.id.toString(),
+            value: r.id,
             label: r.nombre,
           }))}
           onChange={(v) =>
-            setFilter("refugioId", v ? parseInt(v) : undefined)
+            setFilter("refugioId", v || undefined)
           }
         />
       </div>

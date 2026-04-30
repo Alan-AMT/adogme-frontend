@@ -33,7 +33,7 @@ const AGE_MAP: Record<string, string> = {
 };
 
 type DogLite = {
-  id?: number;
+  id?: string;
   nombre: string;
   raza: string;
   edad: number;

@@ -35,8 +35,8 @@ export interface PersonalityTag {
 // Incluye todos los campos del diagrama más campos de UI calculados
 
 export interface Dog {
-  id: number
-  refugioId: number
+  id: string
+  refugioId: string
 
   // Datos básicos (del diagrama)
   nombre: string
@@ -76,7 +76,7 @@ export interface Dog {
 
 export type DogListItem = Pick<
   Dog,
-  | 'id'
+  | 'id'      // string (UUID del MS)
   | 'refugioId'
   | 'nombre'
   | 'edad'
@@ -111,7 +111,7 @@ export interface DogFilters {
   aptoGatos?: boolean
   necesitaJardin?: boolean
   castrado?: boolean
-  refugioId?: number
+  refugioId?: string
   ciudad?: string
   soloConCompatibilidad?: boolean
   page?: number

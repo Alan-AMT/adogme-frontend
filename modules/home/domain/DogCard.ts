@@ -1,7 +1,7 @@
 // modules/home/domain/DogCard.ts
 
 export interface DogCard {
-  id: number
+  id: string
   nombre: string
   raza: string
   descripcion: string

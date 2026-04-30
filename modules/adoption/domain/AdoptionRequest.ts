@@ -21,7 +21,7 @@ export type {
 import type { AdoptionFormData } from '../../shared/domain/AdoptionRequest'
 
 export interface FormDraft {
-  perroId:   number
+  perroId:   string
   perroSlug: string
   perroNombre: string
   step:      number          // último paso completado (0-based)

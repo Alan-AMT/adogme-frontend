@@ -74,7 +74,7 @@ export const MOCK_DOGS: Dog[] = [
   // ── REFUGIO 1 — Huellitas MX (shelter-001) ──────────────────────────────
 
   {
-    id: 1, refugioId: 1, nombre: 'Max', edad: 24, raza: 'Labrador',
+    id: '1', refugioId: '1', nombre: 'Max', edad: 24, raza: 'Labrador',
     tamano: 'grande', nivelEnergia: 'alta', sexo: 'macho',
     salud: 'Vacunado, desparasitado, microchip',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Max es un Labrador cariñoso y lleno de energía. Le encanta correr y jugar con niños. Busca una familia activa con jardín.',
@@ -86,7 +86,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Huellitas MX', refugioSlug: 'huellitas-mx', refugioCiudad: 'Gustavo A. Madero', refugioLogo: SHELTER_LOGOS['huellitas-mx'],
   },
   {
-    id: 2, refugioId: 1, nombre: 'Luna', edad: 8, raza: 'Beagle',
+    id: '2', refugioId: '1', nombre: 'Luna', edad: 8, raza: 'Beagle',
     tamano: 'mediano', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, desparasitada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Luna es una cachorra curiosa y juguetona. Se lleva bien con todos. Ideal para apartamento si se le hace ejercicio diario.',
@@ -98,7 +98,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Huellitas MX', refugioSlug: 'huellitas-mx', refugioCiudad: 'Gustavo A. Madero', refugioLogo: SHELTER_LOGOS['huellitas-mx'],
   },
   {
-    id: 3, refugioId: 1, nombre: 'Thor', edad: 36, raza: 'Husky Siberiano',
+    id: '3', refugioId: '1', nombre: 'Thor', edad: 36, raza: 'Husky Siberiano',
     tamano: 'grande', nivelEnergia: 'muy_alta', sexo: 'macho',
     salud: 'Vacunado, necesita refuerzo de leptospirosis',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Thor es un Husky impresionante, lleno de vida. Necesita mucho ejercicio diario y espacio. No apto para primeros dueños sin experiencia.',
@@ -110,7 +110,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Huellitas MX', refugioSlug: 'huellitas-mx', refugioCiudad: 'Gustavo A. Madero', refugioLogo: SHELTER_LOGOS['huellitas-mx'],
   },
   {
-    id: 4, refugioId: 1, nombre: 'Coco', edad: 60, raza: 'Mestizo',
+    id: '4', refugioId: '1', nombre: 'Coco', edad: 60, raza: 'Mestizo',
     tamano: 'pequeño', nivelEnergia: 'baja', sexo: 'hembra',
     salud: 'Vacunada, desparasitada, esterilizada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Coco es una perrita adulta tranquila y leal. Perfecta para departamento. Lleva 2 años en el refugio esperando un hogar.',
@@ -122,7 +122,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Huellitas MX', refugioSlug: 'huellitas-mx', refugioCiudad: 'Gustavo A. Madero', refugioLogo: SHELTER_LOGOS['huellitas-mx'],
   },
   {
-    id: 5, refugioId: 1, nombre: 'Rocky', edad: 18, raza: 'Pitbull',
+    id: '5', refugioId: '1', nombre: 'Rocky', edad: 18, raza: 'Pitbull',
     tamano: 'mediano', nivelEnergia: 'alta', sexo: 'macho',
     salud: 'Vacunado, desparasitado',
     estado: 'en_proceso', compatibilidad: 0, descripcion: 'Rocky es un Pitbull muy sociable y cariñoso. Desmiente todos los mitos de su raza. Necesita dueño con experiencia.',
@@ -134,7 +134,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Huellitas MX', refugioSlug: 'huellitas-mx', refugioCiudad: 'Gustavo A. Madero', refugioLogo: SHELTER_LOGOS['huellitas-mx'],
   },
   {
-    id: 6, refugioId: 1, nombre: 'Bella', edad: 48, raza: 'Golden Retriever',
+    id: '6', refugioId: '1', nombre: 'Bella', edad: 48, raza: 'Golden Retriever',
     tamano: 'grande', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, desparasitada, microchip',
     estado: 'adoptado', compatibilidad: 0, descripcion: 'Bella fue adoptada en enero. Una historia de éxito.',
@@ -149,7 +149,7 @@ export const MOCK_DOGS: Dog[] = [
   // ── REFUGIO 2 — Patitas Libres (shelter-002) ─────────────────────────────
 
   {
-    id: 7, refugioId: 2, nombre: 'Churro', edad: 6, raza: 'Salchicha',
+    id: '7', refugioId: '2', nombre: 'Churro', edad: 6, raza: 'Salchicha',
     tamano: 'pequeño', nivelEnergia: 'moderada', sexo: 'macho',
     salud: 'Primera vacuna aplicada, pendiente refuerzo',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Churro es un cachorro Salchicha adorable. Pequeño, curioso y muy apegado a las personas. Ideal para departamento.',
@@ -161,7 +161,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Patitas Libres', refugioSlug: 'patitas-libres', refugioCiudad: 'Coyoacán', refugioLogo: SHELTER_LOGOS['patitas-libres'],
   },
   {
-    id: 8, refugioId: 2, nombre: 'Nala', edad: 30, raza: 'Bulldog Francés',
+    id: '8', refugioId: '2', nombre: 'Nala', edad: 30, raza: 'Bulldog Francés',
     tamano: 'pequeño', nivelEnergia: 'baja', sexo: 'hembra',
     salud: 'Vacunada, desparasitada, problema respiratorio leve',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Nala tiene un soplo leve pero lleva vida normal. Tranquila, perfecta para personas mayores o que trabajan desde casa.',
@@ -173,7 +173,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Patitas Libres', refugioSlug: 'patitas-libres', refugioCiudad: 'Coyoacán', refugioLogo: SHELTER_LOGOS['patitas-libres'],
   },
   {
-    id: 9, refugioId: 2, nombre: 'Lobo', edad: 84, raza: 'Mestizo',
+    id: '9', refugioId: '2', nombre: 'Lobo', edad: 84, raza: 'Mestizo',
     tamano: 'grande', nivelEnergia: 'baja', sexo: 'macho',
     salud: 'Vacunado, artritis leve en patas traseras',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Lobo es un perro senior tranquilo. Su artritis no le impide dar paseos cortos. Merece pasar sus últimos años en familia.',
@@ -185,7 +185,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Patitas Libres', refugioSlug: 'patitas-libres', refugioCiudad: 'Coyoacán', refugioLogo: SHELTER_LOGOS['patitas-libres'],
   },
   {
-    id: 10, refugioId: 2, nombre: 'Mia', edad: 12, raza: 'Beagle',
+    id: '10', refugioId: '2', nombre: 'Mia', edad: 12, raza: 'Beagle',
     tamano: 'mediano', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, desparasitada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Mia es una Beagle joven y equilibrada. Sigue muy bien órdenes básicas. Ideal para familia con niños.',
@@ -197,7 +197,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Patitas Libres', refugioSlug: 'patitas-libres', refugioCiudad: 'Coyoacán', refugioLogo: SHELTER_LOGOS['patitas-libres'],
   },
   {
-    id: 11, refugioId: 2, nombre: 'Simba', edad: 15, raza: 'Labrador',
+    id: '11', refugioId: '2', nombre: 'Simba', edad: 15, raza: 'Labrador',
     tamano: 'grande', nivelEnergia: 'alta', sexo: 'macho',
     salud: 'Vacunado, desparasitado',
     estado: 'en_proceso', compatibilidad: 0, descripcion: 'Simba es un Labrador amarillo juvenil, muy activo. Ya tiene solicitud en revisión.',
@@ -209,7 +209,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Patitas Libres', refugioSlug: 'patitas-libres', refugioCiudad: 'Coyoacán', refugioLogo: SHELTER_LOGOS['patitas-libres'],
   },
   {
-    id: 12, refugioId: 2, nombre: 'Canela', edad: 96, raza: 'Golden Retriever',
+    id: '12', refugioId: '2', nombre: 'Canela', edad: 96, raza: 'Golden Retriever',
     tamano: 'grande', nivelEnergia: 'baja', sexo: 'hembra',
     salud: 'Vacunada, hipotiroidismo controlado con medicación',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Canela es una Golden senior dulcísima. Su hipotiroidismo está 100% controlado. Pide una casita tranquila para descansar.',
@@ -224,7 +224,7 @@ export const MOCK_DOGS: Dog[] = [
   // ── REFUGIO 3 — Amigos de 4 Patas (shelter-003) ──────────────────────────
 
   {
-    id: 13, refugioId: 3, nombre: 'Dante', edad: 20, raza: 'Pitbull',
+    id: '13', refugioId: '3', nombre: 'Dante', edad: 20, raza: 'Pitbull',
     tamano: 'mediano', nivelEnergia: 'alta', sexo: 'macho',
     salud: 'Vacunado, desparasitado, microchip',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Dante llegó de una situación de abandono. Ha recuperado la confianza con paciencia. Necesita dueño tranquilo y firme.',
@@ -236,7 +236,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Amigos de 4 Patas', refugioSlug: 'amigos-4-patas', refugioCiudad: 'Iztapalapa', refugioLogo: SHELTER_LOGOS['amigos-4-patas'],
   },
   {
-    id: 14, refugioId: 3, nombre: 'Fiona', edad: 10, raza: 'Husky Siberiano',
+    id: '14', refugioId: '3', nombre: 'Fiona', edad: 10, raza: 'Husky Siberiano',
     tamano: 'grande', nivelEnergia: 'muy_alta', sexo: 'hembra',
     salud: 'Vacunada, desparasitada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Fiona es una Husky joven con muchísima energía. Necesita ejercicio intenso diario. Hará a alguien muy feliz si puede seguirle el ritmo.',
@@ -248,7 +248,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Amigos de 4 Patas', refugioSlug: 'amigos-4-patas', refugioCiudad: 'Iztapalapa', refugioLogo: SHELTER_LOGOS['amigos-4-patas'],
   },
   {
-    id: 15, refugioId: 3, nombre: 'Pepito', edad: 5, raza: 'Salchicha',
+    id: '15', refugioId: '3', nombre: 'Pepito', edad: 5, raza: 'Salchicha',
     tamano: 'pequeño', nivelEnergia: 'moderada', sexo: 'macho',
     salud: 'Primera vacuna aplicada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Pepito es un cachorro pequeñísimo con mucha personalidad. Muy vocal y expresivo. Se adapta bien a espacios pequeños.',
@@ -260,7 +260,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Amigos de 4 Patas', refugioSlug: 'amigos-4-patas', refugioCiudad: 'Iztapalapa', refugioLogo: SHELTER_LOGOS['amigos-4-patas'],
   },
   {
-    id: 16, refugioId: 3, nombre: 'Princesa', edad: 42, raza: 'Bulldog Francés',
+    id: '16', refugioId: '3', nombre: 'Princesa', edad: 42, raza: 'Bulldog Francés',
     tamano: 'pequeño', nivelEnergia: 'baja', sexo: 'hembra',
     salud: 'Vacunada, esterilizada, microchip',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Princesa es una Bulldog adulta muy tranquila. Ama los sofás y los mimos. Perfecta para personas que buscan compañía sin mucha actividad.',
@@ -272,7 +272,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Amigos de 4 Patas', refugioSlug: 'amigos-4-patas', refugioCiudad: 'Iztapalapa', refugioLogo: SHELTER_LOGOS['amigos-4-patas'],
   },
   {
-    id: 17, refugioId: 3, nombre: 'Bruno', edad: 55, raza: 'Labrador',
+    id: '17', refugioId: '3', nombre: 'Bruno', edad: 55, raza: 'Labrador',
     tamano: 'grande', nivelEnergia: 'moderada', sexo: 'macho',
     salud: 'Vacunado, desparasitado',
     estado: 'adoptado', compatibilidad: 0, descripcion: 'Bruno fue adoptado por una familia de la CDMX.',
@@ -287,7 +287,7 @@ export const MOCK_DOGS: Dog[] = [
   // ── REFUGIO 4 — Refugio Esperanza (shelter-004) ───────────────────────────
 
   {
-    id: 18, refugioId: 4, nombre: 'Kira', edad: 14, raza: 'Mestizo',
+    id: '18', refugioId: '4', nombre: 'Kira', edad: 14, raza: 'Mestizo',
     tamano: 'mediano', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, desparasitada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Kira es una mestiza equilibrada y cariñosa. Se adapta a casi cualquier hogar. Muy buena con niños mayores.',
@@ -299,7 +299,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Refugio Esperanza', refugioSlug: 'refugio-esperanza', refugioCiudad: 'Tlalpan', refugioLogo: SHELTER_LOGOS['refugio-esperanza'],
   },
   {
-    id: 19, refugioId: 4, nombre: 'Oreo', edad: 3, raza: 'Bulldog Francés',
+    id: '19', refugioId: '4', nombre: 'Oreo', edad: 3, raza: 'Bulldog Francés',
     tamano: 'pequeño', nivelEnergia: 'moderada', sexo: 'macho',
     salud: 'Primera vacuna esta semana',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Oreo llegó hace poco, aún muy bebé. Blanco y negro como su nombre. Tierno y dormilón.',
@@ -311,7 +311,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Refugio Esperanza', refugioSlug: 'refugio-esperanza', refugioCiudad: 'Tlalpan', refugioLogo: SHELTER_LOGOS['refugio-esperanza'],
   },
   {
-    id: 20, refugioId: 4, nombre: 'Sasha', edad: 72, raza: 'Husky Siberiano',
+    id: '20', refugioId: '4', nombre: 'Sasha', edad: 72, raza: 'Husky Siberiano',
     tamano: 'grande', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, esterilizada, microchip. Ojos azules',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Sasha ya no tiene la energía de antes. Una Husky adulta que prefiere caminatas tranquilas. Impresionante y noble.',
@@ -323,7 +323,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Refugio Esperanza', refugioSlug: 'refugio-esperanza', refugioCiudad: 'Tlalpan', refugioLogo: SHELTER_LOGOS['refugio-esperanza'],
   },
   {
-    id: 21, refugioId: 4, nombre: 'Rex', edad: 18, raza: 'Pitbull',
+    id: '21', refugioId: '4', nombre: 'Rex', edad: 18, raza: 'Pitbull',
     tamano: 'mediano', nivelEnergia: 'alta', sexo: 'macho',
     salud: 'Vacunado, desparasitado',
     estado: 'en_proceso', compatibilidad: 0, descripcion: 'Rex está en proceso de adopción con una familia de Tlalpan.',
@@ -335,7 +335,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Refugio Esperanza', refugioSlug: 'refugio-esperanza', refugioCiudad: 'Tlalpan', refugioLogo: SHELTER_LOGOS['refugio-esperanza'],
   },
   {
-    id: 22, refugioId: 4, nombre: 'Gala', edad: 36, raza: 'Golden Retriever',
+    id: '22', refugioId: '4', nombre: 'Gala', edad: 36, raza: 'Golden Retriever',
     tamano: 'grande', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, desparasitada, microchip',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Gala es una Golden clásica: dulce, gentil y paciente. Excelente con niños de cualquier edad.',
@@ -350,7 +350,7 @@ export const MOCK_DOGS: Dog[] = [
   // ── REFUGIO 5 — Segunda Oportunidad (shelter-005) ────────────────────────
 
   {
-    id: 23, refugioId: 5, nombre: 'Toby', edad: 48, raza: 'Beagle',
+    id: '23', refugioId: '5', nombre: 'Toby', edad: 48, raza: 'Beagle',
     tamano: 'mediano', nivelEnergia: 'moderada', sexo: 'macho',
     salud: 'Vacunado, desparasitado, microchip',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Toby tiene 4 años y sigue tan curioso como el primer día. Olfato increíble. Le encanta explorar parques.',
@@ -362,7 +362,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 24, refugioId: 5, nombre: 'Nina', edad: 7, raza: 'Mestizo',
+    id: '24', refugioId: '5', nombre: 'Nina', edad: 7, raza: 'Mestizo',
     tamano: 'pequeño', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, primera dosis',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Nina es una cachorrota mestiza diminuta. Muy lista, aprende trucos rápido. Primera vacuna hace 2 semanas.',
@@ -374,7 +374,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 25, refugioId: 5, nombre: 'Duke', edad: 60, raza: 'Labrador',
+    id: '25', refugioId: '5', nombre: 'Duke', edad: 60, raza: 'Labrador',
     tamano: 'grande', nivelEnergia: 'moderada', sexo: 'macho',
     salud: 'Vacunado, microchip, displasia leve en cadera',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Duke tiene displasia leve controlada. Camina bien con tratamiento mensual. Necesita familia comprometida y paciente.',
@@ -386,7 +386,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 26, refugioId: 5, nombre: 'Panda', edad: 22, raza: 'Bulldog Francés',
+    id: '26', refugioId: '5', nombre: 'Panda', edad: 22, raza: 'Bulldog Francés',
     tamano: 'pequeño', nivelEnergia: 'baja', sexo: 'macho',
     salud: 'Vacunado, desparasitado',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Panda es blanco y negro, rechoncho y adorable. Le gustan las siestas largas y los abrazos. Bajo mantenimiento.',
@@ -398,7 +398,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 27, refugioId: 5, nombre: 'Alaska', edad: 16, raza: 'Husky Siberiano',
+    id: '27', refugioId: '5', nombre: 'Alaska', edad: 16, raza: 'Husky Siberiano',
     tamano: 'grande', nivelEnergia: 'muy_alta', sexo: 'hembra',
     salud: 'Vacunada, desparasitada',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Alaska es una Husky jovencísima, pura energía. Ojos celestes hipnóticos. Solo para gente muy activa con experiencia en la raza.',
@@ -410,7 +410,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 28, refugioId: 5, nombre: 'Manchas', edad: 108, raza: 'Mestizo',
+    id: '28', refugioId: '5', nombre: 'Manchas', edad: 108, raza: 'Mestizo',
     tamano: 'mediano', nivelEnergia: 'baja', sexo: 'macho',
     salud: 'Vacunado, microchip, sordera parcial',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Manchas tiene 9 años y sordera parcial. Responde a señas. El más veterano del refugio — lleva 3 años esperando. Merece un hogar.',
@@ -422,7 +422,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 29, refugioId: 5, nombre: 'Frida', edad: 28, raza: 'Salchicha',
+    id: '29', refugioId: '5', nombre: 'Frida', edad: 28, raza: 'Salchicha',
     tamano: 'pequeño', nivelEnergia: 'moderada', sexo: 'hembra',
     salud: 'Vacunada, esterilizada, microchip',
     estado: 'en_proceso', compatibilidad: 0, descripcion: 'Frida tiene solicitud activa. Pequeña pero con carácter. Le fascina cavar.',
@@ -434,7 +434,7 @@ export const MOCK_DOGS: Dog[] = [
     refugioNombre: 'Segunda Oportunidad', refugioSlug: 'segunda-oportunidad', refugioCiudad: 'Benito Juárez', refugioLogo: SHELTER_LOGOS['segunda-oportunidad'],
   },
   {
-    id: 30, refugioId: 5, nombre: 'Goldie', edad: 4, raza: 'Golden Retriever',
+    id: '30', refugioId: '5', nombre: 'Goldie', edad: 4, raza: 'Golden Retriever',
     tamano: 'grande', nivelEnergia: 'alta', sexo: 'hembra',
     salud: 'Primera vacuna aplicada, pendiente esquema completo',
     estado: 'disponible', compatibilidad: 0, descripcion: 'Goldie es la más nueva del refugio. Cachorra Golden que promete ser la mejor amiga de alguien muy afortunado.',
@@ -449,13 +449,13 @@ export const MOCK_DOGS: Dog[] = [
 
 // ─── Helper functions ─────────────────────────────────────────────────────────
 
-export const getDogById = (id: number): Dog | undefined =>
+export const getDogById = (id: string): Dog | undefined =>
   MOCK_DOGS.find(d => d.id === id)
 
 export const getDogBySlug = (slug: string): Dog | undefined =>
   MOCK_DOGS.find(d => d.nombre.toLowerCase().replace(/\s+/g, '-') === slug)
 
-export const getDogsByShelterId = (refugioId: number): Dog[] =>
+export const getDogsByShelterId = (refugioId: string): Dog[] =>
   MOCK_DOGS.filter(d => d.refugioId === refugioId)
 
 export const getAvailableDogs = (): Dog[] =>

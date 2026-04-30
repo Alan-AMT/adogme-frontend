@@ -87,7 +87,7 @@ export class MockAdminService implements IAdminService {
     return [..._dogs]
   }
 
-  async updateDogStatus(id: number, status: DogStatus): Promise<Dog> {
+  async updateDogStatus(id: string, status: DogStatus): Promise<Dog> {
     await delay()
     const idx = _dogs.findIndex(d => d.id === id)
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`)

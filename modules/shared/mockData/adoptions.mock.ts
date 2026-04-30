@@ -12,7 +12,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
   {
     id: 1001,
     adoptanteId: ADOPTANTE_ID,
-    perroId: 1,           // Max — Labrador
+    perroId: '1',           // Max — Labrador
     refugioId: SHELTER_IDS.HUELLITAS,
     fecha: '2025-01-20',
     estado: 'pending',
@@ -41,7 +41,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
   {
     id: 1002,
     adoptanteId: ADOPTANTE_ID,
-    perroId: 18,          // Kira — Mestizo
+    perroId: '18',          // Kira — Mestizo
     refugioId: SHELTER_IDS.ESPERANZA,
     fecha: '2025-01-10',
     estado: 'in_review',
@@ -70,7 +70,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
   {
     id: 1003,
     adoptanteId: ADOPTANTE_ID,
-    perroId: 7,           // Churro — Salchicha
+    perroId: '7',           // Churro — Salchicha
     refugioId: SHELTER_IDS.PATITAS,
     fecha: '2024-12-05',
     estado: 'approved',
@@ -102,7 +102,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
   {
     id: 1004,
     adoptanteId: ADOPTANTE_ID,
-    perroId: 3,           // Thor — Husky
+    perroId: '3',           // Thor — Husky
     refugioId: SHELTER_IDS.HUELLITAS,
     fecha: '2024-11-20',
     estado: 'rejected',
@@ -132,7 +132,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
   {
     id: 1005,
     adoptanteId: ADOPTANTE_ID,
-    perroId: 8,           // Nala — Bulldog
+    perroId: '8',           // Nala — Bulldog
     refugioId: SHELTER_IDS.PATITAS,
     fecha: '2024-10-15',
     estado: 'cancelled',
@@ -161,7 +161,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
   // ── 6–12. Solicitudes de otros adoptantes (para dashboard del refugio) ───
 
   {
-    id: 2001, adoptanteId: 102, perroId: 14, refugioId: SHELTER_IDS.AMIGOS,
+    id: 2001, adoptanteId: 102, perroId: '14', refugioId: SHELTER_IDS.AMIGOS,
     fecha: '2025-01-18', estado: 'pending', comentarios: 'Fiona parece increíble.',
     formulario: {
       motivacion: 'Corro maratones, necesito un compañero de entrenamiento.',
@@ -177,7 +177,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioNombre: 'Amigos de 4 Patas', adoptanteNombre: 'Carlos Méndez',
   },
   {
-    id: 2002, adoptanteId: 103, perroId: 22, refugioId: SHELTER_IDS.ESPERANZA,
+    id: 2002, adoptanteId: 103, perroId: '22', refugioId: SHELTER_IDS.ESPERANZA,
     fecha: '2025-01-16', estado: 'in_review', comentarios: 'Gala es perfecta para mi familia.',
     formulario: {
       motivacion: 'Mis hijos llevan años pidiendo un perro. Gala es perfecta.',
@@ -196,7 +196,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioNombre: 'Refugio Esperanza', adoptanteNombre: 'Laura Soto',
   },
   {
-    id: 2003, adoptanteId: 104, perroId: 4, refugioId: SHELTER_IDS.HUELLITAS,
+    id: 2003, adoptanteId: 104, perroId: '4', refugioId: SHELTER_IDS.HUELLITAS,
     fecha: '2025-01-14', estado: 'approved', comentarios: 'Coco necesita un hogar y yo necesito compañía.',
     formulario: {
       motivacion: 'Soy adulta mayor, busco compañía tranquila.',
@@ -216,7 +216,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioNombre: 'Huellitas MX', adoptanteNombre: 'María Hernández',
   },
   {
-    id: 2004, adoptanteId: 105, perroId: 25, refugioId: SHELTER_IDS.SEGUNDA,
+    id: 2004, adoptanteId: 105, perroId: '25', refugioId: SHELTER_IDS.SEGUNDA,
     fecha: '2025-01-08', estado: 'in_review', comentarios: 'Duke a pesar de su displasia me encanta.',
     formulario: {
       motivacion: 'Me identifico con Duke, también tengo una lesión crónica.',
@@ -235,7 +235,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioNombre: 'Segunda Oportunidad', adoptanteNombre: 'Roberto Díaz',
   },
   {
-    id: 2005, adoptanteId: 106, perroId: 28, refugioId: SHELTER_IDS.SEGUNDA,
+    id: 2005, adoptanteId: 106, perroId: '28', refugioId: SHELTER_IDS.SEGUNDA,
     fecha: '2025-01-05', estado: 'pending', comentarios: 'Manchas lleva demasiado tiempo esperando.',
     formulario: {
       motivacion: 'Vi que Manchas lleva 3 años en el refugio. Eso me rompió el corazón.',
@@ -251,7 +251,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioNombre: 'Segunda Oportunidad', adoptanteNombre: 'Sofía Torres',
   },
   {
-    id: 2006, adoptanteId: 107, perroId: 9, refugioId: SHELTER_IDS.PATITAS,
+    id: 2006, adoptanteId: 107, perroId: '9', refugioId: SHELTER_IDS.PATITAS,
     fecha: '2024-12-28', estado: 'rejected', comentarios: 'Lobo me llamó la atención.',
     formulario: {
       motivacion: 'Quiero un perro grande que acompañe a mis hijos pequeños.',
@@ -272,7 +272,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioNombre: 'Patitas Libres', adoptanteNombre: 'Pedro Ramírez',
   },
   {
-    id: 2007, adoptanteId: 108, perroId: 20, refugioId: SHELTER_IDS.ESPERANZA,
+    id: 2007, adoptanteId: 108, perroId: '20', refugioId: SHELTER_IDS.ESPERANZA,
     fecha: '2025-01-22', estado: 'pending', comentarios: 'Sasha es preciosa.',
     formulario: {
       motivacion: 'Soy fotógrafo, quiero un perro fotogénico para mis paseos.',

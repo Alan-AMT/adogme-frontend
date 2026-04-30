@@ -9,13 +9,13 @@ import { useFavoritesStore } from '@/modules/shared/infrastructure/store/favorit
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 
 interface Props {
-  dogId:      number
+  dogId:      string
   dogNombre:  string
   className?: string
 }
 
 /* ── Modal para visitantes ─────────────────────────────── */
-function FavoriteLoginPrompt({ dogNombre, dogId, onClose }: { dogNombre: string; dogId: number; onClose: () => void }) {
+function FavoriteLoginPrompt({ dogNombre, dogId, onClose }: { dogNombre: string; dogId: string; onClose: () => void }) {
   const redirect = encodeURIComponent(`/perros/${dogId}`)
 
   useEffect(() => {

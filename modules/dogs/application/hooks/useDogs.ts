@@ -48,7 +48,7 @@ export function useDogs(initialFilters: DogFilters = {}) {
   // ── Metadata (carga única — para dropdowns y sugerencias) ─────────────────
   const [allDogs,  setAllDogs]  = useState<DogListItem[]>([]);
   const [razas,    setRazas]    = useState<string[]>([]);
-  const [refugios, setRefugios] = useState<{ id: number; nombre: string }[]>([]);
+  const [refugios, setRefugios] = useState<{ id: string; nombre: string }[]>([]);
 
   // ── Debounce 300ms sobre searchText ───────────────────────────────────────
   const debounceRef               = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,7 +68,7 @@ export function useDogs(initialFilters: DogFilters = {}) {
     dogService.getDogs({ limit: 999 }).then(({ data }) => {
       setAllDogs(data);
       setRazas([...new Set(data.map((d) => d.raza))].sort());
-      const seen = new Set<number>();
+      const seen = new Set<string>();
       setRefugios(
         data
           .filter((d) => !seen.has(d.refugioId) && seen.add(d.refugioId))

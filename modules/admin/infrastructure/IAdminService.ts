@@ -35,7 +35,7 @@ export interface IAdminService {
 
   // Moderación de perros
   getAllDogs(): Promise<Dog[]>
-  updateDogStatus(id: number, status: DogStatus): Promise<Dog>
+  updateDogStatus(id: string, status: DogStatus): Promise<Dog>
 
   // Gestión de contenido
   getAdoptionProcess(): Promise<AdoptionStep[]>

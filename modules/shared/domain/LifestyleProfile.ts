@@ -126,7 +126,7 @@ export interface Cuestionario {
 export interface DogRecommendation {
   id: number
   adoptanteId: number     // FK → Adoptante
-  perroId: number         // FK → Perro
+  perroId: string         // FK → Perro (UUID del MS dogs)
   cuestionarioId: number  // FK → Cuestionario
   fecha: string           // ISO date
   compatibilidad: number  // float 0-1 en BD → usamos 0-100 en FE

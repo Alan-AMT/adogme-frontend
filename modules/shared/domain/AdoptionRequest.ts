@@ -68,7 +68,7 @@ export interface StatusChange {
 export interface AdoptionRequest {
   id: number
   adoptanteId: number          // FK → Adoptante
-  perroId: number              // FK → Perro
+  perroId: string              // FK → Perro (UUID del MS dogs)
   refugioId: number            // FK → Refugio
   fecha: string                // ISO date — del diagrama
   estado: RequestStatus        // del diagrama

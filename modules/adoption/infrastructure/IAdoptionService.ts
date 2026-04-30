@@ -11,7 +11,7 @@ import type {
 // ─── Payload para crear una solicitud ─────────────────────────────────────────
 
 export interface SubmitAdoptionPayload {
-  perroId:     number
+  perroId:     string
   refugioId:   number
   comentarios: string
   formulario:  AdoptionFormData

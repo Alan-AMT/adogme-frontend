@@ -20,10 +20,10 @@ import { ADOPTION_STEPS } from '../../domain/AdoptionRequest'
 // ─── Tipos expuestos ──────────────────────────────────────────────────────────
 
 export interface UseAdoptionFormOptions {
-  perroId:     number
+  perroId:     string
   perroSlug:   string
   perroNombre: string
-  refugioId:   number
+  refugioId:   string
 }
 
 export interface UseAdoptionFormState {
@@ -221,7 +221,7 @@ export function useAdoptionForm({
       const request = await adoptionService.submit(
         {
           perroId,
-          refugioId,
+          refugioId: parseInt(refugioId, 10) || 0,
           comentarios: formData.comentariosAdicionales ?? '',
           formulario:  formData as AdoptionFormData,
         },

@@ -51,10 +51,7 @@ export function parseDogsSearchParams(params: RawParams): DogFilters {
   }
 
   const refugioId = str(params, 'refugioId')
-  if (refugioId) {
-    const id = parseInt(refugioId, 10)
-    if (!isNaN(id)) filters.refugioId = id
-  }
+  if (refugioId) filters.refugioId = refugioId
 
   if (str(params, 'aptoNinos')  === 'true') filters.aptoNinos  = true
   if (str(params, 'aptoPerros') === 'true') filters.aptoPerros = true
