@@ -91,7 +91,7 @@ function DogCard({ dog }: { dog: DogListItem }) {
         <div className="cat-dog-media">
           <div className="cat-dog-photo">
             <Image
-              src={dog.foto}
+              src={dog.foto ?? ''}
               alt={`Fotografía de ${dog.nombre}`}
               fill
               className="cat-dog-photo__img group-hover:scale-105 transition-transform duration-300"
@@ -519,7 +519,7 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
                 >
                   <div className="cat-suggestion-item__photo">
                     <Image
-                      src={dog.foto}
+                      src={dog.foto ?? ''}
                       alt={dog.nombre}
                       fill
                       sizes="38px"

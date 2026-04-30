@@ -1,7 +1,7 @@
 'use client'
 // app/(applicant)/layout.tsx
-// Middleware ya garantiza que haya token — este layout verifica el ROL.
-// Si el rol no es 'applicant', redirige al destino correcto.
+// Middleware guarantees a token exists — this layout verifies the ROLE.
+// If the role is not 'applicant', redirects to the correct destination.
 
 import { useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
@@ -12,17 +12,13 @@ import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 
 export default function ApplicantLayout({ children }: { children: ReactNode }) {
   const router   = useRouter()
-  const hydrate  = useAuthStore(s => s.hydrate)
   const user     = useAuthStore(s => s.user)
   const [ready, setReady] = useState(false)
 
-  // Hidrata el store una sola vez al montar
   useEffect(() => {
-    hydrate()
     setReady(true)
-  }, [hydrate])
+  }, [])
 
-  // Una vez hidratado, verifica el rol
   useEffect(() => {
     if (!ready) return
     if (!user) {
@@ -34,7 +30,6 @@ export default function ApplicantLayout({ children }: { children: ReactNode }) {
     if (user.role === 'admin')   { router.replace('/admin'); return }
   }, [ready, user, router])
 
-  // Spinner mientras se hidrata o mientras se verifica el rol
   if (!ready || !user || user.role !== 'applicant') {
     return (
       <>

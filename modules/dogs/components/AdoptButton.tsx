@@ -29,15 +29,13 @@ interface Props {
 }
 
 export default function AdoptButton({ dogId, dogNombre, className = '' }: Props) {
-  const hydrate = useAuthStore(s => s.hydrate)
   const user    = useAuthStore(s => s.user)
   const [ready,     setReady]     = useState(false)
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
-    hydrate()
     setReady(true)
-  }, [hydrate])
+  }, [])
 
   // Shelter y admin: no pueden solicitar adopciones
   if (ready && (user?.role === 'shelter' || user?.role === 'admin')) {

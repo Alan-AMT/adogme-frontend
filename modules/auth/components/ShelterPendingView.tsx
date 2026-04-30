@@ -53,9 +53,7 @@ export default function ShelterPendingView() {
   const user   = useAuthStore(s => s.user)
   const logout = useAuthStore(s => s.logout)
 
-  const shelterName = user
-    ? (user as { nombreRefugio?: string }).nombreRefugio ?? (user as { nombre: string }).nombre
-    : 'tu refugio'
+  const shelterName = user?.name ?? 'tu refugio'
 
   return (
     <div className="min-h-screen bg-[#f4f6f9] flex flex-col">

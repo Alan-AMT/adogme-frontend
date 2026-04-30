@@ -10,7 +10,7 @@ export interface IMLService {
    * por compatibilidad descendente.
    */
   generateRecommendations(
-    adoptanteId: number,
+    adoptanteId: string,
     answers: LifestyleQuizAnswers,
   ): Promise<MLRecommendationResponse>
 }

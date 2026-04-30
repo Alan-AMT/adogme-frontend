@@ -1,45 +1,51 @@
 // modules/shared/application/hooks/useAuth.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Wrapper semántico sobre authStore.
-// Los componentes NUNCA importan useAuthStore directamente — usan este hook.
+// Read-only auth state hook with computed role checks.
+// For auth actions (login, register), use the dedicated hooks (useLogin, etc.)
+// or call authService directly.
 // ─────────────────────────────────────────────────────────────────────────────
-'use client'
+"use client";
 
-import type { ShelterUser } from '../../domain/User'
-import { useAuthStore } from '../../infrastructure/store/authStore'
+import { useCallback } from "react";
+import type { ShelterUser } from "../../domain/User";
+import { useAuthStore } from "../../infrastructure/store/authStore";
+import { authService } from "@/modules/auth/infrastructure/AuthServiceFactory";
 
 export function useAuth() {
-  const store = useAuthStore()
+  const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  const handleLogout = useCallback(async () => {
+    await authService.logout();
+  }, []);
 
   return {
-    // ── Estado ───────────────────────────────────────────────────────────────
-    user:            store.user,
-    token:           store.token,
-    isAuthenticated: store.isAuthenticated,
-    isLoading:       store.isLoading,
-    error:           store.error,
+    // State
+    user,
+    token,
+    isAuthenticated,
 
-    // ── Checks de rol ────────────────────────────────────────────────────────
-    isApplicant: store.user?.role === 'applicant',
-    isShelter:   store.user?.role === 'shelter',
-    isAdmin:     store.user?.role === 'admin',
+    // Role checks
+    isApplicant: user?.role === "applicant",
+    isShelter: user?.role === "shelter",
+    isAdmin: user?.role === "admin",
 
-    // ── Checks de shelter ────────────────────────────────────────────────────
-    isShelterApproved: store.user?.role === 'shelter'
-      ? (store.user as ShelterUser).shelterStatus === 'approved'
-      : false,
+    // Shelter-specific checks
+    isShelterApproved:
+      user?.role === "shelter"
+        ? (user as ShelterUser).shelterStatus === "approved"
+        : false,
 
-    isShelterPending: store.user?.role === 'shelter'
-      ? (store.user as ShelterUser).shelterStatus === 'pending'
-      : false,
+    isShelterPending:
+      user?.role === "shelter"
+        ? (user as ShelterUser).shelterStatus === "pending"
+        : false,
 
-    shelterId: store.user?.role === 'shelter'
-      ? (store.user as ShelterUser).shelterId
-      : null,
+    shelterId:
+      user?.role === "shelter" ? (user as ShelterUser).shelterId : null,
 
-    // ── Actions ──────────────────────────────────────────────────────────────
-    login:      store.login,
-    logout:     store.logout,
-    clearError: store.clearError,
-  }
+    // Actions
+    logout: handleLogout,
+  };
 }

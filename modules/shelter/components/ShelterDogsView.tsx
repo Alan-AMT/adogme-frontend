@@ -9,13 +9,14 @@ import Link  from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { useShelterDogs }      from '../application/hooks/useShelterDogs'
+import { useToast }            from '@/modules/shared/application/hooks/useToast'
 import type { DogStatusFilter } from '../application/hooks/useShelterDogs'
 import type { DogListItem }    from '@/modules/shared/domain/Dog'
 import { shelterService }      from '../infrastructure/ShelterServiceFactory'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
-const CURRENT_SHELTER_ID = 1
+const CURRENT_SHELTER_ID = "1"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -309,6 +310,7 @@ export default function ShelterDogsView() {
     setStatusFilter, setSearch,
     deleteDog, togglePublish,
   } = useShelterDogs()
+  const toast = useToast()
 
   // Mapa perroId → cantidad de solicitudes
   const [reqCountMap, setReqCountMap] = useState<Map<string, number>>(new Map())
@@ -332,6 +334,9 @@ export default function ShelterDogsView() {
     setIsDeleting(true)
     try {
       await deleteDog(confirmDog.id)
+      toast.success(`${confirmDog.nombre} eliminado correctamente`)
+    } catch {
+      toast.error('No se pudo eliminar el perro. Intenta de nuevo.')
     } finally {
       setIsDeleting(false)
       setConfirmDog(null)
@@ -340,8 +345,13 @@ export default function ShelterDogsView() {
 
   const handleTogglePublish = async (id: string) => {
     setTogglingId(id)
+    const dog = dogs.find(d => d.id === id)
     try {
       await togglePublish(id)
+      const wasPublished = dog?.estado === 'disponible'
+      toast.success(wasPublished ? `${dog?.nombre} despublicado` : `${dog?.nombre} publicado`)
+    } catch {
+      toast.error('No se pudo cambiar el estado del perro.')
     } finally {
       setTogglingId(null)
     }

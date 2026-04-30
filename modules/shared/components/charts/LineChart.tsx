@@ -157,7 +157,7 @@ export function LineChart({
             axisLine={false}
             tickLine={false}
             width={40}
-            tickFormatter={v => v.toLocaleString('es-MX')}
+            tickFormatter={(v: number) => v.toLocaleString('es-MX')}
           />
 
           <Tooltip content={<CustomTooltip />} cursor={{ stroke: color, strokeWidth: 1, strokeDasharray: '4 4' }} />
@@ -176,7 +176,7 @@ export function LineChart({
             name={label}
             stroke={color}
             strokeWidth={2.5}
-            dot={(props) => (
+            dot={(props: { cx?: number; cy?: number; stroke?: string; index?: number; [key: string]: unknown }) => (
               <CustomDot
                 key={`dot-${props.index}`}
                 {...props}

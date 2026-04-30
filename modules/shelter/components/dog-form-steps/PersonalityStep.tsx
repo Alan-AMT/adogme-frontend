@@ -11,26 +11,26 @@ type UpdateFn = <K extends keyof DogFormData>(field: K, value: DogFormData[K]) =
 
 interface Props {
   formData: DogFormData
-  errors:   Record<string, string>
-  update:   UpdateFn
+  errors: Record<string, string>
+  update: UpdateFn
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  caracter:      'Carácter',
-  socialización: 'Socialización',
-  actividad:     'Actividad',
+  caracter: 'Carácter',
+  socializacion: 'socializacion',
+  actividad: 'Actividad',
   entrenamiento: 'Entrenamiento',
 }
 
 const COMPAT_OPTIONS = [
-  { key: 'aptoNinos'  as const, label: 'Niños',  icon: 'child_care',   desc: 'Se lleva bien con niños'     },
-  { key: 'aptoPerros' as const, label: 'Perros',  icon: 'pets',         desc: 'Convive con otros perros'    },
-  { key: 'aptoGatos'  as const, label: 'Gatos',   icon: 'cruelty_free', desc: 'Convive con gatos'           },
+  { key: 'aptoNinos' as const, label: 'Niños', icon: 'child_care', desc: 'Se lleva bien con niños' },
+  { key: 'aptoPerros' as const, label: 'Perros', icon: 'pets', desc: 'Convive con otros perros' },
+  { key: 'aptoGatos' as const, label: 'Gatos', icon: 'cruelty_free', desc: 'Convive con gatos' },
 ]
 
 export function PersonalityStep({ formData, errors, update }: Props) {
   const selectedIds = new Set(formData.personalidad.map(t => t.id))
-  const maxReached  = selectedIds.size >= 8
+  const maxReached = selectedIds.size >= 8
 
   function toggleTag(tag: PersonalityTag) {
     if (selectedIds.has(tag.id)) {
@@ -42,7 +42,7 @@ export function PersonalityStep({ formData, errors, update }: Props) {
 
   // Group by category
   const byCategory = PERSONALITY_TAGS_CATALOG.reduce<Record<string, PersonalityTag[]>>((acc, tag) => {
-    ;(acc[tag.categoria] ??= []).push(tag)
+    ; (acc[tag.categoria] ??= []).push(tag)
     return acc
   }, {})
 
@@ -68,7 +68,7 @@ export function PersonalityStep({ formData, errors, update }: Props) {
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
                 {tags.map(tag => {
-                  const active   = selectedIds.has(tag.id)
+                  const active = selectedIds.has(tag.id)
                   const disabled = maxReached && !active
                   return (
                     <button
@@ -77,20 +77,20 @@ export function PersonalityStep({ formData, errors, update }: Props) {
                       disabled={disabled}
                       onClick={() => toggleTag(tag)}
                       style={{
-                        display:      'inline-flex',
-                        alignItems:   'center',
-                        gap:          '0.3rem',
-                        padding:      '0.4rem 0.85rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        padding: '0.4rem 0.85rem',
                         borderRadius: 999,
-                        border:       active ? '1.5px solid rgba(255,107,107,0.35)' : '1.5px solid #e4e4e7',
-                        background:   active ? 'rgba(255,107,107,0.1)' : '#fff',
-                        color:        active ? '#ff6b6b' : '#52525b',
-                        fontSize:     '0.8rem',
-                        fontWeight:   700,
-                        cursor:       disabled ? 'not-allowed' : 'pointer',
-                        opacity:      disabled ? 0.4 : 1,
-                        transition:   'all 150ms ease',
-                        fontFamily:   'inherit',
+                        border: active ? '1.5px solid rgba(255,107,107,0.35)' : '1.5px solid #e4e4e7',
+                        background: active ? 'rgba(255,107,107,0.1)' : '#fff',
+                        color: active ? '#ff6b6b' : '#52525b',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        cursor: disabled ? 'not-allowed' : 'pointer',
+                        opacity: disabled ? 0.4 : 1,
+                        transition: 'all 150ms ease',
+                        fontFamily: 'inherit',
                       }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>{tag.icon}</span>
@@ -131,18 +131,18 @@ export function PersonalityStep({ formData, errors, update }: Props) {
                   type="button"
                   onClick={() => update(opt.key, !active)}
                   style={{
-                    display:        'flex',
-                    flexDirection:  'column',
-                    alignItems:     'center',
-                    gap:            '0.45rem',
-                    padding:        '1.1rem 0.75rem',
-                    borderRadius:   '1rem',
-                    border:         active ? '2px solid rgba(255,107,107,0.35)' : '2px solid #e4e4e7',
-                    background:     active ? 'rgba(255,107,107,0.07)' : '#fafafa',
-                    cursor:         'pointer',
-                    transition:     'all 150ms ease',
-                    textAlign:      'center',
-                    fontFamily:     'inherit',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '1.1rem 0.75rem',
+                    borderRadius: '1rem',
+                    border: active ? '2px solid rgba(255,107,107,0.35)' : '2px solid #e4e4e7',
+                    background: active ? 'rgba(255,107,107,0.07)' : '#fafafa',
+                    cursor: 'pointer',
+                    transition: 'all 150ms ease',
+                    textAlign: 'center',
+                    fontFamily: 'inherit',
                   }}
                 >
                   <span

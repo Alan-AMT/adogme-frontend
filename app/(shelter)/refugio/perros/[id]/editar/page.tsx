@@ -13,5 +13,6 @@ interface Props {
 
 export default async function EditarPerroPage({ params }: Props) {
   const { id } = await params
+
   return <ShelterDogFormView dogId={id} />
 }

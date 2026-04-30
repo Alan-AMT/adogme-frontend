@@ -12,7 +12,7 @@ interface DonationViewProps {
 }
 
 export default function DonationView({ shelter }: DonationViewProps) {
-  const { donationConfig: cfg, nombre, logo, ciudad, estado } = shelter
+  const { donationConfig: cfg, nombre, logo, alcaldia, ubicacion } = shelter
   const [claveCopied, setClaveCopied] = useState(false)
 
   function copiarClabe() {
@@ -42,7 +42,7 @@ export default function DonationView({ shelter }: DonationViewProps) {
           <h2 className="dn-shelter-card__name">{nombre}</h2>
           <p className="dn-shelter-card__city">
             <span className="material-symbols-outlined" style={{ fontSize: 13, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 13" }}>location_on</span>
-            {ciudad}, {estado}
+            {alcaldia ?? ubicacion}
           </p>
         </div>
       </div>

@@ -43,7 +43,7 @@ function FeaturedCard({ s }: { s: ShelterCard }) {
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
               location_on
             </span>
-            {s.ciudad}
+            {s.alcaldia}
           </p>
 
           <div className="hs-featured__stats">
@@ -110,7 +110,7 @@ function SmallCard({ s }: { s: ShelterCard }) {
           <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
             location_on
           </span>
-          {s.ciudad}
+          {s.alcaldia}
         </p>
         <p className="hs-small__stat">{s.adopcionesRealizadas} adopciones</p>
       </div>

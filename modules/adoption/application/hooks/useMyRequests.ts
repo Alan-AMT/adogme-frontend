@@ -37,7 +37,7 @@ export function useMyRequests() {
 
 // ─── Detalle de una solicitud ─────────────────────────────────────────────────
 
-export function useRequestDetail(id: number) {
+export function useRequestDetail(id: string) {
   const user = useAuthStore(s => s.user)
 
   const [request,   setRequest]   = useState<AdoptionRequest | null>(null)
@@ -64,7 +64,7 @@ export function useRequestDetail(id: number) {
       setError(null)
       try {
         // D2 — pasar adoptanteId requerido para validar ownership
-        const updated = await adoptionService.cancel(request.id, user?.id ?? 0, motivo)
+        const updated = await adoptionService.cancel(request.id, user?.id ?? "", motivo)
         setRequest(updated)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Error al cancelar')

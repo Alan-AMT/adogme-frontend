@@ -52,7 +52,7 @@ export default function DogCard(dog: DogListItem) {
         <div className="cat-dog-media">
           <div className="cat-dog-photo">
             <Image
-              src={foto}
+              src={foto ?? ''}
               alt={`Fotografía de ${nombre}`}
               fill
               className="cat-dog-photo__img group-hover:scale-105 transition-transform duration-300"

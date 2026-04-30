@@ -108,7 +108,7 @@ function CardGrid({ shelter }: ShelterCardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: -4 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#ff6b6b' }}>location_on</span>
           <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#71717a' }}>
-            {shelter.ciudad}{shelter.estado !== shelter.ciudad ? `, ${shelter.estado}` : ''}
+            {shelter.alcaldia ?? shelter.ubicacion}
           </span>
         </div>
 
@@ -190,7 +190,7 @@ function CardCompact({ shelter }: ShelterCardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#a1a1aa' }}>location_on</span>
           <span style={{ fontSize: '0.73rem', fontWeight: 600, color: '#a1a1aa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {shelter.ciudad}
+            {shelter.alcaldia ?? shelter.ubicacion}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>

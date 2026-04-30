@@ -132,7 +132,6 @@ function FavoriteLoginPrompt({ dogNombre, dogId, onClose }: { dogNombre: string;
 
 /* ── Botón principal ───────────────────────────────────── */
 export default function FavoriteButton({ dogId, dogNombre, className = '' }: Props) {
-  const hydrateAuth    = useAuthStore(s => s.hydrate)
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
 
   const hydrateFavs    = useFavoritesStore(s => s.hydrate)
@@ -143,10 +142,9 @@ export default function FavoriteButton({ dogId, dogNombre, className = '' }: Pro
   const [showModal, setShowModal]   = useState(false)
 
   useEffect(() => {
-    hydrateAuth()
     hydrateFavs()
     setMounted(true)
-  }, [hydrateAuth, hydrateFavs])
+  }, [hydrateFavs])
 
   if (!mounted) return null
 

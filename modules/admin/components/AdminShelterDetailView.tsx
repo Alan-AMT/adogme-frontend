@@ -57,7 +57,7 @@ function InfoRow({ label, value, mono = false }: InfoRowProps) {
   );
 }
 
-interface AdminShelterDetailViewProps { id: number }
+interface AdminShelterDetailViewProps { id: string }
 
 export default function AdminShelterDetailView({ id }: AdminShelterDetailViewProps) {
   const { shelter, isLoading, isSaving, error, success, updateStatus } = useAdminShelterDetail(id);
@@ -162,7 +162,7 @@ export default function AdminShelterDetailView({ id }: AdminShelterDetailViewPro
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.82rem', color: '#71717a', fontWeight: 500 }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>location_on</span>
-                {shelter.ciudad}, {shelter.estado}
+                {shelter.alcaldia ?? shelter.ubicacion}
               </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.82rem', color: '#71717a', fontWeight: 500 }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>calendar_today</span>

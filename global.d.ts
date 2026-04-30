@@ -1,11 +1,9 @@
 // global.d.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// Extensiones al objeto Window global usadas por el stack de auth.
-// Permite que authStore, apiClient y MockAuthService compartan el token
-// en memoria sin imports circulares.
-// ─────────────────────────────────────────────────────────────────────────────
+// Window extensions used by the auth stack.
+// Allows authStore, apiClient, and services to share tokens
+// in memory without circular imports.
 
 declare interface Window {
-  /** Token JWT activo en memoria — sincronizado desde authStore y leído por apiClient */
-  __authToken?: string
+  __authToken?: string;
+  __refreshToken?: string;
 }

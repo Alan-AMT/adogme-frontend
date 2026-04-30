@@ -3,6 +3,7 @@
 
 export type {
   Dog,
+  DogImage,
   DogListItem,
   DogFilters,
   PaginatedDogs,
@@ -11,10 +12,11 @@ export type {
   DogStatus,
   EnergyLevel,
   AgeCategory,
-  CompatibilityScore,
+  FurLength,
   Vaccination,
   PersonalityTag,
 } from "../../shared/domain/Dog";
+export { calcularEdadCategoria } from "../../shared/domain/Dog";
 
 // SearchState — estado UI del buscador de catálogo
 export interface SearchState {

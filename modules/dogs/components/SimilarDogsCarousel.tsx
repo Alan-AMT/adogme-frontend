@@ -58,7 +58,7 @@ export default function SimilarDogsCarousel({
           >
             <div style={{ position: "relative", width: "100%", height: 130 }}>
               <Image
-                src={dog.foto}
+                src={dog.foto ?? ''}
                 alt={dog.nombre}
                 fill
                 style={{ objectFit: "cover" }}

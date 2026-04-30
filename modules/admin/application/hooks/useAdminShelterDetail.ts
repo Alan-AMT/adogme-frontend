@@ -15,7 +15,7 @@ export interface UseAdminShelterDetailReturn {
   updateStatus: (status: ShelterStatus, nota: string) => Promise<void>
 }
 
-export function useAdminShelterDetail(id: number): UseAdminShelterDetailReturn {
+export function useAdminShelterDetail(id: string): UseAdminShelterDetailReturn {
   const [shelter,   setShelter]   = useState<Shelter | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving,  setIsSaving]  = useState(false)

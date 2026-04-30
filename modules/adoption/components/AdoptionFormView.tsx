@@ -85,7 +85,7 @@ export default function AdoptionFormView({ dog }: Props) {
       <div className="af-dog-bar">
         <div className="af-dog-bar__photo">
           <Image
-            src={dog.foto}
+            src={dog.foto ?? ''}
             alt={dog.nombre}
             fill
             className="object-cover"

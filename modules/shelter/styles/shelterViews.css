@@ -745,6 +745,10 @@
 .sv-field__select:focus,
 .sv-field__textarea:focus { border-color: #ff6b6b; }
 
+.sv-datepicker-wrapper {
+  width: 100%;
+}
+
 .sv-field__textarea {
   resize: vertical;
   min-height: 100px;
@@ -770,11 +774,9 @@
 
 @media (min-width: 520px) {
   .sv-form-row { grid-template-columns: 1fr 1fr; }
+  .sv-field--span-2 { grid-column: span 2; }
 }
 
-@media (min-width: 700px) {
-  .sv-form-row--3 { grid-template-columns: 1fr 1fr 1fr; }
-}
 
 /* Checkboxes de compatibilidad */
 .sv-checks {

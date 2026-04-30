@@ -1,11 +1,11 @@
 // modules/home/domain/ShelterCard.ts
 
 export interface ShelterCard {
-  id: number
+  id: string
   nombre: string
   slug: string
   ubicacion: string
-  ciudad: string
+  alcaldia: string | null
   descripcion: string
   correo: string
   telefono: string

@@ -135,7 +135,7 @@ const delay = (ms = 400) => new Promise<void>(r => setTimeout(r, ms))
 
 export class MockChatbotService implements IChatbotService {
   // C3 — sessionId y userId recibidos para trazabilidad (mock los ignora, backend los usará)
-  async getResponse(message: string, _sessionId: string, _userId?: number): Promise<BotResponse> {
+  async getResponse(message: string, _sessionId: string, _userId?: string): Promise<BotResponse> {
     await delay(400)
 
     const lower  = message.toLowerCase()

@@ -1,6 +1,6 @@
 // modules/shelter/components/dog-form-steps/CareStep.tsx
 // Archivo 179 — Paso 2: Cuidados especiales.
-// Campos: toggle castrado, toggle microchip, toggle necesitaJardin.
+// Campos: toggle castrado, toggle necesitaJardin.
 'use client'
 
 import type { DogFormData } from '../../application/hooks/useDogForm'
@@ -21,12 +21,6 @@ const CARE_TOGGLES = [
     label:       'Esterilizado / Castrado',
     description: 'El perro ha sido esterilizado o castrado quirúrgicamente',
     icon:        'medical_services',
-  },
-  {
-    key:         'microchip'     as const,
-    label:       'Con microchip',
-    description: 'Identificado con microchip de rastreo',
-    icon:        'memory',
   },
   {
     key:         'necesitaJardin' as const,

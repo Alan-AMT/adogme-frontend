@@ -226,11 +226,6 @@ function DogsTable({
                   <p style={{ fontSize: '0.82rem', fontWeight: 700, color: '#18181b' }}>
                     {dog.refugioNombre ?? '—'}
                   </p>
-                  {dog.refugioCiudad && (
-                    <p style={{ fontSize: '0.72rem', color: '#a1a1aa', fontWeight: 600 }}>
-                      {dog.refugioCiudad}
-                    </p>
-                  )}
                 </td>
 
                 {/* Raza / edad / tamaño */}

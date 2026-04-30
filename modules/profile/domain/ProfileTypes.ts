@@ -7,8 +7,10 @@ import type { LifestyleQuizAnswers } from '@/modules/shared/domain/LifestyleProf
 
 export interface ProfileUpdateData {
   nombre?:    string
+  email?:     string
   telefono?:  string
   direccion?: string   // solo Adoptante
+  cp?:        string   // solo Adoptante
   avatarUrl?: string
 }
 

@@ -11,12 +11,12 @@ import type { ProfileUpdateData } from '../domain/ProfileTypes'
 
 const delay = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
 
-const LIFESTYLE_KEY = (userId: number) => `lifestyle-profile-${userId}`
+const LIFESTYLE_KEY = (userId: string) => `lifestyle-profile-${userId}`
 
 export class MockProfileService implements IProfileService {
 
   // ── updateProfile ────────────────────────────────────────────────────────────
-  async updateProfile(userId: number, data: ProfileUpdateData): Promise<ProfileUser> {
+  async updateProfile(userId: string, data: ProfileUpdateData): Promise<ProfileUser> {
     await delay(500)
 
     // Busca el usuario en mock credentials para obtener la copia base
@@ -29,9 +29,13 @@ export class MockProfileService implements IProfileService {
       ...(data.nombre    !== undefined ? { nombre:    data.nombre    } : {}),
       ...(data.telefono  !== undefined ? { telefono:  data.telefono  } : {}),
       ...(data.avatarUrl !== undefined ? { avatarUrl: data.avatarUrl } : {}),
-      // direccion solo aplica a adoptante
+      // direccion y cp solo aplican a adoptante
       ...(data.direccion !== undefined && entry.user.role === 'applicant'
-        ? { direccion: data.direccion }
+        ? { address: data.direccion }
+        : {}
+      ),
+      ...(data.cp !== undefined && entry.user.role === 'applicant'
+        ? { postalCode: data.cp }
         : {}
       ),
     }
@@ -41,7 +45,7 @@ export class MockProfileService implements IProfileService {
 
   // ── changePassword ────────────────────────────────────────────────────────────
   async changePassword(
-    userId: number,
+    userId: string,
     currentPassword: string,
     _newPassword: string,
   ): Promise<void> {
@@ -57,7 +61,7 @@ export class MockProfileService implements IProfileService {
   }
 
   // ── getLifestylePreferences ───────────────────────────────────────────────────
-  async getLifestylePreferences(userId: number): Promise<LifestyleQuizAnswers | null> {
+  async getLifestylePreferences(userId: string): Promise<LifestyleQuizAnswers | null> {
     await delay(200)
 
     if (typeof window === 'undefined') return null
@@ -71,7 +75,7 @@ export class MockProfileService implements IProfileService {
 
   // ── saveLifestylePreferences ──────────────────────────────────────────────────
   async saveLifestylePreferences(
-    userId: number,
+    userId: string,
     answers: LifestyleQuizAnswers,
   ): Promise<void> {
     await delay(500)

@@ -8,5 +8,5 @@ interface Props {
 
 export default async function AdminShelterDetailPage({ params }: Props) {
   const { id } = await params
-  return <AdminShelterDetailView id={parseInt(id, 10)} />
+  return <AdminShelterDetailView id={id} />
 }

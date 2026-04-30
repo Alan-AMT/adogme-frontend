@@ -42,7 +42,7 @@ function Card({ s }: { s: ShelterCard }) {
           <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
             location_on
           </span>
-          {s.ciudad}
+          {s.alcaldia}
         </p>
 
         <div className="sl-card__stats">
@@ -98,7 +98,7 @@ export default function SheltersListView() {
   const filtered =
     activeCity === "Todos"
       ? shelters
-      : shelters.filter((s) => s.ciudad === activeCity);
+      : shelters.filter((s) => s.alcaldia === activeCity);
 
   return (
     <div className="sl-page">

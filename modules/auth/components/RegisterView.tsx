@@ -14,7 +14,6 @@ import {
   AuthBrand,
   AuthCard,
   AuthLayout,
-  GoogleIcon,
 } from "@/modules/shared/components/layout/AuthLayout";
 import { Alert } from "@/modules/shared/components/ui/Alert";
 import { Button } from "@/modules/shared/components/ui/Button";
@@ -23,7 +22,7 @@ import { Stepper } from "@/modules/shared/components/ui/Stepper";
 
 import type { RegisterRole } from "../application/hooks/useRegister";
 import { useRegister } from "../application/hooks/useRegister";
-import { ALCALDIAS_CDMX } from "../infrastructure/MockAuthService";
+import { ALCALDIAS_CDMX } from "@/modules/shared/constants/alcaldias";
 
 // ── Helpers de icono ──────────────────────────────────────────────────────────
 function MIcon({ name, fill = false }: { name: string; fill?: boolean }) {
@@ -93,13 +92,13 @@ function AuthSelect({
 const ROLES: { id: RegisterRole; icon: string; label: string; desc: string }[] =
   [
     {
-      id: "adoptante",
+      id: "applicant",
       icon: "person",
       label: "Adoptante",
       desc: "Quiero adoptar",
     },
     {
-      id: "refugio",
+      id: "shelter",
       icon: "home_work",
       label: "Refugio",
       desc: "Tengo un refugio",
@@ -145,7 +144,8 @@ function AdoptanteSuccessScreen({ email: _email }: { email: string }) {
           ¡Cuenta creada!
         </h2>
         <p className="text-[13px] text-[#6b7280] leading-relaxed max-w-[300px]">
-          Tu cuenta fue creada exitosamente. Ya puedes iniciar sesión y empezar a adoptar.
+          Tu cuenta fue creada exitosamente. Ya puedes iniciar sesión y empezar
+          a adoptar.
         </p>
       </div>
       <Link
@@ -290,7 +290,7 @@ export default function RegisterView() {
   } = reg;
 
   // ── Pantallas de éxito ─────────────────────────────────────────────────────
-  if (success && role === "adoptante") {
+  if (success && role === "applicant") {
     return (
       <AuthLayout
         rightKicker="crea tu cuenta"
@@ -314,7 +314,7 @@ export default function RegisterView() {
     );
   }
 
-  if (success && role === "refugio") {
+  if (success && role === "shelter") {
     return (
       <AuthLayout
         rightKicker="registro de refugio"
@@ -599,64 +599,21 @@ export default function RegisterView() {
           )}
 
           {/* ── PASO 3 — Adoptante: Dirección ── */}
-          {step === 3 && role === "adoptante" && (
+          {step === 3 && role === "applicant" && (
             <>
               <p className="text-[11px] font-[950] tracking-[0.18em] uppercase text-[#9ca3af]">
                 Tu dirección
               </p>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] font-[900] text-[#1f2937]">
-                  Alcaldía <span className="text-[#ff6b6b]">*</span>
-                </label>
-                <AuthSelect
-                  id="reg-alcaldia"
-                  value={data.alcaldia}
-                  onChange={(v) => update("alcaldia", v)}
-                  icon="location_city"
-                  options={ALCALDIAS_CDMX}
-                  placeholder="Selecciona tu alcaldía"
-                />
-              </div>
-
               <Input
-                id="reg-colonia"
-                label="Colonia"
-                placeholder="Ej. Guadalupe Tepeyac"
-                value={data.colonia}
-                onChange={(e) => update("colonia", e.target.value)}
-                leftIcon={<MIcon name="holiday_village" />}
-                required
-              />
-              <Input
-                id="reg-calle"
-                label="Calle"
-                placeholder="Nombre de la calle"
-                value={data.calle}
-                onChange={(e) => update("calle", e.target.value)}
+                id="reg-direccion"
+                label="Dirección"
+                placeholder="Ej. Calle Roble 45, Col. Guadalupe Tepeyac"
+                value={data.direccion}
+                onChange={(e) => update("direccion", e.target.value)}
                 leftIcon={<MIcon name="signpost" />}
                 required
               />
-
-              <div className="grid grid-cols-2 gap-3">
-                <Input
-                  id="reg-ext"
-                  label="Núm. exterior"
-                  placeholder="123"
-                  value={data.numExt}
-                  onChange={(e) => update("numExt", e.target.value)}
-                  leftIcon={<MIcon name="home" />}
-                  required
-                />
-                <Input
-                  id="reg-int"
-                  label="Núm. interior"
-                  placeholder="Depto (opc.)"
-                  value={data.numInt}
-                  onChange={(e) => update("numInt", e.target.value)}
-                  leftIcon={<MIcon name="apartment" />}
-                />
-              </div>
 
               <Input
                 id="reg-cp"
@@ -690,7 +647,7 @@ export default function RegisterView() {
           )}
 
           {/* ── PASO 3 — Refugio: Datos del refugio ── */}
-          {step === 3 && role === "refugio" && (
+          {step === 3 && role === "shelter" && (
             <>
               <p className="text-[11px] font-[950] tracking-[0.18em] uppercase text-[#9ca3af]">
                 Datos del refugio
@@ -762,14 +719,12 @@ export default function RegisterView() {
                   leftIcon={<MIcon name="schedule" />}
                 />
                 <Input
-                  id="ref-cap"
-                  label="Capacidad (perros)"
-                  placeholder="Ej. 30"
-                  value={data.refCapacidad}
-                  onChange={(e) =>
-                    update("refCapacidad", e.target.value.replace(/\D/g, ""))
-                  }
-                  leftIcon={<MIcon name="pets" />}
+                  id="ref-website"
+                  label="Página web"
+                  placeholder="http://refugio.com"
+                  value={data.refWebsite}
+                  onChange={(e) => update("refWebsite", e.target.value)}
+                  leftIcon={<MIcon name="captive_portal" />}
                 />
               </div>
 

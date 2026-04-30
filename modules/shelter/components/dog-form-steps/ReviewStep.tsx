@@ -5,16 +5,18 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import type { DogFormData } from '../../application/hooks/useDogForm'
+import type { DogFormData, UploadProgress } from '../../application/hooks/useDogForm'
 import '../../styles/shelterViews.css'
 
 interface Props {
-  formData:     DogFormData
-  isSubmitting: boolean
-  submitError:  string | null
-  isDraft:      boolean
-  submit:       () => Promise<void>
-  saveDraft:    () => void
+  formData:       DogFormData
+  isSubmitting:   boolean
+  submitError:    string | null
+  uploadProgress: UploadProgress | null
+  isDraft:        boolean
+  submit:         () => Promise<boolean>
+  saveDraft:      () => void
+  prevStep:       () => void
 }
 
 const SIZE_LABELS: Record<string, string> = {
@@ -33,16 +35,12 @@ function formatAge(m: number): string {
   return `${y} año${y !== 1 ? 's' : ''}`
 }
 
-export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submit, saveDraft }: Props) {
+export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress, isDraft, submit, saveDraft, prevStep }: Props) {
   const router = useRouter()
 
   async function handlePublish() {
-    try {
-      await submit()
-      router.push('/refugio/perros')
-    } catch {
-      // submitError is set internally by the hook
-    }
+    const ok = await submit()
+    if (ok) router.push('/refugio/perros')
   }
 
   function handleDraft() {
@@ -151,21 +149,19 @@ export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submi
 
           {/* Datos de salud y cuidados */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-            {formData.vacunado      && <InfoChip icon="vaccines"         label="Vacunado"       />}
-            {formData.desparasitado && <InfoChip icon="medication"       label="Desparasitado"  />}
-            {formData.castrado      && <InfoChip icon="medical_services" label="Esterilizado"   />}
-            {formData.microchip     && <InfoChip icon="memory"           label="Microchip"      />}
-            {formData.necesitaJardin && <InfoChip icon="yard"            label="Necesita jardín" />}
-            {formData.pesoKg        && <InfoChip icon="monitor_weight"   label={`${formData.pesoKg} kg`} />}
+            {formData.estaVacunado      && <InfoChip icon="vaccines"         label="Vacunado"       />}
+            {formData.estaDesparasitado && <InfoChip icon="medication"       label="Desparasitado"  />}
+            {formData.castrado          && <InfoChip icon="medical_services" label="Esterilizado"   />}
+            {formData.necesitaJardin    && <InfoChip icon="yard"            label="Necesita jardín" />}
+            {formData.pesoKg            && <InfoChip icon="monitor_weight"   label={`${formData.pesoKg} kg`} />}
             {formData.vacunas.length > 0 && <InfoChip icon="vaccines" label={`${formData.vacunas.length} vacuna${formData.vacunas.length !== 1 ? 's' : ''}`} />}
           </div>
           <p style={{ fontSize: '0.8rem', color: '#71717a', lineHeight: 1.5, padding: '0.75rem', background: '#f9fafb', borderRadius: '0.75rem', border: '1px solid #f0f0f0' }}>
-            <strong style={{ color: '#374151' }}>Estado de salud: </strong>
-            {{ 1: 'Sano', 2: 'Lesión leve', 3: 'Lesión grave' }[formData.nivelSalud]}
+            <strong style={{ color: '#374151' }}>Salud: </strong>
+            {formData.salud || 'Sin información'}
             {' · '}
             <strong style={{ color: '#374151' }}>Pelaje: </strong>
-            {{ 1: 'Corto', 2: 'Mediano', 3: 'Largo' }[formData.pelaje]}
-            {formData.cuotaAdopcion > 0 && ` · Cuota: $${formData.cuotaAdopcion} MXN`}
+            {{ corto: 'Corto', mediano: 'Mediano', largo: 'Largo' }[formData.largoPelaje]}
           </p>
         </div>
       </div>
@@ -180,6 +176,15 @@ export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submi
 
       {/* ── Barra de acciones ── */}
       <div className="sv-submit-bar">
+        <button
+          type="button"
+          className="sv-submit-bar__btn sv-submit-bar__btn--ghost"
+          onClick={prevStep}
+          disabled={isSubmitting}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
+          Anterior
+        </button>
         <button
           type="button"
           className="sv-submit-bar__btn sv-submit-bar__btn--ghost"
@@ -198,7 +203,9 @@ export function ReviewStep({ formData, isSubmitting, submitError, isDraft, submi
           {isSubmitting ? (
             <>
               <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 1s linear infinite' }}>progress_activity</span>
-              Publicando...
+              {uploadProgress
+                ? `Subiendo ${uploadProgress.current}/${uploadProgress.total} fotos...`
+                : 'Publicando...'}
             </>
           ) : (
             <>

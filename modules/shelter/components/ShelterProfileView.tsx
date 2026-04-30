@@ -20,11 +20,13 @@ interface FormState {
   correo:        string
   telefono:      string
   ubicacion:     string
-  ciudad:        string
-  estado:        string
+  alcaldia:      string
+  direccionCompleta: string
+  schedule:      string
   logo:          string
   imagenPortada: string
   socialLinks:   SocialLink[]
+  cuotaAdopcion: string
   // Donaciones
   aceptaDonaciones: boolean
   descripcionCausa: string
@@ -43,9 +45,10 @@ function shelterToForm(s: Shelter): FormState {
   if (s.redesSociales?.web)       links.push({ platform: 'web',       url: s.redesSociales.web })
   return {
     nombre: s.nombre, descripcion: s.descripcion, correo: s.correo, telefono: s.telefono,
-    ubicacion: s.ubicacion, ciudad: s.ciudad, estado: s.estado,
+    ubicacion: s.ubicacion, alcaldia: s.alcaldia ?? '', direccionCompleta: s.direccionCompleta ?? '', schedule: s.schedule ?? '',
     logo: s.logo, imagenPortada: s.imagenPortada,
     socialLinks: links,
+    cuotaAdopcion: s.cuotaAdopcion != null ? String(s.cuotaAdopcion) : '',
     aceptaDonaciones: s.donationConfig?.aceptaDonaciones ?? false,
     descripcionCausa: s.donationConfig?.descripcionCausa ?? '',
     cuentaClabe:      s.donationConfig?.cuentaClabe ?? '',
@@ -58,8 +61,9 @@ function shelterToForm(s: Shelter): FormState {
 
 const EMPTY_FORM: FormState = {
   nombre: '', descripcion: '', correo: '', telefono: '',
-  ubicacion: '', ciudad: '', estado: '', logo: '', imagenPortada: '',
+  ubicacion: '', alcaldia: '', direccionCompleta: '', schedule: '', logo: '', imagenPortada: '',
   socialLinks: [],
+  cuotaAdopcion: '',
   aceptaDonaciones: false, descripcionCausa: '', cuentaClabe: '',
   banco: '', titularCuenta: '', paypalLink: '', mercadoPagoLink: '',
 }
@@ -129,7 +133,7 @@ function ProfileHero({
         <h2 className="sv-profile-hero__name">{form.nombre || 'Nombre del refugio'}</h2>
         <p className="sv-profile-hero__location">
           <span className="material-symbols-outlined">location_on</span>
-          {form.ciudad && form.estado ? `${form.ciudad}, ${form.estado}` : 'Sin ubicación'}
+          {form.alcaldia || form.ubicacion || 'Sin ubicación'}
         </p>
       </div>
     </div>
@@ -166,11 +170,13 @@ export default function ShelterProfileView() {
       correo:        form.correo.trim(),
       telefono:      form.telefono.trim(),
       ubicacion:     form.ubicacion.trim(),
-      ciudad:        form.ciudad.trim(),
-      estado:        form.estado.trim(),
+      alcaldia:      form.alcaldia.trim() || null,
+      direccionCompleta: form.direccionCompleta.trim() || null,
+      schedule:      form.schedule.trim() || null,
       logo:          form.logo.trim(),
       imagenPortada: form.imagenPortada.trim(),
       redesSociales,
+      cuotaAdopcion: form.cuotaAdopcion ? Number(form.cuotaAdopcion) : 0,
       donationConfig: {
         aceptaDonaciones: form.aceptaDonaciones,
         descripcionCausa: form.descripcionCausa.trim() || undefined,
@@ -271,25 +277,50 @@ export default function ShelterProfileView() {
 
                 <div className="sv-form-row">
                   <div className="sv-field">
-                    <label className="sv-field__label">Ciudad</label>
+                    <label className="sv-field__label">Alcaldía / Municipio</label>
                     <input
                       type="text"
                       className="sv-field__input"
-                      value={form.ciudad}
-                      onChange={e => update('ciudad', e.target.value)}
+                      value={form.alcaldia}
+                      onChange={e => update('alcaldia', e.target.value)}
                       maxLength={80}
                     />
                   </div>
                   <div className="sv-field">
-                    <label className="sv-field__label">Estado / Provincia</label>
+                    <label className="sv-field__label">Horario</label>
                     <input
                       type="text"
                       className="sv-field__input"
-                      value={form.estado}
-                      onChange={e => update('estado', e.target.value)}
+                      value={form.schedule}
+                      onChange={e => update('schedule', e.target.value)}
                       maxLength={80}
+                      placeholder="Ej: Lun-Vie 9:00-17:00"
                     />
                   </div>
+                </div>
+
+                <div className="sv-field">
+                  <label className="sv-field__label">Cuota de adopción (opcional)</label>
+                  <input
+                    type="number"
+                    className="sv-field__input"
+                    value={form.cuotaAdopcion}
+                    onChange={e => update('cuotaAdopcion', e.target.value)}
+                    min={0}
+                    placeholder="Ej. 500 — deja vacío si es gratuita"
+                  />
+                </div>
+
+                <div className="sv-field">
+                  <label className="sv-field__label">Ubicación</label>
+                  <input
+                    type="text"
+                    className="sv-field__input"
+                    value={form.ubicacion}
+                    onChange={e => update('ubicacion', e.target.value)}
+                    maxLength={200}
+                    placeholder="Ej: Coyoacán, Ciudad de México"
+                  />
                 </div>
 
                 <div className="sv-field">
@@ -297,8 +328,8 @@ export default function ShelterProfileView() {
                   <input
                     type="text"
                     className="sv-field__input"
-                    value={form.ubicacion}
-                    onChange={e => update('ubicacion', e.target.value)}
+                    value={form.direccionCompleta}
+                    onChange={e => update('direccionCompleta', e.target.value)}
                     maxLength={200}
                     placeholder="Calle, Colonia, Ciudad"
                   />

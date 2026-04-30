@@ -22,7 +22,8 @@ export type DogAttributeType =
   | 'salud'
   | 'sexo'
   | 'castrado'
-  | 'microchip'
+  | 'vacunado'
+  | 'desparasitado'
   | 'vacunas'
   | 'ninos'
   | 'perros'
@@ -36,9 +37,10 @@ const ICON_MAP: Record<DogAttributeType, string> = {
   energia:  'bolt',
   salud:    'medical_bag',
   sexo:     'gender_male',        // se sobreescribe dinámicamente si es hembra
-  castrado: 'cut',
-  microchip:'memory_chip',
-  vacunas:  'syringe',
+  castrado:      'cut',
+  vacunado:      'vaccines',
+  desparasitado: 'bug_report',
+  vacunas:       'syringe',
   ninos:    'child_care',
   perros:   'pets',
   gatos:    'cruelty_free',
@@ -153,9 +155,10 @@ export const DOG_ATTRIBUTE_LABELS: Record<DogAttributeType, string> = {
   energia:  'Energía',
   salud:    'Salud',
   sexo:     'Sexo',
-  castrado: 'Castrado',
-  microchip:'Microchip',
-  vacunas:  'Vacunas',
+  castrado:      'Castrado',
+  vacunado:      'Vacunado',
+  desparasitado: 'Desparasitado',
+  vacunas:       'Vacunas',
   ninos:    'Con niños',
   perros:   'Con perros',
   gatos:    'Con gatos',

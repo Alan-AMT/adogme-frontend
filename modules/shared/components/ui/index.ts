@@ -36,9 +36,6 @@ export { ProgressBar } from './ProgressBar'
 
 export { Alert } from './Alert'
 
-// Toast — exporta desde ToastContainer si es archivo separado, sino desde Toast
-export { ToastContainer } from './ToastContainer'
-
 export { Tooltip } from './Tooltip'
 
 // ── Overlays / diálogos ──────────────────────────────────────────────────────

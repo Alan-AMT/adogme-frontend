@@ -9,6 +9,7 @@ import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 import { profileService } from '../../infrastructure/ProfileServiceFactory'
 import type { ProfileUpdateData } from '../../domain/ProfileTypes'
 import type { LifestyleQuizAnswers } from '@/modules/shared/domain/LifestyleProfile'
+import type { Adoptante } from '@/modules/shared/domain/User'
 
 // ─── Tipos de retorno ─────────────────────────────────────────────────────────
 
@@ -88,7 +89,16 @@ export function useProfile(): UseProfileReturn {
       setSaveError(null)
       setSaveOk(false)
       try {
-        const updated = await profileService.updateProfile(user.id, data)
+        const adoptante = user.role === 'applicant' ? (user as Adoptante) : null
+        const fullData: ProfileUpdateData = {
+          nombre:    data.nombre    ?? user.name,
+          email:     data.email     ?? user.email,
+          telefono:  data.telefono  ?? adoptante?.phone,
+          direccion: data.direccion ?? adoptante?.address,
+          cp:        data.cp        ?? adoptante?.postalCode,
+          avatarUrl: data.avatarUrl ?? adoptante?.avatarUrl,
+        }
+        const updated = await profileService.updateProfile(user.id, fullData)
         setUser(updated)
         setSaveOk(true)
       } catch (err) {

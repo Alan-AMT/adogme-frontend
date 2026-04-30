@@ -14,7 +14,7 @@ export interface UseShelterRequestDetailReturn {
   updateStatus: (status: RequestStatus, comentario?: string) => Promise<void>
 }
 
-export function useShelterRequestDetail(id: number): UseShelterRequestDetailReturn {
+export function useShelterRequestDetail(id: string): UseShelterRequestDetailReturn {
   const [request,   setRequest]   = useState<AdoptionRequest | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving,  setIsSaving]  = useState(false)

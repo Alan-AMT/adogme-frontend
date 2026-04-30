@@ -9,14 +9,14 @@ export type ProfileUser = Adoptante | ShelterUser | Administrador
 
 export interface IProfileService {
   /** Actualiza datos básicos (nombre, teléfono, dirección, avatar) */
-  updateProfile(userId: number, data: ProfileUpdateData): Promise<ProfileUser>
+  updateProfile(userId: string, data: ProfileUpdateData): Promise<ProfileUser>
 
   /** Cambia contraseña; lanza error si currentPassword no coincide */
-  changePassword(userId: number, currentPassword: string, newPassword: string): Promise<void>
+  changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void>
 
   /** Lee preferencias ML almacenadas para el usuario (null si no existen) */
-  getLifestylePreferences(userId: number): Promise<LifestyleQuizAnswers | null>
+  getLifestylePreferences(userId: string): Promise<LifestyleQuizAnswers | null>
 
   /** Guarda/actualiza las preferencias ML del usuario */
-  saveLifestylePreferences(userId: number, answers: LifestyleQuizAnswers): Promise<void>
+  saveLifestylePreferences(userId: string, answers: LifestyleQuizAnswers): Promise<void>
 }

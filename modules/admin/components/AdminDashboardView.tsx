@@ -135,7 +135,7 @@ export default function AdminDashboardView() {
   shelters
     .filter(s => s.status === 'approved')
     .forEach(s => {
-      const city = s.ciudad || 'Sin ciudad'
+      const city = s.alcaldia || s.ubicacion || 'Sin ciudad'
       cityMap.set(city, (cityMap.get(city) ?? 0) + 1)
     })
   const cityData = Array.from(cityMap.entries())
@@ -344,7 +344,7 @@ export default function AdminDashboardView() {
                     </div>
                   </td>
                   <td>
-                    <span className="ad-shelter-cell__city">{s.ciudad}</span>
+                    <span className="ad-shelter-cell__city">{s.alcaldia ?? s.ubicacion}</span>
                   </td>
                   <td>{formatDate(s.fechaRegistro)}</td>
                   <td>

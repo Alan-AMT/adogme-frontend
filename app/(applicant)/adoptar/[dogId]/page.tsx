@@ -19,8 +19,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function AdoptarPage({ params }: Props) {
   const { dogId } = await params
 
-  if (!dogId) notFound()
-
   const dog = await dogService.getDogById(dogId)
 
   if (!dog) notFound()
