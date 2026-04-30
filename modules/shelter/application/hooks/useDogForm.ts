@@ -400,6 +400,11 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
 
       if (dogId) {
         // Modo edición
+        // La portada es siempre fotos[0]. Si es existing → su imageId; si es new → null.
+        const cover = formData.fotos[0];
+        const updatedMainImageId =
+          cover?.kind === "existing" ? cover.imageId : null;
+
         const updateData: DogUpdateData = {
           nombre: formData.nombre,
           edad: formData.edad,
@@ -428,6 +433,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           cuotaAdopcion: formData.cuotaAdopcion ?? 0,
           amountImagesToCreate: newSlots.length,
           imagesToDelete: formData.imagenesAEliminar,
+          updatedMainImageId,
         };
         const { uploadUrls } = await shelterService.updateDog(
           dogId,

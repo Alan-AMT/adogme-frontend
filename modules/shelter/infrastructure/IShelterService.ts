@@ -73,6 +73,11 @@ export type DogUpdateData = Partial<DogCreateData> & {
   amountImagesToCreate?: number;
   /** IDs de DogImage existentes a eliminar */
   imagesToDelete?: string[];
+  /**
+   * Si la portada elegida es una imagen existente, su id; si es una imagen nueva
+   * (aún por subir), null. Omitir si no aplica.
+   */
+  updatedMainImageId?: string | null;
 };
 
 // ─── Interfaz del servicio ────────────────────────────────────────────────────

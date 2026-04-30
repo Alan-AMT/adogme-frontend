@@ -322,6 +322,7 @@ export class ShelterService implements IShelterService {
           adoptionFee: payload.cuotaAdopcion,
           amountImagesToCreate: payload.amountImagesToCreate ?? 0,
           imagesToDelete: payload.imagesToDelete ?? [],
+          updatedMainImageId: payload.updatedMainImageId ?? null,
         },
         { timeout: 60_000 },
       );
