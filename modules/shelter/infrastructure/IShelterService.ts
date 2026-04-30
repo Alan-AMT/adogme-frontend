@@ -69,6 +69,10 @@ export interface DogCreateData {
 export type DogUpdateData = Partial<DogCreateData> & {
   // export type DogUpdateData = Partial<Omit<DogCreateData, "refugioId">> & {
   estado?: DogStatus;
+  /** Cantidad de fotos nuevas a subir (genera N signed URLs en la respuesta) */
+  amountImagesToCreate?: number;
+  /** IDs de DogImage existentes a eliminar */
+  imagesToDelete?: string[];
 };
 
 // ─── Interfaz del servicio ────────────────────────────────────────────────────
@@ -115,8 +119,16 @@ export interface IShelterService {
     uploadUrls: string[],
     onProgress?: (current: number, total: number) => void,
   ): Promise<void>;
-  /** Actualiza campos editables de un perro existente */
-  updateDog(id: string, payload: DogUpdateData): Promise<Dog>;
+  /**
+   * Actualiza campos editables de un perro existente.
+   * Devuelve el perro actualizado y N signed URLs para subir imágenes nuevas
+   * (una por cada `amountImagesToCreate`, en el mismo orden). Las imágenes
+   * en `imagesToDelete` son eliminadas en el backend.
+   */
+  updateDog(
+    id: string,
+    payload: DogUpdateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }>;
   /** Elimina permanentemente un perro del refugio */
   deleteDog(id: string): Promise<void>;
   /** Alterna publicación: no_disponible ↔ disponible */

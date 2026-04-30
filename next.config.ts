@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: "standalone",
   images: {
     domains: [
-      'images.unsplash.com',  // mock data con fotos reales
-      'res.cloudinary.com',   // cuando conectes el backend
+      "images.unsplash.com", // mock data con fotos reales
+      "storage.googleapis.com", // cuando conectes el backend
     ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

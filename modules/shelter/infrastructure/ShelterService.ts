@@ -11,6 +11,7 @@ import {
 } from "@/modules/shared/domain";
 import {
   DogCreateData,
+  DogUpdateData,
   IShelterService,
   ShelterDashboardStats,
 } from "./IShelterService";
@@ -214,7 +215,7 @@ export class ShelterService implements IShelterService {
               }))
             : [],
           health: payload.salud,
-          amountImages: payload.fotos?.length ?? 0,
+          amountImagesToCreate: payload.fotos?.length ?? 0,
           breed2: payload.raza2 ?? null,
           shelterName: payload.refugioNombre,
           shelterLogo: payload.refugioLogo,
@@ -274,9 +275,12 @@ export class ShelterService implements IShelterService {
     }
   }
 
-  async updateDog(id: string, payload: DogCreateData): Promise<Dog> {
+  async updateDog(
+    id: string,
+    payload: DogUpdateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }> {
     try {
-      const { data } = await apiClient.put<CreateDogApiResponse>(
+      const { data } = await apiClient.put<CreateDogWithUploadUrlsApiResponse>(
         API_ENDPOINTS.DOGS.UPDATE(id),
         {
           name: payload.nombre,
@@ -316,10 +320,14 @@ export class ShelterService implements IShelterService {
           shelterName: payload.refugioNombre,
           shelterLogo: payload.refugioLogo,
           adoptionFee: payload.cuotaAdopcion,
+          amountImagesToCreate: payload.amountImagesToCreate ?? 0,
+          imagesToDelete: payload.imagesToDelete ?? [],
         },
+        { timeout: 60_000 },
       );
-      return parseDog(data);
+      return { dog: parseDog(data.dog), uploadUrls: data.uploadUrls };
     } catch (e) {
+      console.log(e);
       throw Error("Error al actualizar perro");
     }
   }

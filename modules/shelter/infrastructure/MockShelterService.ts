@@ -269,25 +269,50 @@ export class MockShelterService implements IShelterService {
     void files;
   }
 
-  async updateDog(id: string, data: DogUpdateData): Promise<Dog> {
+  async updateDog(
+    id: string,
+    data: DogUpdateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }> {
     await delay(400);
     const idx = _dogs.findIndex((d) => d.id === id);
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`);
 
     const prev = _dogs[idx];
     const edad = data.edad ?? prev.edad;
-    const { fotos: fotosUrls, ...rest } = data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { fotos: _ignoredFotos, amountImagesToCreate, imagesToDelete, ...rest } =
+      data;
+
+    // 1) Aplicar borrado de imágenes existentes
+    const idsAEliminar = new Set(imagesToDelete ?? []);
+    const fotosRestantes = prev.fotos.filter((img) => !idsAEliminar.has(img.id));
+
+    // 2) Reservar N "slots" nuevos (mock: tras el upload, sus URLs serán reales)
+    const nuevasFotos = Array.from(
+      { length: amountImagesToCreate ?? 0 },
+      (_v, i) => ({
+        id: `${prev.id}-img-new-${Date.now()}-${i}`,
+        dogId: prev.id,
+        url: `https://mock-gcs/${prev.id}/${Date.now()}-${i}.jpg`,
+        status: "pending" as const,
+      }),
+    );
+
     const updated: Dog = {
       ...prev,
       ...rest,
-      fotos: fotosUrls ? urlsToDogImages(fotosUrls, prev.id) : prev.fotos,
+      fotos: [...fotosRestantes, ...nuevasFotos],
       edadCategoria: calcularEdadCategoria(edad),
       id: prev.id,
       refugioId: prev.refugioId,
     };
 
     _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
-    return { ...updated };
+
+    const uploadUrls = nuevasFotos.map(
+      (_f, i) => `https://mock-gcs/upload/${prev.id}/${i}`,
+    );
+    return { dog: { ...updated }, uploadUrls };
   }
 
   async deleteDog(id: string): Promise<void> {

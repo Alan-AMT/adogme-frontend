@@ -84,6 +84,44 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
     form.nextStep(); // valida el paso actual; si hay errores, no avanza
   }
 
+  if (isEdit && form.isLoadingDog) {
+    return (
+      <div
+        className="sv-form"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1rem",
+          minHeight: 320,
+          padding: "3rem 1rem",
+        }}
+      >
+        <span
+          className="material-symbols-outlined"
+          style={{
+            fontSize: 36,
+            color: "#ff6b6b",
+            animation: "spin 1s linear infinite",
+          }}
+        >
+          progress_activity
+        </span>
+        <p
+          style={{
+            fontSize: "0.9rem",
+            fontWeight: 700,
+            color: "#52525b",
+            margin: 0,
+          }}
+        >
+          Cargando datos del perro...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="sv-form">
       {/* ── Header ── */}

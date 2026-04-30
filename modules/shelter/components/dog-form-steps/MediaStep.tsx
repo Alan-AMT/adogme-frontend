@@ -11,7 +11,10 @@ import {
   type ChangeEvent,
   type DragEvent,
 } from "react";
-import type { DogFormData } from "../../application/hooks/useDogForm";
+import type {
+  DogFormData,
+  PhotoSlot,
+} from "../../application/hooks/useDogForm";
 import "../../styles/shelterViews.css";
 
 type UpdateFn = <K extends keyof DogFormData>(
@@ -56,15 +59,17 @@ export function MediaStep({ formData, errors, update }: Props) {
 
       if (valid.length === 0) return;
 
-      const newUrls = valid.map((f) => URL.createObjectURL(f));
-      const allUrls = [...formData.fotos, ...newUrls];
-      const allFiles = [...formData.fotosFiles, ...valid];
+      const newSlots: PhotoSlot[] = valid.map((file) => ({
+        kind: "new",
+        url: URL.createObjectURL(file),
+        file,
+      }));
+      const allSlots = [...formData.fotos, ...newSlots];
 
-      update("fotos", allUrls);
-      update("fotosFiles", allFiles);
-      update("foto", allUrls[0] ?? "");
+      update("fotos", allSlots);
+      update("foto", allSlots[0]?.url ?? "");
     },
-    [formData.fotos, formData.fotosFiles, update],
+    [formData.fotos, update],
   );
 
   const onDrop = (e: DragEvent) => {
@@ -78,20 +83,34 @@ export function MediaStep({ formData, errors, update }: Props) {
   };
 
   function removePhoto(idx: number) {
+    const removed = formData.fotos[idx];
+    if (!removed) return;
     const next = formData.fotos.filter((_, i) => i !== idx);
-    const nextFiles = formData.fotosFiles.filter((_, i) => i !== idx);
+
+    if (removed.kind === "existing") {
+      update("imagenesAEliminar", [
+        ...formData.imagenesAEliminar,
+        removed.imageId,
+      ]);
+    } else {
+      try {
+        URL.revokeObjectURL(removed.url);
+      } catch {
+        /* ignore */
+      }
+    }
+
     update("fotos", next);
-    update("fotosFiles", nextFiles);
-    update("foto", next[0] ?? "");
+    update("foto", next[0]?.url ?? "");
   }
 
-  function setMain(url: string) {
-    if (url === formData.foto) return;
-    const idx = formData.fotos.indexOf(url);
-    const files = formData.fotosFiles;
-    update("foto", url);
-    update("fotos", [url, ...formData.fotos.filter((u) => u !== url)]);
-    update("fotosFiles", [files[idx], ...files.filter((_, i) => i !== idx)]);
+  function setMain(idx: number) {
+    if (idx === 0) return;
+    const slot = formData.fotos[idx];
+    if (!slot) return;
+    const next = [slot, ...formData.fotos.filter((_, i) => i !== idx)];
+    update("fotos", next);
+    update("foto", slot.url);
   }
 
   const canAdd = formData.fotos.length < MAX_PHOTOS;
@@ -189,12 +208,16 @@ export function MediaStep({ formData, errors, update }: Props) {
                 gap: "0.65rem",
               }}
             >
-              {formData.fotos.map((url, idx) => {
-                const isMain = url === formData.foto;
+              {formData.fotos.map((slot, idx) => {
+                const isMain = idx === 0;
+                const slotKey =
+                  slot.kind === "existing"
+                    ? `existing-${slot.imageId}`
+                    : `new-${slot.url}`;
 
                 return (
                   <div
-                    key={url}
+                    key={slotKey}
                     style={{
                       position: "relative",
                       borderRadius: "0.85rem",
@@ -206,7 +229,7 @@ export function MediaStep({ formData, errors, update }: Props) {
                       background: "#f4f4f5",
                       cursor: "pointer",
                     }}
-                    onClick={() => setMain(url)}
+                    onClick={() => setMain(idx)}
                     title={
                       isMain
                         ? "Foto principal"
@@ -214,7 +237,7 @@ export function MediaStep({ formData, errors, update }: Props) {
                     }
                   >
                     <Image
-                      src={url}
+                      src={slot.url}
                       alt={`Foto ${idx + 1}`}
                       fill
                       style={{ objectFit: "cover" }}
