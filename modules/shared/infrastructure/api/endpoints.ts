@@ -38,6 +38,7 @@ export const API_ENDPOINTS = {
     // DELETE: (id: number) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // UPLOAD_MEDIA: `http://localhost:3001/api/media/upload`,
     LIST: `${BASE}/dogs-ms/dogs`,
+    PORTRAIT: `${BASE}/dogs-ms/dogs/portrait`,
     DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
     BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,

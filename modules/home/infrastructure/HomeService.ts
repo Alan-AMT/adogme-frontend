@@ -3,13 +3,29 @@
 import { calcularEdadCategoria } from "@/modules/shared/domain";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
-import type { GetDogsApiResponse } from "@/modules/dogs/infrastructure/ApiResponses";
 import type { AdoptionStory } from "../domain/AdoptionStory";
 import type { DogCard } from "../domain/DogCard";
 import type { ShelterCard } from "../domain/ShelterCard";
 import type { IHomeService } from "./IHomeService";
 
 // ─── API Response Types ───────────────────────────────────────────────────────
+
+type DogFindAllCatalog = {
+  id: string;
+  shelterId: string;
+  name: string;
+  age: number;
+  breed: string;
+  size: string;
+  sex: string;
+  energyLevel: string;
+  status: string;
+  photo: string | null;
+  goodWithKids: boolean;
+  goodWithDogs: boolean;
+  needsYard: boolean;
+  shelterName: string | null;
+};
 
 type ShelterListItemApiResponse = {
   id: string;
@@ -51,24 +67,21 @@ function estadoLabel(estado: string): string {
 export class HomeService implements IHomeService {
   async getMainDogs(): Promise<DogCard[]> {
     try {
-      const { data } = await apiClient.get<GetDogsApiResponse>(
-        API_ENDPOINTS.DOGS.LIST,
-        { params: { limit: 4, status: "disponible" } },
+      const { data } = await apiClient.get<DogFindAllCatalog[]>(
+        API_ENDPOINTS.DOGS.PORTRAIT,
       );
-      return data.data.map(d => ({
-        id:             d.id,
-        nombre:         d.name,
-        raza:           d.breed,
-        descripcion:    "",
-        edad:           Math.max(1, Math.round(d.age / 12)),
-        tamano:         d.size.charAt(0).toUpperCase() + d.size.slice(1),
-        nivelEnergia:   nivelEnergiaLabel(d.energyLevel),
-        salud:          "",
-        estado:         estadoLabel(d.status),
-        imageUrl:       d.photo ?? "",
-        tamanoRaw:      d.size,
+      return data.map(d => ({
+        id:              d.id,
+        nombre:          d.name,
+        raza:            d.breed,
+        edad:            Math.max(1, Math.round(d.age / 12)),
+        tamano:          d.size.charAt(0).toUpperCase() + d.size.slice(1),
+        nivelEnergia:    nivelEnergiaLabel(d.energyLevel),
+        estado:          estadoLabel(d.status),
+        imageUrl:        d.photo ?? "",
+        tamanoRaw:       d.size,
         nivelEnergiaRaw: d.energyLevel,
-        edadCat:        calcularEdadCategoria(d.age),
+        edadCat:         calcularEdadCategoria(d.age),
       }));
     } catch (e) {
       throw new Error("Error al obtener perros destacados", { cause: e });
