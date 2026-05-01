@@ -31,8 +31,8 @@ export const API_ENDPOINTS = {
     // LIST: `http://localhost:3001/dogs-ms/dogs`,
     // DETAIL: (id: number) => `http://localhost:3001/dogs-ms/dogs/${id}`,
     // BY_ID: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
-    // BY_SHELTER: (id: string) =>
-    //   `http://localhost:3001/dogs-ms/dogs/shelter/${id}`,
+    BY_SHELTER: (id: string) =>
+      `http://localhost:3001/dogs-ms/dogs/shelter/${id}`,
     // CREATE: `http://localhost:3001/dogs-ms/dog`,
     // UPDATE: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // DELETE: (id: number) => `http://localhost:3001/dogs-ms/dog/${id}`,
@@ -41,7 +41,7 @@ export const API_ENDPOINTS = {
     PORTRAIT: `${BASE}/dogs-ms/dogs/portrait`,
     DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
     BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
+    // BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
     CREATE: `${BASE}/dogs-ms/dog`,
     UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,

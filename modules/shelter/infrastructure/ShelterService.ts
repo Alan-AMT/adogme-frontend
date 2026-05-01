@@ -23,8 +23,12 @@ import {
 import {
   CreateDogApiResponse,
   CreateDogWithUploadUrlsApiResponse,
+  GetDogsApiResponse,
 } from "@/modules/dogs/infrastructure/ApiResponses";
-import { parseDog } from "@/modules/dogs/infrastructure/parseDog";
+import {
+  parseDog,
+  parseDogListItem,
+} from "@/modules/dogs/infrastructure/parseDog";
 
 export class ShelterService implements IShelterService {
   async getShelterProfile(refugioId: string): Promise<Shelter> {
@@ -325,30 +329,22 @@ export class ShelterService implements IShelterService {
     filters?: DogFilters,
   ): Promise<PaginatedDogs> {
     try {
-      const { data } = await apiClient.get<CreateDogApiResponse[]>(
+      const params: Record<string, string | number> = {};
+      if (filters?.estado) params.status = filters.estado;
+      if (filters?.search) params.search = filters.search;
+      if (filters?.page) params.page = filters.page;
+      if (filters?.limit) params.limit = filters.limit;
+
+      const { data } = await apiClient.get<GetDogsApiResponse>(
         API_ENDPOINTS.DOGS.BY_SHELTER(refugioId),
-        // {
-        //   params: {
-        //     status:    filters?.estado,
-        //     search:    filters?.search,
-        //     page:      filters?.page,
-        //     limit:     filters?.limit,
-        //     sortBy:    filters?.sortBy,
-        //     sortOrder: filters?.sortOrder,
-        //   },
-        // },
+        { params },
       );
       return {
-        data: data.map(parseDog),
-        total: data.length,
-        page: 1,
-        totalPages: 1,
-        limit: 10,
-        // data: data.data.map(parseDog),
-        // total: data.data.length,
-        // page: data.page,
-        // totalPages: data.totalPages,
-        // limit: data.limit,
+        data: data.data.map(parseDogListItem),
+        total: data.total,
+        page: data.page,
+        totalPages: data.totalPages,
+        limit: data.limit,
       };
     } catch (e) {
       throw Error("Error al obtener los perros del refugio");
