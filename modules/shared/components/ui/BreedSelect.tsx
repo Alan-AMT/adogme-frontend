@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import type { CSSObjectWithLabel } from "react-select";
@@ -78,6 +79,8 @@ export function BreedSelect({
   id,
   allowCreate = true,
 }: Props) {
+  const generatedId = useId();
+  const instanceId = id ?? generatedId;
   const knownOption = OPTIONS.find((o) => o.value === value);
   const selected: Option | null = value
     ? knownOption ?? (allowCreate ? { value, label: value } : null)
@@ -87,6 +90,7 @@ export function BreedSelect({
     return (
       <CreatableSelect
         inputId={id}
+        instanceId={instanceId}
         isClearable
         options={OPTIONS}
         value={selected}
@@ -103,6 +107,7 @@ export function BreedSelect({
   return (
     <Select
       inputId={id}
+      instanceId={instanceId}
       isClearable
       options={OPTIONS}
       value={selected}
