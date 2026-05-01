@@ -1,5 +1,6 @@
 "use client";
 
+import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import type { CSSObjectWithLabel } from "react-select";
 import { DOG_BREEDS } from "../../data/breeds";
@@ -9,6 +10,7 @@ interface Props {
   onChange: (value: string) => void;
   placeholder?: string;
   id?: string;
+  allowCreate?: boolean;
 }
 
 type Option = { value: string; label: string };
@@ -69,20 +71,44 @@ const styles = {
   }),
 };
 
-export function BreedSelect({ value, onChange, placeholder, id }: Props) {
-  const selected: Option | null = value ? { value, label: value } : null;
+export function BreedSelect({
+  value,
+  onChange,
+  placeholder,
+  id,
+  allowCreate = true,
+}: Props) {
+  const knownOption = OPTIONS.find((o) => o.value === value);
+  const selected: Option | null = value
+    ? knownOption ?? (allowCreate ? { value, label: value } : null)
+    : null;
+
+  if (allowCreate) {
+    return (
+      <CreatableSelect
+        inputId={id}
+        isClearable
+        options={OPTIONS}
+        value={selected}
+        onChange={(opt) => onChange(opt ? opt.value : "")}
+        onCreateOption={(typed) => onChange(typed)}
+        placeholder={placeholder ?? "Buscar o escribir raza..."}
+        noOptionsMessage={() => "Sin coincidencias"}
+        formatCreateLabel={(input) => `Usar "${input}"`}
+        styles={styles}
+      />
+    );
+  }
 
   return (
-    <CreatableSelect
+    <Select
       inputId={id}
       isClearable
       options={OPTIONS}
       value={selected}
       onChange={(opt) => onChange(opt ? opt.value : "")}
-      onCreateOption={(typed) => onChange(typed)}
-      placeholder={placeholder ?? "Buscar o escribir raza..."}
+      placeholder={placeholder ?? "Buscar raza..."}
       noOptionsMessage={() => "Sin coincidencias"}
-      formatCreateLabel={(input) => `Usar "${input}"`}
       styles={styles}
     />
   );

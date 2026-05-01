@@ -128,9 +128,10 @@ export default function FavoritesView() {
     }
 
     setLoading(true)
-    Promise.all(favoriteIds.map(id => dogService.getDogById(id)))
-      .then(results => setDogs(results.filter((d): d is Dog => d !== null)))
-      .catch(() => setDogs([]))
+    Promise.allSettled(favoriteIds.map(id => dogService.getDogById(id)))
+      .then(results => setDogs(results
+        .filter((r): r is PromiseFulfilledResult<Dog> => r.status === 'fulfilled')
+        .map(r => r.value)))
       .finally(() => setLoading(false))
   }, [favoriteIds])
 

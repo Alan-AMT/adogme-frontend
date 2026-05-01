@@ -1,7 +1,6 @@
 import {
   AdoptionRequest,
   AdoptionRequestListItem,
-  calcularEdadCategoria,
   Dog,
   DogFilters,
   DonationConfig,
@@ -17,59 +16,15 @@ import {
 } from "./IShelterService";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
-import { getPersonalityTagByLabel } from "@/modules/shared/utils/constants";
 import {
-  CreateDogApiResponse,
-  CreateDogWithUploadUrlsApiResponse,
-  // GetDogsApiResponse,
   GetShelterProfileApiResponse,
   UpdateShelterApiResponse,
 } from "./ApiResponses";
-
-function parseDog(data: CreateDogApiResponse): Dog {
-  return {
-    id: data.id,
-    userOwnerId: data.userOwnerId,
-    refugioId: data.shelterId,
-    nombre: data.name,
-    raza: data.breed,
-    raza2: data.breed2 ?? undefined,
-    edad: data.age,
-    sexo: data.sex,
-    tamano: data.size,
-    nivelEnergia: data.energyLevel,
-    descripcion: data.description,
-    estado: data.status,
-    personalidad: data.personality.flatMap((p) => {
-      const tag = getPersonalityTagByLabel(p.label);
-      return tag ? [tag] : [];
-    }),
-    aptoNinos: data.goodWithKids,
-    aptoPerros: data.goodWithDogs,
-    aptoGatos: data.goodWithCats,
-    castrado: data.sterilized,
-    necesitaJardin: data.needsYard,
-    estaVacunado: data.isVaccinated,
-    estaDesparasitado: data.isDewormed,
-    largoPelaje: data.furLength,
-    vacunas: data.vaccinations.map((v) => ({
-      id: v.id,
-      nombre: v.name,
-      fecha: new Date(v.date).toISOString(),
-      verificada: v.verified,
-      proximaDosis: v.nextDose ? new Date(v.nextDose).toISOString() : undefined,
-    })),
-    salud: data.health,
-    fotos: data.images,
-    edadCategoria: calcularEdadCategoria(data.age),
-    fechaRegistro: new Date(data.createdAt).toDateString(),
-    fechaActualizacion: new Date(data.updatedAt).toDateString(),
-    pesoKg: data.weightKg ?? undefined,
-    foto: data.photo ?? undefined,
-    refugioNombre: data.shelterName ?? undefined,
-    refugioLogo: data.shelterLogo ?? undefined,
-  };
-}
+import {
+  CreateDogApiResponse,
+  CreateDogWithUploadUrlsApiResponse,
+} from "@/modules/dogs/infrastructure/ApiResponses";
+import { parseDog } from "@/modules/dogs/infrastructure/parseDog";
 
 export class ShelterService implements IShelterService {
   async getShelterProfile(refugioId: string): Promise<Shelter> {

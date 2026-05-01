@@ -57,9 +57,11 @@ export class MockAdoptionService implements IAdoptionService {
 
     const dog = getDogById(payload.perroId)
 
-    // A1 — Verificar que el perro esté disponible antes de crear la solicitud
-    const liveDog = await dogService.getDogById(payload.perroId)
-    if (liveDog && liveDog.estado !== 'disponible') {
+    // A1 — Verificar que el perro esté disponible antes de crear la solicitud.
+    // Tratamos "no encontrado" igual que "no disponible": el adoptante no puede
+    // continuar y necesita un mensaje claro.
+    const liveDog = await dogService.getDogById(payload.perroId).catch(() => null)
+    if (!liveDog || liveDog.estado !== 'disponible') {
       throw new Error('Este perro ya no está disponible para adopción')
     }
 

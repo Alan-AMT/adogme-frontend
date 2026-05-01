@@ -7,7 +7,7 @@ import {
   MOCK_DOGS,
   getDogById as sharedGetById,
 } from "../../shared/mockData/dogs.mock";
-import type { IDogService } from "./IDogService";
+import { DogNotFoundError, type IDogService } from "./IDogService";
 
 const DEFAULT_LIMIT = 30;
 
@@ -148,9 +148,11 @@ export class MockDogService implements IDogService {
     return { data, total, page, totalPages: Math.ceil(total / limit), limit };
   }
 
-  async getDogById(id: string): Promise<Dog | null> {
+  async getDogById(id: string): Promise<Dog> {
     await delay(200, 400);
-    return _dogs.find((d) => d.id === id) ?? sharedGetById(id) ?? null;
+    const dog = _dogs.find((d) => d.id === id) ?? sharedGetById(id);
+    if (!dog) throw new DogNotFoundError(id);
+    return dog;
   }
 }
 

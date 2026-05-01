@@ -28,7 +28,7 @@ export const API_ENDPOINTS = {
   },
 
   DOGS: {
-    // LIST: `http://localhost:3001/dogs-ms/dogs`,
+    LIST: `http://localhost:3001/dogs-ms/dogs`,
     // DETAIL: (id: number) => `http://localhost:3001/dogs-ms/dogs/${id}`,
     // BY_ID: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // BY_SLUG: (slug: string) => `http://localhost:3001/dogs-ms/dog/slug/${slug}`,
@@ -38,7 +38,7 @@ export const API_ENDPOINTS = {
     // UPDATE: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // DELETE: (id: number) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // UPLOAD_MEDIA: `http://localhost:3001/api/media/upload`,
-    LIST: `${BASE}/dogs-ms/dogs`,
+    // LIST: `${BASE}/dogs-ms/dogs`,
     DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
     BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     BY_SLUG: (slug: string) => `${BASE}/dogs-ms/dog/slug/${slug}`,
