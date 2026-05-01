@@ -3,16 +3,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { getShelterBySlug } from "@/modules/shared/mockData/shelters.mock";
+import { getShelterById } from "@/modules/shared/mockData/shelters.mock";
 import { MOCK_DOGS } from "@/modules/shared/mockData/dogs.mock";
 import "../styles/shelterPublic.css";
 
 interface Props {
-  slug: string;
+  id: string;
 }
 
-export default function ShelterPublicView({ slug }: Props) {
-  const shelter = getShelterBySlug(slug);
+export default function ShelterPublicView({ id }: Props) {
+  const shelter = getShelterById(id);
 
   if (!shelter || !shelter.aprobado) {
     return (
@@ -228,7 +228,7 @@ export default function ShelterPublicView({ slug }: Props) {
                 {shelter.donationConfig.descripcionCausa}
               </p>
               <Link
-                href={`/refugios/${shelter.slug}/donar`}
+                href={`/refugios/${shelter.id}/donar`}
                 className="sp-donate-btn"
               >
                 Donar ahora

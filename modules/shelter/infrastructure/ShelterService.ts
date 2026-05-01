@@ -54,7 +54,6 @@ export class ShelterService implements IShelterService {
         logo: data.logo ?? "",
         imagenPortada: data.imageUrl ?? "",
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
-        slug: "",
         cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
           aceptaDonaciones: true,
@@ -113,7 +112,6 @@ export class ShelterService implements IShelterService {
         logo: data.logo ?? "",
         imagenPortada: data.imageUrl ?? "",
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
-        slug: "",
         cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
           aceptaDonaciones: true,

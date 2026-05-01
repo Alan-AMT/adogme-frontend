@@ -89,7 +89,6 @@ export class MockHomeService implements IHomeService {
     return SHARED_SHELTERS.map(s => ({
       id:                   s.id,
       nombre:               s.nombre,
-      slug:                 s.slug,
       ubicacion:            s.ubicacion,
       alcaldia:             s.alcaldia ?? s.ubicacion,
       descripcion:          s.descripcion,

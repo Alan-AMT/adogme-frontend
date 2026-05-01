@@ -3,7 +3,6 @@
 export interface ShelterCard {
   id: string
   nombre: string
-  slug: string
   ubicacion: string
   alcaldia: string | null
   descripcion: string

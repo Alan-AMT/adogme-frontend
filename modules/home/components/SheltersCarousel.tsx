@@ -13,7 +13,7 @@ function FeaturedCard({ s }: { s: ShelterCard }) {
   const cover = s.imagenPortada || s.imageUrl || "/assets/shelters/shelter1.jpg";
   return (
     <div className="hs-featured-wrap">
-      <Link href={`/refugios/${s.slug}`} className="hs-featured">
+      <Link href={`/refugios/${s.id}`} className="hs-featured">
         <Image
           src={cover}
           alt={`Imagen de ${s.nombre}`}
@@ -80,7 +80,7 @@ function FeaturedCard({ s }: { s: ShelterCard }) {
 function SmallCard({ s }: { s: ShelterCard }) {
   const cover = s.imagenPortada || s.imageUrl || "/assets/shelters/shelter1.jpg";
   return (
-    <Link href={`/refugios/${s.slug}`} className="hs-small">
+    <Link href={`/refugios/${s.id}`} className="hs-small">
       <div className="hs-small__media">
         <Image
           src={cover}
