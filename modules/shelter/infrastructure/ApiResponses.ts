@@ -18,6 +18,13 @@ export type GetShelterProfileApiResponse = {
   adoptionFee: number | null;
   createdAt: Date;
   updatedAt: Date;
+  acceptsDonations: boolean;
+  donationCauseText: string | null;
+  donationClabe: string | null;
+  donationBankName: string | null;
+  donationAccountHolder: string | null;
+  donationPaypalLink: string | null;
+  donationMercadoPagoLink: string | null;
 };
 
 export type UpdateShelterApiResponse = {
@@ -40,4 +47,11 @@ export type UpdateShelterApiResponse = {
   adoptionFee: number | null;
   createdAt: Date;
   updatedAt: Date;
+  acceptsDonations: boolean;
+  donationCauseText: string | null;
+  donationClabe: string | null;
+  donationBankName: string | null;
+  donationAccountHolder: string | null;
+  donationPaypalLink: string | null;
+  donationMercadoPagoLink: string | null;
 };

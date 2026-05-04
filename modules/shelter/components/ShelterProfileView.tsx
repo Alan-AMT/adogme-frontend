@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useEffect, useRef, useState, type FormEvent, type ChangeEvent } from 'react'
 import { useShelterProfile } from '../application/hooks/useShelterProfile'
 import type { Shelter } from '@/modules/shared/domain/Shelter'
+import { useToast } from '@/modules/shared/application/hooks/useToast'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
@@ -143,7 +144,8 @@ function ProfileHero({
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 export default function ShelterProfileView() {
-  const { shelter, isLoading, isSaving, error, success, saveProfile } = useShelterProfile()
+  const { shelter, isLoading, isSaving, error, saveProfile } = useShelterProfile()
+  const toast = useToast()
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
 
   const logoInputRef   = useRef<HTMLInputElement>(null)
@@ -189,8 +191,9 @@ export default function ShelterProfileView() {
     }
     try {
       await saveProfile(payload)
-    } catch {
-      // error ya manejado en el hook
+      toast.success('Perfil actualizado correctamente')
+    } catch (e) {
+      toast.error((e as Error).message ?? 'No se pudo guardar el perfil')
     }
   }
 
@@ -573,17 +576,6 @@ export default function ShelterProfileView() {
           </div>
 
         </div>
-
-        {/* Mensajes de estado */}
-        {error && (
-          <p style={{ color: '#dc2626', fontSize: '0.85rem', fontWeight: 600 }}>{error}</p>
-        )}
-        {success && (
-          <p style={{ color: '#16a34a', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check_circle</span>
-            Perfil actualizado correctamente
-          </p>
-        )}
 
         {/* Barra de acciones */}
         <div className="sv-submit-bar">

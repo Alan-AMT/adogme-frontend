@@ -60,10 +60,13 @@ export const API_ENDPOINTS = {
     UPLOAD_COVER: `${BASE}/api/media/shelter/cover`,
     // LIST: `http://localhost:3002/shelters-ms/shelters`,
     // CREATE: `http://localhost:3002/shelters-ms/shelter`,
-    // DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    // DETAIL: (id: number | string) =>
+    //   `http://localhost:3002/shelters-ms/shelter/${id}`,
     // BY_ID: (id: string) => `http://localhost:3002/shelters-ms/shelter/${id}`,
-    // UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    // STATS: (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
+    // UPDATE: (id: number | string) =>
+    //   `http://localhost:3002/shelters-ms/shelter/${id}`,
+    // STATS: (id: number | string) =>
+    //   `http://localhost:3002/api/shelters/${id}/stats`,
     // UPLOAD_LOGO: `http://localhost:3002/api/media/shelter/logo`,
     // BY_OWNER: (userId: string) =>
     //   `http://localhost:3002/shelters-ms/shelter/user/${userId}`,

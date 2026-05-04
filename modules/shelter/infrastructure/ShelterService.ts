@@ -59,7 +59,13 @@ export class ShelterService implements IShelterService {
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
         cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
-          aceptaDonaciones: true,
+          aceptaDonaciones: data.acceptsDonations,
+          banco: data.donationBankName,
+          cuentaClabe: data.donationClabe,
+          descripcionCausa: data.donationCauseText,
+          mercadoPagoLink: data.donationMercadoPagoLink,
+          paypalLink: data.donationPaypalLink,
+          titularCuenta: data.donationAccountHolder,
         } as DonationConfig,
       };
       return shelter;
@@ -91,6 +97,14 @@ export class ShelterService implements IShelterService {
           logo: shelterUpdate.logo,
           imageUrl: shelterUpdate.imagenPortada,
           adoptionFee: shelterUpdate.cuotaAdopcion ?? 0,
+          acceptsDonations: shelterUpdate.donationConfig?.aceptaDonaciones,
+          donationCauseText: shelterUpdate.donationConfig?.descripcionCausa,
+          donationClabe: shelterUpdate.donationConfig?.cuentaClabe,
+          donationBankName: shelterUpdate.donationConfig?.banco,
+          donationAccountHolder: shelterUpdate.donationConfig?.titularCuenta,
+          donationPaypalLink: shelterUpdate.donationConfig?.paypalLink,
+          donationMercadoPagoLink:
+            shelterUpdate.donationConfig?.mercadoPagoLink,
         },
       );
       const updated: Shelter = {
@@ -116,7 +130,13 @@ export class ShelterService implements IShelterService {
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
         cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
-          aceptaDonaciones: true,
+          aceptaDonaciones: data.acceptsDonations,
+          banco: data.donationBankName,
+          cuentaClabe: data.donationClabe,
+          descripcionCausa: data.donationCauseText,
+          mercadoPagoLink: data.donationMercadoPagoLink,
+          paypalLink: data.donationPaypalLink,
+          titularCuenta: data.donationAccountHolder,
         } as DonationConfig,
       };
       return updated;
