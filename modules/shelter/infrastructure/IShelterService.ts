@@ -33,6 +33,18 @@ export interface ShelterDashboardStats {
   calificacion?: number;
 }
 
+// ─── Input types para perfil del refugio ────────────────────────────────────
+
+/**
+ * Payload para actualizar el perfil del refugio. Los flags `newLogo` y
+ * `newImageUrl` indican al backend que debe generar signed URLs para subir
+ * las imágenes nuevas (logo y/o portada).
+ */
+export type ShelterUpdatePayload = Partial<Shelter> & {
+  newLogo?: boolean | null;
+  newImageUrl?: boolean | null;
+};
+
 // ─── Input types para CRUD de perros ─────────────────────────────────────────
 
 /** Campos necesarios para crear un perro (refugioId requerido, estado lo asigna el servicio) */
@@ -88,8 +100,8 @@ export interface IShelterService {
   getShelterById(id: string): Promise<Shelter>;
   updateShelterProfile(
     refugioId: string,
-    data: Partial<Shelter>,
-  ): Promise<Shelter>;
+    data: ShelterUpdatePayload,
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }>;
 
   // ── Dashboard ──────────────────────────────────────────────────────────────
   getDashboardStats(refugioId: string): Promise<ShelterDashboardStats>;

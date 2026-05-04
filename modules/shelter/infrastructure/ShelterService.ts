@@ -14,6 +14,7 @@ import {
   DogUpdateData,
   IShelterService,
   ShelterDashboardStats,
+  ShelterUpdatePayload,
 } from "./IShelterService";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
@@ -78,8 +79,8 @@ export class ShelterService implements IShelterService {
 
   async updateShelterProfile(
     refugioId: string,
-    shelterUpdate: Partial<Shelter>,
-  ): Promise<Shelter> {
+    shelterUpdate: ShelterUpdatePayload,
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }> {
     try {
       const { data } = await apiClient.put<UpdateShelterApiResponse>(
         API_ENDPOINTS.SHELTERS.UPDATE(refugioId),
@@ -95,8 +96,8 @@ export class ShelterService implements IShelterService {
           facebook: shelterUpdate.redesSociales?.facebook,
           instagram: shelterUpdate.redesSociales?.instagram,
           twitter: shelterUpdate.redesSociales?.twitter,
-          logo: shelterUpdate.logo,
-          imageUrl: shelterUpdate.imagenPortada,
+          newLogo: shelterUpdate.newLogo ?? null,
+          newImageUrl: shelterUpdate.newImageUrl ?? null,
           adoptionFee: shelterUpdate.cuotaAdopcion ?? 0,
           acceptsDonations: shelterUpdate.donationConfig?.aceptaDonaciones,
           donationCauseText: shelterUpdate.donationConfig?.descripcionCausa,
@@ -108,39 +109,40 @@ export class ShelterService implements IShelterService {
             shelterUpdate.donationConfig?.mercadoPagoLink,
         },
       );
+      const s = data.shelter;
       const updated: Shelter = {
-        id: data.id,
-        nombre: data.name,
-        status: data.status,
-        descripcion: data.description ?? "",
-        telefono: data.phone ?? "",
-        correo: data.email ?? "",
+        id: s.id,
+        nombre: s.name,
+        status: s.status,
+        descripcion: s.description ?? "",
+        telefono: s.phone ?? "",
+        correo: s.email ?? "",
         redesSociales: {
-          facebook: data.facebook ?? "",
-          instagram: data.instagram ?? "",
-          twitter: data.twitter ?? "",
-          web: data.website ?? "",
+          facebook: s.facebook ?? "",
+          instagram: s.instagram ?? "",
+          twitter: s.twitter ?? "",
+          web: s.website ?? "",
         },
-        alcaldia: data.municipality ?? "",
-        ubicacion: data.municipality ?? "",
-        direccionCompleta: data.fullAddress ?? "",
-        schedule: data.schedule ?? "",
-        aprobado: data.approved,
-        logo: data.logo ?? "",
-        imagenPortada: data.imageUrl ?? "",
-        fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
-        cuotaAdopcion: data.adoptionFee ?? 0,
+        alcaldia: s.municipality ?? "",
+        ubicacion: s.municipality ?? "",
+        direccionCompleta: s.fullAddress ?? "",
+        schedule: s.schedule ?? "",
+        aprobado: s.approved,
+        logo: s.logo ?? "",
+        imagenPortada: s.imageUrl ?? "",
+        fechaRegistro: new Date(s.createdAt).toLocaleDateString("en-GB"),
+        cuotaAdopcion: s.adoptionFee ?? 0,
         donationConfig: {
-          aceptaDonaciones: data.acceptsDonations,
-          banco: data.donationBankName,
-          cuentaClabe: data.donationClabe,
-          descripcionCausa: data.donationCauseText,
-          mercadoPagoLink: data.donationMercadoPagoLink,
-          paypalLink: data.donationPaypalLink,
-          titularCuenta: data.donationAccountHolder,
+          aceptaDonaciones: s.acceptsDonations,
+          banco: s.donationBankName,
+          cuentaClabe: s.donationClabe,
+          descripcionCausa: s.donationCauseText,
+          mercadoPagoLink: s.donationMercadoPagoLink,
+          paypalLink: s.donationPaypalLink,
+          titularCuenta: s.donationAccountHolder,
         } as DonationConfig,
       };
-      return updated;
+      return { shelter: updated, uploadUrls: data.uploadUrls ?? [] };
     } catch (e) {
       console.log(e);
       throw Error("No se pudo actualizar el perfil del refugio");

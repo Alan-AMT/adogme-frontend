@@ -102,7 +102,7 @@ export class MockShelterService implements IShelterService {
   async updateShelterProfile(
     refugioId: string,
     shelterUpdate: Partial<Shelter>,
-  ): Promise<Shelter> {
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }> {
     await delay(400);
     const idx = _shelters.findIndex((s) => s.id === refugioId);
     if (idx === -1) throw new Error(`Refugio ${refugioId} no encontrado`);
@@ -117,7 +117,7 @@ export class MockShelterService implements IShelterService {
       updated,
       ..._shelters.slice(idx + 1),
     ];
-    return { ...updated };
+    return { shelter: { ...updated }, uploadUrls: [] };
   }
 
   // ── Dashboard ───────────────────────────────────────────────────────────────
