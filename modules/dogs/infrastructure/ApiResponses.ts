@@ -11,7 +11,6 @@ import {
 
 export type CreateDogApiResponse = {
   id: string;
-  userOwnerId: string;
   shelterId: string;
   status: DogStatus;
   name: string;

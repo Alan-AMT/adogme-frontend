@@ -1,6 +1,5 @@
 export type GetShelterProfileApiResponse = {
   id: string;
-  userOwnerId: string;
   name: string;
   description: string | null;
   phone: string | null;
@@ -23,7 +22,6 @@ export type GetShelterProfileApiResponse = {
 
 export type UpdateShelterApiResponse = {
   id: string;
-  userOwnerId: string;
   name: string;
   description: string | null;
   phone: string | null;

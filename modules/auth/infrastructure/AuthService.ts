@@ -31,11 +31,15 @@ export class AuthService implements IAuthService {
       if (axios.isAxiosError(e)) {
         const status = e.response?.status;
         if (status === 401 || status === 400)
-          throw new Error("Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo.");
+          throw new Error(
+            "Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo.",
+          );
         if (status === 404)
           throw new Error("No encontramos una cuenta con ese correo.");
         if (status === 429)
-          throw new Error("Demasiados intentos fallidos. Espera unos minutos antes de intentar de nuevo.");
+          throw new Error(
+            "Demasiados intentos fallidos. Espera unos minutos antes de intentar de nuevo.",
+          );
       }
       throw new Error("No pudimos iniciar sesión. Intenta de nuevo más tarde.");
     }

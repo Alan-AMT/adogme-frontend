@@ -216,7 +216,6 @@ export class MockShelterService implements IShelterService {
     const fotosUrls = payload.fotos ?? (payload.foto ? [payload.foto] : []);
     const newDog: Dog = {
       id: newDogId,
-      userOwnerId: "current-user",
       refugioId: payload.refugioId,
       nombre: payload.nombre,
       raza: payload.raza,
@@ -280,12 +279,18 @@ export class MockShelterService implements IShelterService {
     const prev = _dogs[idx];
     const edad = data.edad ?? prev.edad;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { fotos: _ignoredFotos, amountImagesToCreate, imagesToDelete, ...rest } =
-      data;
+    const {
+      fotos: _ignoredFotos,
+      amountImagesToCreate,
+      imagesToDelete,
+      ...rest
+    } = data;
 
     // 1) Aplicar borrado de imágenes existentes
     const idsAEliminar = new Set(imagesToDelete ?? []);
-    const fotosRestantes = prev.fotos.filter((img) => !idsAEliminar.has(img.id));
+    const fotosRestantes = prev.fotos.filter(
+      (img) => !idsAEliminar.has(img.id),
+    );
 
     // 2) Reservar N "slots" nuevos (mock: tras el upload, sus URLs serán reales)
     const nuevasFotos = Array.from(

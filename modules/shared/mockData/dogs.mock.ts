@@ -78,7 +78,12 @@ const TAGS: Record<string, PersonalityTag> = {
   },
   curioso: { id: "4", label: "Curioso", icon: "search", categoria: "caracter" },
   leal: { id: "5", label: "Leal", icon: "favorite", categoria: "caracter" },
-  energico: { id: "6", label: "Enérgico", icon: "bolt", categoria: "actividad" },
+  energico: {
+    id: "6",
+    label: "Enérgico",
+    icon: "bolt",
+    categoria: "actividad",
+  },
   relajado: {
     id: "7",
     label: "Relajado",
@@ -91,7 +96,12 @@ const TAGS: Record<string, PersonalityTag> = {
     icon: "pets",
     categoria: "socializacion",
   },
-  timido: { id: "9", label: "Tímido", icon: "hide", categoria: "socializacion" },
+  timido: {
+    id: "9",
+    label: "Tímido",
+    icon: "hide",
+    categoria: "socializacion",
+  },
   independiente: {
     id: "10",
     label: "Independiente",
@@ -192,7 +202,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "1",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Max",
     raza: "Labrador",
@@ -225,7 +234,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "2",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Luna",
     raza: "Beagle",
@@ -258,7 +266,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "3",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Thor",
     raza: "Husky Siberiano",
@@ -291,7 +298,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "4",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Coco",
     raza: "Mestizo",
@@ -324,7 +330,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "5",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Rocky",
     raza: "Pitbull",
@@ -357,7 +362,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "6",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Bella",
     raza: "Golden Retriever",
@@ -392,7 +396,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "7",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Churro",
     raza: "Salchicha",
@@ -425,7 +428,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "8",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Nala",
     raza: "Bulldog Francés",
@@ -458,7 +460,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "9",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Lobo",
     raza: "Mestizo",
@@ -491,7 +492,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "10",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Mia",
     raza: "Beagle",
@@ -524,7 +524,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "11",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Simba",
     raza: "Labrador",
@@ -557,7 +556,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "12",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Canela",
     raza: "Golden Retriever",
@@ -593,7 +591,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "13",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Dante",
     raza: "Pitbull",
@@ -626,7 +623,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "14",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Fiona",
     raza: "Husky Siberiano",
@@ -664,7 +660,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "15",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Pepito",
     raza: "Salchicha",
@@ -697,7 +692,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "16",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Princesa",
     raza: "Bulldog Francés",
@@ -730,7 +724,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "17",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Bruno",
     raza: "Labrador",
@@ -765,7 +758,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "18",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Kira",
     raza: "Mestizo",
@@ -798,7 +790,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "19",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Oreo",
     raza: "Bulldog Francés",
@@ -831,7 +822,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "20",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Sasha",
     raza: "Husky Siberiano",
@@ -864,7 +854,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "21",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Rex",
     raza: "Pitbull",
@@ -896,7 +885,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "22",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Gala",
     raza: "Golden Retriever",
@@ -932,7 +920,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "23",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Toby",
     raza: "Beagle",
@@ -965,7 +952,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "24",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Nina",
     raza: "Mestizo",
@@ -998,7 +984,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "25",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Duke",
     raza: "Labrador",
@@ -1031,7 +1016,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "26",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Panda",
     raza: "Bulldog Francés",
@@ -1064,7 +1048,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "27",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Alaska",
     raza: "Husky Siberiano",
@@ -1102,7 +1085,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "28",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Manchas",
     raza: "Mestizo",
@@ -1135,7 +1117,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "29",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Frida",
     raza: "Salchicha",
@@ -1168,7 +1149,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "30",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Goldie",
     raza: "Golden Retriever",

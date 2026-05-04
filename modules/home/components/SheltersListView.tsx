@@ -8,8 +8,6 @@ import { useHomeShelters } from "../application/hooks/useHomeContent";
 import type { ShelterCard } from "../domain/ShelterCard";
 import "../styles/sheltersList.css";
 
-const CITIES = ["Todos", "Gustavo A. Madero", "Coyoacán", "Iztapalapa", "Tlalpan", "Benito Juárez"];
-
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function Card({ s }: { s: ShelterCard }) {
@@ -109,19 +107,6 @@ export default function SheltersListView() {
           Conoce a los refugios que hacen posible cada adopción
         </p>
       </header>
-
-      {/* City filter */}
-      <div className="sl-filters">
-        {CITIES.map((city) => (
-          <button
-            key={city}
-            className={`sl-filter${activeCity === city ? " is-active" : ""}`}
-            onClick={() => setActiveCity(city)}
-          >
-            {city}
-          </button>
-        ))}
-      </div>
 
       {/* Grid */}
       <div className="sl-grid">

@@ -12,7 +12,6 @@ import type {
 export function parseDog(data: CreateDogApiResponse): Dog {
   return {
     id: data.id,
-    userOwnerId: data.userOwnerId,
     refugioId: data.shelterId,
     nombre: data.name,
     raza: data.breed,
