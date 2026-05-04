@@ -1,20 +1,7 @@
 // modules/recommendations/components/LifestyleQuizView.tsx
-// Orquestador del quiz de estilo de vida.
-//
-//  ┌─ Header sticky ─────────────────────────────────────┐
-//  │  [← Salir]    Paso 3 de 7    Vivienda               │
-//  │  ████████████░░░░░░░░░░░░░░░░░░░░░   43%            │
-//  └──────────────────────────────────────────────────────┘
-//  ┌─ Content (scrollable) ──────────────────────────────┐
-//  │  <StepComponent> con animación slide                 │
-//  └──────────────────────────────────────────────────────┘
-//  ┌─ Nav sticky bottom ─────────────────────────────────┐
-//  │  [← Anterior]       [Siguiente →]                   │
-//  │  Último paso:       [Obtener mis recomendaciones ✨] │
-//  └──────────────────────────────────────────────────────┘
+// Orquestador del quiz de match (4 bloques: Activity / Housing / Experience / Care).
 'use client'
 
-import { type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ProgressBar } from '../../shared/components/ui/ProgressBar'
@@ -22,39 +9,16 @@ import { Button }      from '../../shared/components/ui/Button'
 import { Alert }       from '../../shared/components/ui/Alert'
 import { Spinner }     from '../../shared/components/ui/Spinner'
 import { useLifestyleQuiz, TOTAL_STEPS } from '../application/hooks/useLifestyleQuiz'
-import { Step1Activity }    from './quiz-steps/Step1Activity'
-import { Step2Housing }     from './quiz-steps/Step2Housing'
-import { Step3Experience }  from './quiz-steps/Step3Experience'
-import { Step4Coexistence } from './quiz-steps/Step4Coexistence'
-import type { StepProps } from './quiz-steps/types'
+import { QUIZ_BLOCKS } from '../../shared/domain/LifestyleProfile'
+import { BlockStep }   from './quiz-steps/BlockStep'
 import '../styles/quiz.css'
-
-// ─── Metadatos por paso ───────────────────────────────────────────────────────
-
-const STEP_META: { label: string }[] = [
-  { label: 'Actividad'   },
-  { label: 'Hogar'       },
-  { label: 'Experiencia' },
-  { label: 'Cuidados'    },
-]
-
-// ─── Componentes de paso ──────────────────────────────────────────────────────
-
-const STEP_COMPONENTS: ComponentType<StepProps>[] = [
-  Step1Activity,
-  Step2Housing,
-  Step3Experience,
-  Step4Coexistence,
-]
-
-// ─── Componente ───────────────────────────────────────────────────────────────
 
 export default function LifestyleQuizView() {
   const router = useRouter()
 
   const {
     currentStep,
-    answers,
+    draft,
     direction,
     canAdvance,
     isSubmitting,
@@ -68,16 +32,13 @@ export default function LifestyleQuizView() {
   const isFirstStep = currentStep === 0
   const isLastStep  = currentStep === TOTAL_STEPS - 1
   const progress    = Math.round(((currentStep + 1) / TOTAL_STEPS) * 100)
+  const blockMeta   = QUIZ_BLOCKS[currentStep]
 
-  const CurrentStep = STEP_COMPONENTS[currentStep]
-
-  // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit() {
     const result = await submitQuiz()
     if (result) router.push('/mi-match')
   }
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div
       style={{
@@ -87,8 +48,7 @@ export default function LifestyleQuizView() {
         background: '#fafafa',
       }}
     >
-
-      {/* ── Loading overlay (ML processing) ───────────────────────────────── */}
+      {/* ── Loading overlay ─────────────────────────────────────────────── */}
       {isSubmitting && (
         <div
           style={{
@@ -105,13 +65,22 @@ export default function LifestyleQuizView() {
           }}
         >
           <Spinner size="lg" />
-          <p style={{ fontSize: '0.92rem', fontWeight: 700, color: '#52525b', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
+          <p
+            style={{
+              fontSize: '0.92rem',
+              fontWeight: 700,
+              color: '#52525b',
+              textAlign: 'center',
+              maxWidth: 260,
+              lineHeight: 1.5,
+            }}
+          >
             Generando tus recomendaciones personalizadas…
           </p>
         </div>
       )}
 
-      {/* ── Header sticky ─────────────────────────────────────────────────── */}
+      {/* ── Header sticky ───────────────────────────────────────────────── */}
       <header
         style={{
           position: 'sticky',
@@ -129,7 +98,6 @@ export default function LifestyleQuizView() {
             padding: '1rem 1.25rem 0.875rem',
           }}
         >
-          {/* Row: Salir | Paso N de 7 | Label */}
           <div
             style={{
               display: 'flex',
@@ -172,16 +140,15 @@ export default function LifestyleQuizView() {
                 textAlign: 'right',
               }}
             >
-              {STEP_META[currentStep].label}
+              {blockMeta.label}
             </p>
           </div>
 
-          {/* Progress bar */}
           <ProgressBar value={progress} size="sm" />
         </div>
       </header>
 
-      {/* ── Step content ──────────────────────────────────────────────────── */}
+      {/* ── Step content ────────────────────────────────────────────────── */}
       <main
         style={{
           flex: 1,
@@ -192,19 +159,15 @@ export default function LifestyleQuizView() {
           overflowX: 'hidden',
         }}
       >
-        {/* Animación: key fuerza re-mount → re-dispara la animación CSS */}
         <div
           key={currentStep}
           className={
-            direction === 'forward'
-              ? 'qz-slide-enter-right'
-              : 'qz-slide-enter-left'
+            direction === 'forward' ? 'qz-slide-enter-right' : 'qz-slide-enter-left'
           }
         >
-          <CurrentStep answers={answers} onChange={setAnswer} />
+          <BlockStep blockIndex={currentStep} draft={draft} onChange={setAnswer} />
         </div>
 
-        {/* Error del submit */}
         {submitError && (
           <div style={{ marginTop: '1.25rem' }}>
             <Alert type="error" message={submitError} closable />
@@ -212,7 +175,7 @@ export default function LifestyleQuizView() {
         )}
       </main>
 
-      {/* ── Navegación sticky bottom ───────────────────────────────────────── */}
+      {/* ── Navegación sticky bottom ─────────────────────────────────────── */}
       <nav
         style={{
           position: 'sticky',
@@ -232,7 +195,6 @@ export default function LifestyleQuizView() {
             gap: '0.75rem',
           }}
         >
-          {/* ← Anterior */}
           {!isFirstStep && (
             <Button
               variant="ghost"
@@ -249,7 +211,6 @@ export default function LifestyleQuizView() {
             </Button>
           )}
 
-          {/* Siguiente / Obtener recomendaciones */}
           <div style={{ flex: 1 }}>
             {isLastStep ? (
               <Button
@@ -292,7 +253,6 @@ export default function LifestyleQuizView() {
           </div>
         </div>
 
-        {/* Hint cuando el paso está incompleto */}
         {!canAdvance && !isSubmitting && (
           <p
             style={{
@@ -303,7 +263,7 @@ export default function LifestyleQuizView() {
               paddingBottom: '0.6rem',
             }}
           >
-            Completa todas las opciones para continuar
+            Responde todas las preguntas para continuar
           </p>
         )}
       </nav>

@@ -1,18 +1,17 @@
 // modules/dogs/infrastructure/DogServiceFactory.ts
-// Único punto de intercambio entre la implementación mock y la real.
-// Para usar la API real: descomentar ApiDogService y ajustar la condición.
+// Selecciona implementación de IDogService según env:
+//   NEXT_PUBLIC_USE_MOCK=true  → MockDogService (sin red)
+//   default                    → ApiDogService (HTTP a dogs-ms)
 
-import { MockDogService } from "./MockDogService";
-import type { IDogService } from "./IDogService";
+import type { IDogService } from "./IDogService"
+import { MockDogService } from "./MockDogService"
+import { ApiDogService } from "./ApiDogService"
 
-// import { ApiDogService } from "./ApiDogService";
+const useMock = process.env.NEXT_PUBLIC_USE_MOCK === "true"
 
 function createDogService(): IDogService {
-  // if (process.env.NEXT_PUBLIC_USE_REAL_API === "true") {
-  //   return new ApiDogService(process.env.NEXT_PUBLIC_API_URL!);
-  // }
-  return new MockDogService();
+  return useMock ? new MockDogService() : new ApiDogService()
 }
 
 /** Singleton — importar siempre desde aquí, nunca instanciar el servicio directamente */
-export const dogService: IDogService = createDogService();
+export const dogService: IDogService = createDogService()

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
+import { mlService } from '../infrastructure/MLServiceFactory'
 import type {
   MLRecommendationResponse,
   DogRecommendation,
@@ -210,17 +211,39 @@ function formatGenDate(iso: string): string {
 
 export function RecommendationsView() {
   const { user } = useAuthStore()
-  const [result, setResult]               = useState<MLRecommendationResponse | null>(null)
-  const [loaded, setLoaded]               = useState(false)
+  const [result, setResult]   = useState<MLRecommendationResponse | null>(null)
+  const [loaded, setLoaded]   = useState(false)
+  const [error,  setError]    = useState<string | null>(null)
 
+  // Si user.userVector ya existe (vino en /me y vive en cookie),
+  // pedimos top matches directo. Si no existe, EmptyState invita al quiz.
   useEffect(() => {
     if (!user?.id) { setLoaded(true); return }
-    try {
-      const raw = localStorage.getItem(RESULTS_KEY(user.id))
-      if (raw) setResult(JSON.parse(raw) as MLRecommendationResponse)
-    } catch { /* noop */ }
-    setLoaded(true)
-  }, [user?.id])
+
+    const userVector =
+      user.role === 'applicant' ? user.userVector ?? null : null
+
+    if (!userVector) {
+      // Fallback transitorio: leer del localStorage si el quiz lo dejó ahí
+      // (mientras applicants-ms no devuelve userVector en /me).
+      try {
+        const raw = localStorage.getItem(RESULTS_KEY(user.id))
+        if (raw) setResult(JSON.parse(raw) as MLRecommendationResponse)
+      } catch { /* noop */ }
+      setLoaded(true)
+      return
+    }
+
+    setLoaded(false)
+    mlService
+      .getMatchesByUserVector(user.id, userVector)
+      .then(setResult)
+      .catch(err => {
+        console.error('[mi-match] getMatchesByUserVector failed:', err)
+        setError(err instanceof Error ? err.message : 'Error al cargar matches')
+      })
+      .finally(() => setLoaded(true))
+  }, [user?.id, user?.role === 'applicant' ? user.userVector : null])
 
   if (!loaded) return <LoadingSkeleton />
 
@@ -271,6 +294,24 @@ export function RecommendationsView() {
             auto_awesome
           </span>
           <p className="rec-summary__text">{result.resumen}</p>
+        </div>
+      )}
+
+      {/* Error (cuando getMatchesByUserVector falla) */}
+      {error && !hasResults && (
+        <div
+          style={{
+            padding: '1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '0.75rem',
+            color: '#b91c1c',
+            fontSize: '0.85rem',
+            margin: '0 auto 1rem',
+            maxWidth: 600,
+          }}
+        >
+          {error}
         </div>
       )}
 
