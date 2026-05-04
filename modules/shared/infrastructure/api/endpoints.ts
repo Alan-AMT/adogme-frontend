@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     CREATE: `${BASE}/dogs-ms/dog`,
     UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    STATUS: (id: string) => `${BASE}/dogs-ms/dog/${id}/status`,
     UPLOAD_MEDIA: `${BASE}/api/media/upload`,
   },
 

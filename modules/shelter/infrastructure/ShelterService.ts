@@ -3,6 +3,7 @@ import {
   AdoptionRequestListItem,
   Dog,
   DogFilters,
+  DogStatus,
   DonationConfig,
   PaginatedDogs,
   RequestStatus,
@@ -369,8 +370,12 @@ export class ShelterService implements IShelterService {
     }
   }
 
-  togglePublish(id: string): Promise<Dog> {
-    throw Error("Not implemented");
+  async updateDogStatus(dogId: string, status: DogStatus): Promise<void> {
+    try {
+      await apiClient.patch(API_ENDPOINTS.DOGS.STATUS(dogId), { status });
+    } catch (e) {
+      throw Error("Error al actualizar el estado del perro");
+    }
   }
 
   getShelterRequests(refugioId: string): Promise<AdoptionRequestListItem[]> {

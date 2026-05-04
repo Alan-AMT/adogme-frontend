@@ -137,8 +137,8 @@ export interface IShelterService {
   ): Promise<{ dog: Dog; uploadUrls: string[] }>;
   /** Elimina permanentemente un perro del refugio */
   deleteDog(id: string): Promise<void>;
-  /** Alterna publicación: no_disponible ↔ disponible */
-  togglePublish(id: string): Promise<Dog>;
+  /** Actualiza el estado de un perro */
+  updateDogStatus(dogId: string, status: DogStatus): Promise<void>;
 
   // ── Solicitudes ────────────────────────────────────────────────────────────
   getShelterRequests(refugioId: string): Promise<AdoptionRequestListItem[]>;

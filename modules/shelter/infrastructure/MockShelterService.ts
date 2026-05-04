@@ -17,6 +17,7 @@ import type {
   DogFilters,
   DogImage,
   DogListItem,
+  DogStatus,
   PaginatedDogs,
 } from "../../shared/domain/Dog";
 import { calcularEdadCategoria } from "../../shared/domain/Dog";
@@ -331,18 +332,11 @@ export class MockShelterService implements IShelterService {
     _dogs = _dogs.filter((d) => d.id !== id);
   }
 
-  async togglePublish(id: string): Promise<Dog> {
+  async updateDogStatus(dogId: string, status: DogStatus): Promise<void> {
     await delay(350);
-    const idx = _dogs.findIndex((d) => d.id === id);
-    if (idx === -1) throw new Error(`Perro ${id} no encontrado`);
-
-    const prev = _dogs[idx];
-    const nuevoEstado =
-      prev.estado === "disponible" ? "no_disponible" : "disponible";
-    const updated: Dog = { ...prev, estado: nuevoEstado };
-
-    _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
-    return { ...updated };
+    const idx = _dogs.findIndex((d) => d.id === dogId);
+    if (idx === -1) throw new Error(`Perro ${dogId} no encontrado`);
+    _dogs = _dogs.map((d, i) => i === idx ? { ...d, estado: status } : d);
   }
 
   // ── Solicitudes ─────────────────────────────────────────────────────────────
