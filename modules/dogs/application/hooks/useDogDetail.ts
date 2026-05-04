@@ -1,5 +1,5 @@
 // modules/dogs/application/hooks/useDogDetail.ts
-// Archivo 117 — carga un perro por slug y gestiona favoritos via favoritesStore.
+// Carga un perro por id y gestiona favoritos via favoritesStore.
 // La hidratación del store se hace aquí para que el corazón muestre el estado
 // correcto desde el primer render del componente que use este hook.
 "use client";
@@ -9,7 +9,7 @@ import type { Dog } from "../../../shared/domain/Dog";
 import { dogService } from "../../infrastructure/DogServiceFactory";
 import { useFavoritesStore } from "../../../shared/infrastructure/store/favoritesStore";
 
-export function useDogDetail(slug: string) {
+export function useDogDetail(dogId: string) {
   const [dog,     setDog]     = useState<Dog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
@@ -20,9 +20,8 @@ export function useDogDetail(slug: string) {
   // Hidratar el store una sola vez al montar (lee localStorage)
   useEffect(() => { hydrate(); }, [hydrate]);
 
-  // ── Fetch del perro por slug ──────────────────────────────────────────────
   useEffect(() => {
-    if (!slug) return;
+    if (!dogId) return;
     let cancelled = false;
 
     setLoading(true);
@@ -30,13 +29,13 @@ export function useDogDetail(slug: string) {
     setDog(null);
 
     dogService
-      .getDogBySlug(slug)
+      .getDogById(dogId)
       .then((d) => { if (!cancelled) setDog(d); })
       .catch((e: Error) => { if (!cancelled) setError(e.message); })
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [slug]);
+  }, [dogId]);
 
   // ── Toggle favorito (solo cuando tenemos el id del perro) ─────────────────
   const toggleFavorite = useCallback(() => {

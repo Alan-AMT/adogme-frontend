@@ -301,13 +301,27 @@ const FILTER_OPTIONS: { label: string; value: DogStatusFilter }[] = [
   { label: 'No disponibles', value: 'no_disponible' },
 ]
 
+// ─── Pagination helpers ───────────────────────────────────────────────────────
+
+function getPageRange(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages: (number | '...')[] = [1]
+  const left  = current - 2
+  const right = current + 2
+  if (left > 2)          pages.push('...')
+  for (let i = Math.max(2, left); i <= Math.min(total - 1, right); i++) pages.push(i)
+  if (right < total - 1) pages.push('...')
+  pages.push(total)
+  return pages
+}
+
 // ─── View ─────────────────────────────────────────────────────────────────────
 
 export default function ShelterDogsView() {
   const {
     dogs, isLoading, error,
-    statusFilter, search,
-    setStatusFilter, setSearch,
+    statusFilter, search, pagination,
+    setStatusFilter, setSearch, setPage,
     deleteDog, togglePublish,
   } = useShelterDogs()
   const toast = useToast()
@@ -421,32 +435,70 @@ export default function ShelterDogsView() {
           </p>
         </div>
       ) : (
-        <div className="sd-card sv-table-wrap">
-          <table className="sv-dogs-table">
-            <thead>
-              <tr>
-                <th style={{ width: 52 }}></th>
-                <th>Nombre</th>
-                <th>Raza / Edad / Talla</th>
-                <th>Estado</th>
-                <th style={{ textAlign: 'center' }}>Solicitudes</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dogs.map(dog => (
-                <DogRow
-                  key={dog.id}
-                  dog={dog}
-                  solicitudesCount={reqCountMap.get(dog.id) ?? 0}
-                  onDelete={handleDeleteRequest}
-                  onTogglePublish={handleTogglePublish}
-                  isToggling={togglingId === dog.id}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="sd-card sv-table-wrap">
+            <table className="sv-dogs-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 52 }}></th>
+                  <th>Nombre</th>
+                  <th>Raza / Edad / Talla</th>
+                  <th>Estado</th>
+                  <th style={{ textAlign: 'center' }}>Solicitudes</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dogs.map(dog => (
+                  <DogRow
+                    key={dog.id}
+                    dog={dog}
+                    solicitudesCount={reqCountMap.get(dog.id) ?? 0}
+                    onDelete={handleDeleteRequest}
+                    onTogglePublish={handleTogglePublish}
+                    isToggling={togglingId === dog.id}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {pagination.totalPages > 1 && (
+            <div className="sv-pagination">
+              <button
+                className={`sv-page-btn${pagination.page === 1 ? ' sv-page-btn--disabled' : ''}`}
+                onClick={() => setPage(pagination.page - 1)}
+                aria-label="Página anterior"
+              >
+                «
+              </button>
+
+              {getPageRange(pagination.page, pagination.totalPages).map((p, i) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${i}`} className="sv-page-ellipsis">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    className={`sv-page-btn${p === pagination.page ? ' sv-page-btn--active' : ''}`}
+                    onClick={() => setPage(p)}
+                    aria-label={`Página ${p}`}
+                    aria-current={p === pagination.page ? 'page' : undefined}
+                  >
+                    {p}
+                  </button>
+                ),
+              )}
+
+              <button
+                className={`sv-page-btn${pagination.page === pagination.totalPages ? ' sv-page-btn--disabled' : ''}`}
+                onClick={() => setPage(pagination.page + 1)}
+                aria-label="Página siguiente"
+              >
+                »
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* ConfirmDialog */}

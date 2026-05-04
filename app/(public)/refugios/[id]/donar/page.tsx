@@ -1,15 +1,15 @@
-// app/(public)/refugios/[slug]/donar/page.tsx
+// app/(public)/refugios/[id]/donar/page.tsx
 // Archivo 217 — Página pública de donación a un refugio.
 // Guards: refugio no encontrado → 404; donationConfig.aceptaDonaciones = false → 404
 import { notFound } from 'next/navigation'
-import { getShelterBySlug } from '@/modules/shared/mockData/shelters.mock'
+import { getShelterById } from '@/modules/shared/mockData/shelters.mock'
 import DonationView from '@/modules/donations/components/DonationView'
 
-type Params = Promise<{ slug: string }>
+type Params = Promise<{ id: string }>
 
 export async function generateMetadata({ params }: { params: Params }) {
-  const { slug } = await params
-  const shelter  = getShelterBySlug(slug)
+  const { id } = await params
+  const shelter  = getShelterById(id)
   if (!shelter) return { title: 'Donar | aDOGme' }
   return {
     title: `Donar a ${shelter.nombre} | aDOGme`,
@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: { params: Params }) {
 }
 
 export default async function DonationPage({ params }: { params: Params }) {
-  const { slug }  = await params
-  const shelter   = getShelterBySlug(slug)
+  const { id }  = await params
+  const shelter   = getShelterById(id)
 
   if (!shelter || !shelter.donationConfig.aceptaDonaciones) {
     notFound()

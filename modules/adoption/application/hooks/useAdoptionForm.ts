@@ -21,7 +21,6 @@ import { ADOPTION_STEPS } from '../../domain/AdoptionRequest'
 
 export interface UseAdoptionFormOptions {
   perroId:     string
-  perroSlug:   string
   perroNombre: string
   refugioId:   string
 }
@@ -101,7 +100,6 @@ function validateStep(step: number, data: Partial<AdoptionFormData>): Record<str
 
 export function useAdoptionForm({
   perroId,
-  perroSlug,
   perroNombre,
   refugioId,
 }: UseAdoptionFormOptions): UseAdoptionFormReturn {
@@ -141,7 +139,7 @@ export function useAdoptionForm({
   function persist(step: number, data: Partial<AdoptionFormData>): void {
     if (typeof window === 'undefined') return
     const now   = new Date().toISOString()
-    const draft: FormDraft = { perroId, perroSlug, perroNombre, step, data, savedAt: now }
+    const draft: FormDraft = { perroId, perroNombre, step, data, savedAt: now }
     localStorage.setItem(draftKey, JSON.stringify(draft))
     setSavedAt(now)
   }

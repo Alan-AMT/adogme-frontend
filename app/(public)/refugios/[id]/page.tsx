@@ -1,11 +1,11 @@
 import ShelterPublicView from "@/modules/home/components/ShelterPublicView";
-import { getShelterBySlug } from "@/modules/shared/mockData/shelters.mock";
+import { getShelterById } from "@/modules/shared/mockData/shelters.mock";
 
-type Params = Promise<{ slug: string }>;
+type Params = Promise<{ id: string }>;
 
 export async function generateMetadata({ params }: { params: Params }) {
-  const { slug } = await params;
-  const shelter = getShelterBySlug(slug);
+  const { id } = await params;
+  const shelter = getShelterById(id);
   if (!shelter) return { title: "Refugio | aDOGme" };
   return {
     title: `${shelter.nombre} | aDOGme`,
@@ -14,6 +14,6 @@ export async function generateMetadata({ params }: { params: Params }) {
 }
 
 export default async function Page({ params }: { params: Params }) {
-  const { slug } = await params;
-  return <ShelterPublicView slug={slug} />;
+  const { id } = await params;
+  return <ShelterPublicView id={id} />;
 }

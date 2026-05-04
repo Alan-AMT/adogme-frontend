@@ -207,7 +207,6 @@ export default function AdminShelterDetailView({ id }: AdminShelterDetailViewPro
               <InfoRow label="Correo"        value={shelter.correo} />
               <InfoRow label="Teléfono"      value={shelter.telefono || '—'} />
               <InfoRow label="Ubicación"     value={shelter.ubicacion || '—'} />
-              <InfoRow label="Slug"          value={shelter.slug} mono />
               <InfoRow label="Fecha de registro" value={formatDate(shelter.fechaRegistro)} />
             </div>
             {shelter.descripcion && (

@@ -14,7 +14,7 @@ const CITIES = ["Todos", "Gustavo A. Madero", "Coyoacán", "Iztapalapa", "Tlalpa
 
 function Card({ s }: { s: ShelterCard }) {
   return (
-    <Link href={`/refugios/${s.slug}`} className="sl-card">
+    <Link href={`/refugios/${s.id}`} className="sl-card">
       <div className="sl-card__media">
         <Image
           src={s.imagenPortada}

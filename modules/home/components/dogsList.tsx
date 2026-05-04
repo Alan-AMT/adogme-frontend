@@ -38,7 +38,7 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
 /* ── Card ────────────────────────────────────────────── */
 function DogCard({ dog }: { dog: DogCard }) {
   return (
-    <Link href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="home-dog-frame group">
+    <Link href={`/perros/${dog.id}`} className="home-dog-frame group">
       <div className="home-dog-panel">
 
         {/* Foto */}

@@ -1068,3 +1068,56 @@
   }
 }
 
+/* ─── Pagination ───────────────────────────────────────────────────────────── */
+.sv-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.25rem 0 0.5rem;
+}
+
+.sv-page-btn {
+  min-width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.65rem;
+  border: 1.5px solid #e4e4e7;
+  background: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #3f3f46;
+  cursor: pointer;
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sv-page-btn:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.sv-page-btn--active,
+.sv-page-btn--active:hover {
+  background: #ff6b6b;
+  border-color: #ff6b6b;
+  color: #fff;
+}
+
+.sv-page-btn--disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
+.sv-page-ellipsis {
+  min-width: 2.4rem;
+  height: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  color: #a1a1aa;
+  user-select: none;
+}
+

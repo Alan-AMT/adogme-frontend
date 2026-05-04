@@ -120,7 +120,7 @@ function MiniDogCard({
                 <li>✓ Carácter amigable y sociable</li>
               </ul>
               <Link
-                href={dog.nombre ? `/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}` : "/perros"}
+                href={dog.id ? `/perros/${dog.id}` : "/perros"}
                 className={styles["mini-card__back-cta"]}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -136,7 +136,7 @@ function MiniDogCard({
   // ── Card normal — sin badge ──────────────────────────────────────────────
   return (
     <Link
-      href={dog.nombre ? `/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}` : "/perros"}
+      href={dog.id ? `/perros/${dog.id}` : "/perros"}
       className={styles["mini-card"]}
       style={{ animationDelay: `${index * 60}ms` }}
     >

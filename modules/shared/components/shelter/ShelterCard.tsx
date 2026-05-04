@@ -22,7 +22,7 @@ function CardGrid({ shelter }: ShelterCardProps) {
 
   return (
     <Link
-      href={`/refugios/${shelter.slug}`}
+      href={`/refugios/${shelter.id}`}
       className="group"
       style={{
         display: 'block',
@@ -149,7 +149,7 @@ function CardCompact({ shelter }: ShelterCardProps) {
 
   return (
     <Link
-      href={`/refugios/${shelter.slug}`}
+      href={`/refugios/${shelter.id}`}
       className="group"
       style={{
         display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none',

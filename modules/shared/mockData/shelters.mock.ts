@@ -32,7 +32,6 @@ export const MOCK_SHELTERS: Shelter[] = [
     fechaRegistro: '2024-01-15',
     aprobado: true,
     status: 'approved',
-    slug: 'huellitas-mx',
     userOwnerId: '101',
     alcaldia: 'Gustavo A. Madero',
     direccionCompleta: 'Col. Industrial, Gustavo A. Madero, Ciudad de México',
@@ -67,7 +66,6 @@ export const MOCK_SHELTERS: Shelter[] = [
     fechaRegistro: '2024-02-20',
     aprobado: true,
     status: 'approved',
-    slug: 'patitas-libres',
     userOwnerId: '102',
     alcaldia: 'Coyoacán',
     direccionCompleta: 'Col. Del Carmen, Coyoacán, Ciudad de México',
@@ -102,7 +100,6 @@ export const MOCK_SHELTERS: Shelter[] = [
     fechaRegistro: '2024-03-10',
     aprobado: true,
     status: 'approved',
-    slug: 'amigos-4-patas',
     userOwnerId: '103',
     alcaldia: 'Iztapalapa',
     direccionCompleta: 'Col. Santa Martha Acatitla, Iztapalapa, Ciudad de México',
@@ -136,7 +133,6 @@ export const MOCK_SHELTERS: Shelter[] = [
     fechaRegistro: '2024-04-05',
     aprobado: true,
     status: 'approved',
-    slug: 'refugio-esperanza',
     userOwnerId: '104',
     alcaldia: 'Tlalpan',
     direccionCompleta: 'Col. Pedregal de San Nicolás, Tlalpan, Ciudad de México',
@@ -172,7 +168,6 @@ export const MOCK_SHELTERS: Shelter[] = [
     fechaRegistro: '2024-05-18',
     aprobado: true,
     status: 'approved',
-    slug: 'segunda-oportunidad',
     userOwnerId: '105',
     alcaldia: 'Benito Juárez',
     direccionCompleta: 'Col. Del Valle, Benito Juárez, Ciudad de México',
@@ -213,7 +208,6 @@ export const MOCK_PENDING_SHELTERS: Shelter[] = [
     fechaRegistro: '2025-01-05',
     aprobado: false,
     status: 'pending',
-    slug: 'patitas-del-norte',
     userOwnerId: '106',
     alcaldia: 'Azcapotzalco',
     direccionCompleta: null,
@@ -236,7 +230,6 @@ export const MOCK_PENDING_SHELTERS: Shelter[] = [
     fechaRegistro: '2025-01-12',
     aprobado: false,
     status: 'pending',
-    slug: 'rescate-xochimilco',
     userOwnerId: '107',
     alcaldia: 'Xochimilco',
     direccionCompleta: null,
@@ -259,7 +252,6 @@ export const MOCK_PENDING_SHELTERS: Shelter[] = [
     fechaRegistro: '2025-01-20',
     aprobado: false,
     status: 'pending',
-    slug: 'rescate-centro',
     userOwnerId: '108',
     alcaldia: 'Cuauhtémoc',
     direccionCompleta: null,
@@ -279,11 +271,8 @@ export const ALL_MOCK_SHELTERS = [...MOCK_SHELTERS, ...MOCK_PENDING_SHELTERS]
 export const getShelterById = (id: string): Shelter | undefined =>
   ALL_MOCK_SHELTERS.find(s => s.id === id)
 
-export const getShelterBySlug = (slug: string): Shelter | undefined =>
-  ALL_MOCK_SHELTERS.find(s => s.slug === slug)
-
 export const getShelterListItem = (s: Shelter): ShelterListItem => ({
-  id: s.id, nombre: s.nombre, slug: s.slug, alcaldia: s.alcaldia,
+  id: s.id, nombre: s.nombre, alcaldia: s.alcaldia,
   ubicacion: s.ubicacion, logo: s.logo, imagenPortada: s.imagenPortada,
   status: s.status, perrosDisponibles: s.perrosDisponibles,
   adopcionesRealizadas: s.adopcionesRealizadas, calificacion: s.calificacion,
