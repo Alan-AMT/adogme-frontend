@@ -85,6 +85,7 @@ export type DogUpdateData = Partial<DogCreateData> & {
 export interface IShelterService {
   // ── Perfil del refugio ─────────────────────────────────────────────────────
   getShelterProfile(refugioId: string): Promise<Shelter>;
+  getShelterById(id: string): Promise<Shelter>;
   updateShelterProfile(
     refugioId: string,
     data: Partial<Shelter>,

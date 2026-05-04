@@ -94,6 +94,10 @@ export class MockShelterService implements IShelterService {
     return { ...shelter };
   }
 
+  async getShelterById(id: string): Promise<Shelter> {
+    return this.getShelterProfile(id);
+  }
+
   async updateShelterProfile(
     refugioId: string,
     shelterUpdate: Partial<Shelter>,

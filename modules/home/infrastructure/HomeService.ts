@@ -5,7 +5,7 @@ import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import type { AdoptionStory } from "../domain/AdoptionStory";
 import type { DogCard } from "../domain/DogCard";
-import type { ShelterCard } from "../domain/ShelterCard";
+import type { PaginatedShelterCards } from "../domain/ShelterCard";
 import type { IHomeService } from "./IHomeService";
 
 // ─── API Response Types ───────────────────────────────────────────────────────
@@ -27,20 +27,22 @@ type DogFindAllCatalog = {
   shelterName: string | null;
 };
 
-type ShelterListItemApiResponse = {
+type ShelterFindAll = {
   id: string;
   name: string;
-  description: string | null;
-  email: string | null;
-  phone: string | null;
+  municipality: string | null;
+  fullAddress: string | null;
+  schedule: string | null;
   logo: string | null;
   imageUrl: string | null;
-  municipality: string | null;
-  createdAt: string | Date;
-  approved: boolean;
-  availableDogs?: number;
-  adoptionsDone?: number;
-  rating?: number;
+};
+
+type ShelterListPaginatedApiResponse = {
+  data: ShelterFindAll[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
 };
 
 // ─── Label helpers ────────────────────────────────────────────────────────────
@@ -88,29 +90,28 @@ export class HomeService implements IHomeService {
     }
   }
 
-  async getHomeSheltersList(): Promise<ShelterCard[]> {
+  async getHomeSheltersList(page: number, limit: number): Promise<PaginatedShelterCards> {
     try {
-      const { data } = await apiClient.get<ShelterListItemApiResponse[]>(
+      const { data } = await apiClient.get<ShelterListPaginatedApiResponse>(
         API_ENDPOINTS.SHELTERS.LIST,
-        { params: { limit: 5 } },
+        { params: { limit, page } },
       );
-      return data.map(s => ({
-        id:                   s.id,
-        nombre:               s.name,
-        ubicacion:            s.municipality ?? "",
-        alcaldia:             s.municipality ?? null,
-        descripcion:          s.description ?? "",
-        correo:               s.email ?? "",
-        telefono:             s.phone ?? "",
-        logo:                 s.logo ?? "",
-        imagenPortada:        s.imageUrl ?? "",
-        fechaRegistro:        new Date(s.createdAt).toLocaleDateString("en-GB"),
-        aprobado:             s.approved,
-        imageUrl:             s.imageUrl ?? "",
-        adopcionesRealizadas: s.adoptionsDone ?? 0,
-        perrosDisponibles:    s.availableDogs ?? 0,
-        calificacion:         s.rating,
-      }));
+      return {
+        data: data.data.map(s => ({
+          id:                   s.id,
+          nombre:               s.name,
+          alcaldia:             s.municipality,
+          logo:                 s.logo ?? "",
+          imagenPortada:        s.imageUrl ?? "",
+          adopcionesRealizadas: 0,
+          perrosDisponibles:    0,
+          calificacion:         undefined,
+        })),
+        total:      data.total,
+        page:       data.page,
+        totalPages: data.totalPages,
+        limit:      data.limit,
+      };
     } catch (e) {
       throw new Error("Error al obtener refugios", { cause: e });
     }

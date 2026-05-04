@@ -2,10 +2,10 @@
 
 import type { AdoptionStory } from "../domain/AdoptionStory";
 import type { DogCard } from "../domain/DogCard";
-import type { ShelterCard } from "../domain/ShelterCard";
+import type { PaginatedShelterCards } from "../domain/ShelterCard";
 
 export interface IHomeService {
   getMainDogs(): Promise<DogCard[]>;
-  getHomeSheltersList(): Promise<ShelterCard[]>;
+  getHomeSheltersList(page: number, limit: number): Promise<PaginatedShelterCards>;
   getLatestStories(): Promise<AdoptionStory[]>;
 }

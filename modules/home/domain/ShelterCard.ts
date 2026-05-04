@@ -3,17 +3,18 @@
 export interface ShelterCard {
   id: string
   nombre: string
-  ubicacion: string
-  alcaldia: string | null
-  descripcion: string
-  correo: string
-  telefono: string
   logo: string
   imagenPortada: string
-  fechaRegistro: string
-  aprobado: boolean
-  imageUrl: string
+  alcaldia: string | null
   adopcionesRealizadas: number
   perrosDisponibles: number
   calificacion?: number
+}
+
+export interface PaginatedShelterCards {
+  data: ShelterCard[]
+  total: number
+  page: number
+  totalPages: number
+  limit: number
 }
