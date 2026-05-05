@@ -1,42 +1,30 @@
 // modules/shared/infrastructure/api/endpoints.ts
 // ─────────────────────────────────────────────────────────────────────────────
 // ÚNICO lugar donde viven las URLs de la API.
-//
-// En PRODUCCIÓN: todos los MS están detrás de un único gateway.
-//   → cambia las constantes a `process.env.NEXT_PUBLIC_API_URL` y listo.
-//
-// En LOCAL: cada MS corre en su puerto, las URLs son absolutas y completas.
-//   → modificar acá cuando un puerto cambie.
-//
-// Cualquier servicio (AuthService, ApiDogService, MLService, etc.) usa
-// apiClient con la URL completa que viene de aquí. apiClient.baseURL = ""
-// porque las URLs ya son absolutas.
+// Los MockServices ignoran este archivo hoy.
+// Cuando NEXT_PUBLIC_USE_MOCK=false, SOLO este archivo cambia las rutas.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ─── Bases por microservicio ─────────────────────────────────────────────────
-// LOCAL: hardcodeamos el puerto de cada MS.
-// PROD:  reemplazar por process.env.NEXT_PUBLIC_API_URL (un único gateway).
-
-const BASE_AUTH       = "http://localhost:3006";  // auth-ms
-const BASE_APPLICANTS = "http://localhost:3009";  // applicants-ms
-const BASE_DOGS       = "http://localhost:3002";  // dogs-ms
-const BASE_SHELTERS   = "http://localhost:8080";  // shelters-ms
-const BASE_ADOPTIONS  = "http://localhost:3006";  // adoptions-ms (placeholder)
-const BASE_ML         = "http://localhost:8000";  // ml-ms
-const BASE_CHATBOT    = "http://localhost:8006";  // chatbot
-const BASE_ADMIN      = "http://localhost:3006";  // admin (placeholder)
-
-// ─── Endpoints ───────────────────────────────────────────────────────────────
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+const ML = process.env.NEXT_PUBLIC_ML_API_URL ?? "";
 
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN:            `${BASE_AUTH}/auth-ms/user/login`,
-    REGISTER:         `${BASE_AUTH}/auth-ms/adopter`,
-    REGISTER_SHELTER: `${BASE_AUTH}/auth-ms/shelter`,
-    REFRESH:          `${BASE_AUTH}/auth-ms/user/update-tokens`,
-    LOGOUT:           `${BASE_AUTH}/auth-ms/user/logout`,
-    FORGOT:           `${BASE_AUTH}/auth-ms/user/forgot-password`,
-    RESET:            `${BASE_AUTH}/auth-ms/user/reset-password`,
+    // LOGIN: `http://localhost:3001/auth-ms/user/login`,
+    // REGISTER: `http://localhost:3001/auth-ms/adopter`,
+    // REGISTER_SHELTER: `http://localhost:3001/auth-ms/shelter`,
+    // REFRESH: `http://localhost:3001/auth-ms/user/update-tokens`,
+    // LOGOUT: `http://localhost:3001/api/auth/logout`,
+    // FORGOT: `http://localhost:3001/api/auth/forgot-password`,
+    // RESET: `http://localhost:3001/api/auth/reset-password`,
+    // ME: `http://localhost:3001/api/auth/me`,
+    LOGIN: `${BASE}/auth-ms/user/login`,
+    REGISTER: `${BASE}/auth-ms/adopter`,
+    REGISTER_SHELTER: `${BASE}/auth-ms/shelter`,
+    REFRESH: `${BASE}/auth-ms/user/update-tokens`,
+    LOGOUT: `${BASE}/auth-ms/user/logout`,
+    FORGOT: `${BASE}/auth-ms/user/forgot-password`,
+    RESET: `${BASE}/auth-ms/user/reset-password`,
   },
 
   DOGS: {
@@ -100,43 +88,42 @@ export const API_ENDPOINTS = {
     //   `${BASE}/applications-ms/applications/shelter/${id}/stats`,
   },
 
-  // Conserva los nombres viejos por compatibilidad si algo aún los importa.
   RECOMMENDATIONS: {
-    GENERATE:     `${BASE_ML}/predict/compatible-dogs`,
-    BY_ADOPTANTE: `${BASE_ML}/api/ml/recommendations/me`,
-    QUIZ:         `${BASE_APPLICANTS}/api/quiz`,
-    QUIZ_DETAIL:  (id: number) => `${BASE_APPLICANTS}/api/quiz/${id}`,
+    GENERATE: `${ML}/predict/compatible-dogs`,
+    BY_ADOPTANTE: `${ML}/api/ml/recommendations/me`,
+    QUIZ: `${BASE}/api/quiz`,
+    QUIZ_DETAIL: (id: number) => `${BASE}/api/quiz/${id}`,
   },
 
   CHATBOT: {
-    MESSAGE: `${BASE_CHATBOT}/api/chatbot/message`,
-    HISTORY: `${BASE_CHATBOT}/api/chatbot/history`,
+    MESSAGE: `${BASE}/api/chatbot/message`,
+    HISTORY: `${BASE}/api/chatbot/history`,
   },
 
   FAVORITES: {
-    LIST:   `${BASE_APPLICANTS}/api/favorites`,
-    ADD:    (dogId: number) => `${BASE_APPLICANTS}/api/favorites/${dogId}`,
-    REMOVE: (dogId: number) => `${BASE_APPLICANTS}/api/favorites/${dogId}`,
+    LIST: `${BASE}/api/favorites`,
+    ADD: (dogId: number) => `${BASE}/api/favorites/${dogId}`,
+    REMOVE: (dogId: number) => `${BASE}/api/favorites/${dogId}`,
   },
 
   APPLICANTS: {
-    REGISTER: `${BASE_APPLICANTS}/applicants-ms/applicant`,
-    ME:       `${BASE_APPLICANTS}/applicants-ms/applicant/me`,
-    UPDATE:   (userId: string) => `${BASE_APPLICANTS}/applicants-ms/applicant/${userId}`,
+    REGISTER: `${BASE}/applicants-ms/applicant`,
+    ME: `${BASE}/applicants-ms/applicant/me`,
+    UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
     // TODO(backend): PATCH para persistir el user_vector cuando el endpoint exista.
     UPDATE_USER_VECTOR: (userId: string) =>
-      `${BASE_APPLICANTS}/applicants-ms/applicant/${userId}/user-vector`,
+      `${BASE}/applicants-ms/applicant/${userId}/user-vector`,
   },
 
   ADMIN: {
-    STATS:           `${BASE_ADMIN}/api/admin/stats`,
-    SHELTERS:        `${BASE_ADMIN}/api/admin/shelters`,
-    SHELTER_DETAIL:  (id: number) => `${BASE_ADMIN}/api/admin/shelters/${id}`,
-    APPROVE_SHELTER: (id: number) => `${BASE_ADMIN}/api/admin/shelters/${id}/approve`,
-    REJECT_SHELTER:  (id: number) => `${BASE_ADMIN}/api/admin/shelters/${id}/reject`,
-    DOGS:            `${BASE_ADMIN}/api/admin/dogs`,
-    DOG_DETAIL:      (id: number) => `${BASE_ADMIN}/api/admin/dogs/${id}`,
-    USERS:           `${BASE_ADMIN}/api/admin/users`,
-    CONTENT:         `${BASE_ADMIN}/api/admin/content`,
+    STATS: `${BASE}/api/admin/stats`,
+    SHELTERS: `${BASE}/api/admin/shelters`,
+    SHELTER_DETAIL: (id: number) => `${BASE}/api/admin/shelters/${id}`,
+    APPROVE_SHELTER: (id: number) => `${BASE}/api/admin/shelters/${id}/approve`,
+    REJECT_SHELTER: (id: number) => `${BASE}/api/admin/shelters/${id}/reject`,
+    DOGS: `${BASE}/api/admin/dogs`,
+    DOG_DETAIL: (id: number) => `${BASE}/api/admin/dogs/${id}`,
+    USERS: `${BASE}/api/admin/users`,
+    CONTENT: `${BASE}/api/admin/content`,
   },
 } as const;
