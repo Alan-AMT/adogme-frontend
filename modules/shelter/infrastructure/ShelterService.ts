@@ -10,10 +10,12 @@ import {
   Shelter,
 } from "@/modules/shared/domain";
 import {
+  DashboardDogsByStatus,
+  DashboardDogsStats,
+  DashboardRequestsStats,
   DogCreateData,
   DogUpdateData,
   IShelterService,
-  ShelterDashboardStats,
   ShelterUpdatePayload,
 } from "./IShelterService";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
@@ -25,6 +27,7 @@ import {
 import {
   CreateDogApiResponse,
   CreateDogWithUploadUrlsApiResponse,
+  DogListItemApiResponse,
   GetDogsApiResponse,
 } from "@/modules/dogs/infrastructure/ApiResponses";
 import {
@@ -395,22 +398,38 @@ export class ShelterService implements IShelterService {
     throw Error("Not implemented");
   }
 
-  getRecentRequests(
-    refugioId: string,
-    limit?: number,
-  ): Promise<AdoptionRequestListItem[]> {
-    try {
-      return Promise.resolve([]);
-    } catch (e) {
-      throw Error("Not implemented");
-    }
-  }
-
   getRequestById(id: string): Promise<AdoptionRequest | null> {
     throw Error("Not implemented");
   }
 
-  getDashboardStats(refugioId: string): Promise<ShelterDashboardStats> {
-    throw Error("Not implemented");
+  async getDashboardDogsStats(
+    shelterId: string,
+  ): Promise<DashboardDogsStats> {
+    try {
+      const { data } = await apiClient.get<{
+        recentDogs: DogListItemApiResponse[];
+        dogsByStatus: DashboardDogsByStatus;
+      }>(API_ENDPOINTS.DOGS.GET_SHELTER_DASHBOARD_DOGS_STATS(shelterId));
+      return {
+        recentDogs: data.recentDogs.map(parseDogListItem),
+        dogsByStatus: data.dogsByStatus,
+      };
+    } catch (e) {
+      throw Error("No se pudieron obtener las estadísticas de perros del refugio.");
+    }
+  }
+
+  async getDashboardRequestsStats(
+    _shelterId: string,
+  ): Promise<DashboardRequestsStats> {
+    // TODO: el endpoint del MS de solicitudes aún no está disponible.
+    // Cuando se implemente, llamar a
+    //   API_ENDPOINTS.ADOPTIONS.GET_SHELTER_DASHBOARD_REQUESTS_STATS(_shelterId)
+    return {
+      solicitudesPendientes: 0,
+      solicitudesEnRevision: 0,
+      solicitudesCompletadas: 0,
+      recentRequests: [],
+    };
   }
 }

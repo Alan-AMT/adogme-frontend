@@ -1,13 +1,18 @@
 // modules/shelter/application/hooks/useShelterDashboard.ts
-// Archivo 172 — Carga stats del refugio con selector de período reactivo.
+// Carga stats del dashboard del refugio en dos llamadas: perros y solicitudes.
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { ShelterDashboardStats } from '../../infrastructure/IShelterService'
+import type {
+  DashboardDogsByStatus,
+  DashboardDogsStats,
+  DashboardRequestsStats,
+} from '../../infrastructure/IShelterService'
 import type { AdoptionRequestListItem } from '../../../shared/domain/AdoptionRequest'
+import type { DogListItem } from '../../../shared/domain/Dog'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
-
-const CURRENT_SHELTER_ID = "1"
+import { useAuth } from '../../../shared/application/hooks/useAuth'
+import { useAuthStore } from '../../../shared/infrastructure/store/authStore'
 
 // ─── Tipos exportados ─────────────────────────────────────────────────────────
 
@@ -19,6 +24,8 @@ export interface ChartPoint {
 }
 
 // ─── Datos mock fijos para el LineChart (solicitudes por tiempo) ──────────────
+// Opción A: el filtrado por período se mantiene client-side mientras el
+// backend no exponga este dato.
 
 const SOLICITUDES_CHART: Record<DashboardPeriod, ChartPoint[]> = {
   week: [
@@ -41,46 +48,73 @@ const SOLICITUDES_CHART: Record<DashboardPeriod, ChartPoint[]> = {
   ],
 }
 
-// Donaciones acumuladas según el período seleccionado (mock)
-const DONACIONES_PERIODO: Record<DashboardPeriod, number> = {
-  week:   850,
-  month: 3200,
-  year: 28500,
+const EMPTY_DOGS_BY_STATUS: DashboardDogsByStatus = {
+  disponible: 0,
+  en_proceso: 0,
+  adoptado: 0,
+  no_disponible: 0,
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useShelterDashboard() {
-  const [stats,    setStats]    = useState<ShelterDashboardStats | null>(null)
-  const [requests, setRequests] = useState<AdoptionRequestListItem[]>([])
-  const [loading,  setLoading]  = useState(true)
-  const [error,    setError]    = useState<string | null>(null)
-  const [period,   setPeriod]   = useState<DashboardPeriod>('month')
+  const { shelterId } = useAuth()
+  const hydrate = useAuthStore((s) => s.hydrate)
+
+  const [dogsByStatus, setDogsByStatus]   = useState<DashboardDogsByStatus>(EMPTY_DOGS_BY_STATUS)
+  const [recentDogs, setRecentDogs]       = useState<DogListItem[]>([])
+  const [solicitudesPendientes, setSolicitudesPendientes] = useState(0)
+  const [solicitudesEnRevision, setSolicitudesEnRevision] = useState(0)
+  const [solicitudesCompletadas, setSolicitudesCompletadas] = useState(0)
+  const [recentRequests, setRecentRequests] = useState<AdoptionRequestListItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error,   setError]   = useState<string | null>(null)
+  const [period,  setPeriod]  = useState<DashboardPeriod>('month')
+
+  // Si la sesión no trae shelterId aún, intenta re-hidratar una vez.
+  useEffect(() => {
+    if (!shelterId) {
+      void hydrate()
+    }
+  }, [shelterId, hydrate])
 
   useEffect(() => {
+    if (!shelterId) {
+      setLoading(false)
+      setError('No se pudo identificar el refugio en tu sesión.')
+      return
+    }
+
     setLoading(true)
+    setError(null)
+
     Promise.all([
-      shelterService.getDashboardStats(CURRENT_SHELTER_ID),
-      shelterService.getRecentRequests(CURRENT_SHELTER_ID, 5),
+      shelterService.getDashboardDogsStats(shelterId),
+      shelterService.getDashboardRequestsStats(shelterId),
     ])
-      .then(([s, r]) => {
-        // Inyecta las donaciones del período seleccionado
-        setStats({ ...s, donacionesEstemes: DONACIONES_PERIODO[period] })
-        setRequests(r)
+      .then(([dogs, reqs]: [DashboardDogsStats, DashboardRequestsStats]) => {
+        setDogsByStatus(dogs.dogsByStatus)
+        setRecentDogs(dogs.recentDogs)
+        setSolicitudesPendientes(reqs.solicitudesPendientes)
+        setSolicitudesEnRevision(reqs.solicitudesEnRevision)
+        setSolicitudesCompletadas(reqs.solicitudesCompletadas)
+        setRecentRequests(reqs.recentRequests)
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period])
+  }, [shelterId])
 
   return {
-    stats,
-    requests,
+    dogsByStatus,
+    recentDogs,
+    solicitudesPendientes,
+    solicitudesEnRevision,
+    solicitudesCompletadas,
+    recentRequests,
     loading,
     error,
     period,
     setPeriod,
-    chartData:  SOLICITUDES_CHART[period],
-    refugioId:  CURRENT_SHELTER_ID,
+    chartData: SOLICITUDES_CHART[period],
   }
 }

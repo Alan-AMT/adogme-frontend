@@ -6,10 +6,11 @@
 // Los cambios son visibles durante la sesión; al recargar se pierde el estado.
 
 import type {
-  IShelterService,
-  ShelterDashboardStats,
+  DashboardDogsStats,
+  DashboardRequestsStats,
   DogCreateData,
   DogUpdateData,
+  IShelterService,
 } from "./IShelterService";
 import type { Shelter } from "../../shared/domain/Shelter";
 import type {
@@ -122,34 +123,40 @@ export class MockShelterService implements IShelterService {
 
   // ── Dashboard ───────────────────────────────────────────────────────────────
 
-  async getDashboardStats(refugioId: string): Promise<ShelterDashboardStats> {
+  async getDashboardDogsStats(
+    shelterId: string,
+  ): Promise<DashboardDogsStats> {
     await delay(250);
 
-    const dogs = _dogs.filter((d) => d.refugioId === refugioId);
-    const shelter = _shelters.find((s) => s.id === refugioId);
-    const reqs = _requests.filter((r) => r.refugioId === refugioId);
+    const dogs = _dogs.filter((d) => d.refugioId === shelterId);
+
+    const recentDogs = [...dogs]
+      .sort((a, b) =>
+        (b.fechaRegistro ?? "").localeCompare(a.fechaRegistro ?? ""),
+      )
+      .slice(0, 5)
+      .map(toDogListItem);
 
     return {
-      perrosTotales: dogs.length,
-      perrosDisponibles: dogs.filter((d) => d.estado === "disponible").length,
-      perrosEnProceso: dogs.filter((d) => d.estado === "en_proceso").length,
-      adopcionesTotales: shelter?.adopcionesRealizadas ?? 0,
-      solicitudesPendientes: reqs.filter((r) => r.estado === "pending").length,
-      solicitudesEnRevision: reqs.filter((r) => r.estado === "in_review")
-        .length,
-      calificacion: shelter?.calificacion,
+      recentDogs,
+      dogsByStatus: {
+        disponible: dogs.filter((d) => d.estado === "disponible").length,
+        en_proceso: dogs.filter((d) => d.estado === "en_proceso").length,
+        adoptado: dogs.filter((d) => d.estado === "adoptado").length,
+        no_disponible: dogs.filter((d) => d.estado === "no_disponible").length,
+      },
     };
   }
 
-  async getRecentRequests(
-    refugioId: string,
-    limit = 5,
-  ): Promise<AdoptionRequestListItem[]> {
+  async getDashboardRequestsStats(
+    shelterId: string,
+  ): Promise<DashboardRequestsStats> {
     await delay(200);
-    return _requests
-      .filter((r) => r.refugioId === refugioId)
+
+    const reqs = _requests.filter((r) => r.refugioId === shelterId);
+    const recentRequests: AdoptionRequestListItem[] = [...reqs]
       .sort((a, b) => b.fecha.localeCompare(a.fecha))
-      .slice(0, limit)
+      .slice(0, 5)
       .map((r) => ({
         id: r.id,
         adoptanteId: r.adoptanteId,
@@ -162,6 +169,13 @@ export class MockShelterService implements IShelterService {
         refugioNombre: r.refugioNombre,
         adoptanteNombre: r.adoptanteNombre,
       }));
+
+    return {
+      solicitudesPendientes: reqs.filter((r) => r.estado === "pending").length,
+      solicitudesEnRevision: reqs.filter((r) => r.estado === "in_review").length,
+      solicitudesCompletadas: reqs.filter((r) => r.estado === "approved").length,
+      recentRequests,
+    };
   }
 
   // ── Perros — lectura ────────────────────────────────────────────────────────

@@ -5,6 +5,7 @@ import type { Shelter } from "../../shared/domain/Shelter";
 import type {
   Dog,
   DogFilters,
+  DogListItem,
   DogSize,
   DogSex,
   DogStatus,
@@ -22,15 +23,23 @@ import type {
 
 // ─── Stats del dashboard ──────────────────────────────────────────────────────
 
-export interface ShelterDashboardStats {
-  perrosTotales: number;
-  perrosDisponibles: number;
-  perrosEnProceso: number;
-  adopcionesTotales: number;
+export interface DashboardDogsByStatus {
+  disponible: number;
+  en_proceso: number;
+  adoptado: number;
+  no_disponible: number;
+}
+
+export interface DashboardDogsStats {
+  recentDogs: DogListItem[];
+  dogsByStatus: DashboardDogsByStatus;
+}
+
+export interface DashboardRequestsStats {
   solicitudesPendientes: number;
   solicitudesEnRevision: number;
-  donacionesEstemes?: number; // MXN
-  calificacion?: number;
+  solicitudesCompletadas: number;
+  recentRequests: AdoptionRequestListItem[];
 }
 
 // ─── Input types para perfil del refugio ────────────────────────────────────
@@ -104,11 +113,10 @@ export interface IShelterService {
   ): Promise<{ shelter: Shelter; uploadUrls: string[] }>;
 
   // ── Dashboard ──────────────────────────────────────────────────────────────
-  getDashboardStats(refugioId: string): Promise<ShelterDashboardStats>;
-  getRecentRequests(
-    refugioId: string,
-    limit?: number,
-  ): Promise<AdoptionRequestListItem[]>;
+  getDashboardDogsStats(shelterId: string): Promise<DashboardDogsStats>;
+  getDashboardRequestsStats(
+    shelterId: string,
+  ): Promise<DashboardRequestsStats>;
 
   // ── Perros — lectura ───────────────────────────────────────────────────────
   getShelterDogs(

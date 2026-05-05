@@ -42,6 +42,8 @@ export const API_ENDPOINTS = {
     DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
     BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
+    GET_SHELTER_DASHBOARD_DOGS_STATS: (id: string) =>
+      `${BASE}/dogs-ms/dogs/shelter/${id}/stats`,
     CREATE: `${BASE}/dogs-ms/dog`,
     UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
     DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
@@ -56,7 +58,6 @@ export const API_ENDPOINTS = {
     BY_ID: (id: string) => `${BASE}/shelters-ms/shelter/${id}`,
     BY_OWNER: (userId: string) => `${BASE}/shelters-ms/shelter/user/${userId}`,
     UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    STATS: (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
     UPLOAD_LOGO: `${BASE}/api/media/shelter/logo`,
     UPLOAD_COVER: `${BASE}/api/media/shelter/cover`,
     // LIST: `http://localhost:3002/shelters-ms/shelters`,
@@ -82,6 +83,9 @@ export const API_ENDPOINTS = {
     CREATE: `${BASE}/api/adoptions`,
     UPDATE_STATUS: (id: number) => `${BASE}/api/adoptions/${id}/status`,
     CANCEL: (id: number) => `${BASE}/api/adoptions/${id}/cancel`,
+    // TODO: endpoint del MS de solicitudes — aún no está listo en backend.
+    // GET_SHELTER_DASHBOARD_REQUESTS_STATS: (id: string) =>
+    //   `${BASE}/applications-ms/applications/shelter/${id}/stats`,
   },
 
   RECOMMENDATIONS: {
