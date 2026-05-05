@@ -59,7 +59,6 @@ export interface DogImage {
 
 export interface Dog {
   id: string;
-  userOwnerId: string;
   refugioId: string;
 
   // Datos básicos

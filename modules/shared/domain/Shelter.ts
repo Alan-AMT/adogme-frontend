@@ -14,7 +14,6 @@ export type { DonationConfig };
 
 export interface Shelter {
   id: string;
-  userOwnerId: string;
   nombre: string;
   descripcion: string;
   correo: string;

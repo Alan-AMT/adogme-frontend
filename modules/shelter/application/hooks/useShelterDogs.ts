@@ -41,10 +41,10 @@ export interface UseShelterDogsReturn {
   refetch:         () => Promise<void>
 
   // Mutaciones
-  createDog:     (data: DogCreateData) => Promise<void>
-  updateDog:     (id: string, data: DogUpdateData) => Promise<void>
-  deleteDog:     (id: string) => Promise<void>
-  togglePublish: (id: string) => Promise<void>
+  createDog:        (data: DogCreateData) => Promise<void>
+  updateDog:        (id: string, data: DogUpdateData) => Promise<void>
+  deleteDog:        (id: string) => Promise<void>
+  updateDogStatus:  (dogId: string, status: DogStatus) => Promise<void>
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -151,10 +151,10 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [selectedDog, load])
 
-  const togglePublish = useCallback(async (id: string) => {
+  const updateDogStatus = useCallback(async (dogId: string, status: DogStatus) => {
     setError(null)
     try {
-      await shelterService.togglePublish(id)
+      await shelterService.updateDogStatus(dogId, status)
       await load()
     } catch (e: unknown) {
       setError((e as Error).message ?? 'Error al cambiar el estado del perro')
@@ -167,6 +167,6 @@ export function useShelterDogs(): UseShelterDogsReturn {
     statusFilter, search, pagination,
     setStatusFilter, setSearch, setSelectedDog, setPage,
     refetch: load,
-    createDog, updateDog, deleteDog, togglePublish,
+    createDog, updateDog, deleteDog, updateDogStatus,
   }
 }

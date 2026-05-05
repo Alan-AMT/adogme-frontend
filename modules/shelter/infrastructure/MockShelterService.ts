@@ -17,6 +17,7 @@ import type {
   DogFilters,
   DogImage,
   DogListItem,
+  DogStatus,
   PaginatedDogs,
 } from "../../shared/domain/Dog";
 import { calcularEdadCategoria } from "../../shared/domain/Dog";
@@ -94,10 +95,14 @@ export class MockShelterService implements IShelterService {
     return { ...shelter };
   }
 
+  async getShelterById(id: string): Promise<Shelter> {
+    return this.getShelterProfile(id);
+  }
+
   async updateShelterProfile(
     refugioId: string,
     shelterUpdate: Partial<Shelter>,
-  ): Promise<Shelter> {
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }> {
     await delay(400);
     const idx = _shelters.findIndex((s) => s.id === refugioId);
     if (idx === -1) throw new Error(`Refugio ${refugioId} no encontrado`);
@@ -112,7 +117,7 @@ export class MockShelterService implements IShelterService {
       updated,
       ..._shelters.slice(idx + 1),
     ];
-    return { ...updated };
+    return { shelter: { ...updated }, uploadUrls: [] };
   }
 
   // ── Dashboard ───────────────────────────────────────────────────────────────
@@ -216,7 +221,6 @@ export class MockShelterService implements IShelterService {
     const fotosUrls = payload.fotos ?? (payload.foto ? [payload.foto] : []);
     const newDog: Dog = {
       id: newDogId,
-      userOwnerId: "current-user",
       refugioId: payload.refugioId,
       nombre: payload.nombre,
       raza: payload.raza,
@@ -280,12 +284,18 @@ export class MockShelterService implements IShelterService {
     const prev = _dogs[idx];
     const edad = data.edad ?? prev.edad;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { fotos: _ignoredFotos, amountImagesToCreate, imagesToDelete, ...rest } =
-      data;
+    const {
+      fotos: _ignoredFotos,
+      amountImagesToCreate,
+      imagesToDelete,
+      ...rest
+    } = data;
 
     // 1) Aplicar borrado de imágenes existentes
     const idsAEliminar = new Set(imagesToDelete ?? []);
-    const fotosRestantes = prev.fotos.filter((img) => !idsAEliminar.has(img.id));
+    const fotosRestantes = prev.fotos.filter(
+      (img) => !idsAEliminar.has(img.id),
+    );
 
     // 2) Reservar N "slots" nuevos (mock: tras el upload, sus URLs serán reales)
     const nuevasFotos = Array.from(
@@ -322,18 +332,11 @@ export class MockShelterService implements IShelterService {
     _dogs = _dogs.filter((d) => d.id !== id);
   }
 
-  async togglePublish(id: string): Promise<Dog> {
+  async updateDogStatus(dogId: string, status: DogStatus): Promise<void> {
     await delay(350);
-    const idx = _dogs.findIndex((d) => d.id === id);
-    if (idx === -1) throw new Error(`Perro ${id} no encontrado`);
-
-    const prev = _dogs[idx];
-    const nuevoEstado =
-      prev.estado === "disponible" ? "no_disponible" : "disponible";
-    const updated: Dog = { ...prev, estado: nuevoEstado };
-
-    _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
-    return { ...updated };
+    const idx = _dogs.findIndex((d) => d.id === dogId);
+    if (idx === -1) throw new Error(`Perro ${dogId} no encontrado`);
+    _dogs = _dogs.map((d, i) => i === idx ? { ...d, estado: status } : d);
   }
 
   // ── Solicitudes ─────────────────────────────────────────────────────────────

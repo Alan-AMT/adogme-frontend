@@ -33,6 +33,18 @@ export interface ShelterDashboardStats {
   calificacion?: number;
 }
 
+// ─── Input types para perfil del refugio ────────────────────────────────────
+
+/**
+ * Payload para actualizar el perfil del refugio. Los flags `newLogo` y
+ * `newImageUrl` indican al backend que debe generar signed URLs para subir
+ * las imágenes nuevas (logo y/o portada).
+ */
+export type ShelterUpdatePayload = Partial<Shelter> & {
+  newLogo?: boolean | null;
+  newImageUrl?: boolean | null;
+};
+
 // ─── Input types para CRUD de perros ─────────────────────────────────────────
 
 /** Campos necesarios para crear un perro (refugioId requerido, estado lo asigna el servicio) */
@@ -85,10 +97,11 @@ export type DogUpdateData = Partial<DogCreateData> & {
 export interface IShelterService {
   // ── Perfil del refugio ─────────────────────────────────────────────────────
   getShelterProfile(refugioId: string): Promise<Shelter>;
+  getShelterById(id: string): Promise<Shelter>;
   updateShelterProfile(
     refugioId: string,
-    data: Partial<Shelter>,
-  ): Promise<Shelter>;
+    data: ShelterUpdatePayload,
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }>;
 
   // ── Dashboard ──────────────────────────────────────────────────────────────
   getDashboardStats(refugioId: string): Promise<ShelterDashboardStats>;
@@ -136,8 +149,8 @@ export interface IShelterService {
   ): Promise<{ dog: Dog; uploadUrls: string[] }>;
   /** Elimina permanentemente un perro del refugio */
   deleteDog(id: string): Promise<void>;
-  /** Alterna publicación: no_disponible ↔ disponible */
-  togglePublish(id: string): Promise<Dog>;
+  /** Actualiza el estado de un perro */
+  updateDogStatus(dogId: string, status: DogStatus): Promise<void>;
 
   // ── Solicitudes ────────────────────────────────────────────────────────────
   getShelterRequests(refugioId: string): Promise<AdoptionRequestListItem[]>;
