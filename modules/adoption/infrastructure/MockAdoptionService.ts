@@ -12,6 +12,7 @@ import {
 } from '../../shared/mockData/adoptions.mock'
 import { getDogById } from '../../shared/mockData/dogs.mock'
 import { dogService } from '../../dogs/infrastructure/DogServiceFactory'
+import { _setDogStatusForMocks } from '../../dogs/infrastructure/MockDogService'
 
 // ─── Copia mutable en memoria ─────────────────────────────────────────────────
 // Partimos del mock estático y cualquier submit/update opera aquí.
@@ -56,9 +57,11 @@ export class MockAdoptionService implements IAdoptionService {
 
     const dog = getDogById(payload.perroId)
 
-    // A1 — Verificar que el perro esté disponible antes de crear la solicitud
-    const liveDog = await dogService.getDogById(payload.perroId)
-    if (liveDog && liveDog.estado !== 'disponible') {
+    // A1 — Verificar que el perro esté disponible antes de crear la solicitud.
+    // Tratamos "no encontrado" igual que "no disponible": el adoptante no puede
+    // continuar y necesita un mensaje claro.
+    const liveDog = await dogService.getDogById(payload.perroId).catch(() => null)
+    if (!liveDog || liveDog.estado !== 'disponible') {
       throw new Error('Este perro ya no está disponible para adopción')
     }
 
@@ -87,14 +90,13 @@ export class MockAdoptionService implements IAdoptionService {
       // Datos enriquecidos del perro (join simulado)
       perroNombre:   dog?.nombre,
       perroFoto:     dog?.foto,
-      perroSlug:     dog ? dog.nombre.toLowerCase().replace(/\s+/g, '-') : undefined,
       refugioNombre: dog?.refugioNombre,
     }
 
     _requests = [newRequest, ..._requests]
 
     // A1 — Actualizar estado del perro a "en_proceso" tras crear la solicitud
-    await dogService.updateDog(payload.perroId, { estado: 'en_proceso' })
+    _setDogStatusForMocks(payload.perroId, 'en_proceso')
 
     return newRequest
   }
@@ -176,9 +178,9 @@ export class MockAdoptionService implements IAdoptionService {
 
     // A2 — Actualizar estado del perro según la resolución de la solicitud
     if (newStatus === 'approved') {
-      await dogService.updateDog(req.perroId, { estado: 'adoptado' })
+      _setDogStatusForMocks(req.perroId, 'adoptado')
     } else if (newStatus === 'rejected' || newStatus === 'cancelled') {
-      await dogService.updateDog(req.perroId, { estado: 'disponible' })
+      _setDogStatusForMocks(req.perroId, 'disponible')
     }
 
     return updated

@@ -48,11 +48,17 @@ export interface PersonalityTag {
   categoria: "caracter" | "socializacion" | "actividad" | "entrenamiento";
 }
 
+export interface DogImage {
+  id: string;
+  dogId: string;
+  url: string;
+  status: "pending" | "accepted" | "rejected";
+}
+
 // ─── Entidad completa ─────────────────────────────────────────────────────────
 
 export interface Dog {
   id: string;
-  userOwnerId: string;
   refugioId: string;
 
   // Datos básicos
@@ -84,7 +90,7 @@ export interface Dog {
 
   // Multimedia
   foto?: string;
-  fotos: string[];
+  fotos: DogImage[];
 
   // Campos calculados / solo frontend
   edadCategoria: AgeCategory;

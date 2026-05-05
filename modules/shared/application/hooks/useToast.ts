@@ -1,31 +1,23 @@
 // modules/shared/application/hooks/useToast.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// Shorthand semántico para disparar toasts desde cualquier componente.
-//
-// Uso:
+// Shorthand semántico sobre sonner. Uso:
 //   const toast = useToast()
-//   toast.success('Perro guardado en favoritos')
+//   toast.success('Perro guardado')
 //   toast.error('No se pudo enviar la solicitud')
-//   toast.info('Revisa tu correo para verificar tu cuenta')
-//   toast.warning('Este perro ya tiene una solicitud activa')
-//   toast.custom({ type: 'success', message: '...', duration: 8000 })
-// ─────────────────────────────────────────────────────────────────────────────
+//   toast.info('Revisa tu correo')
+//   toast.warning('Ya tienes una solicitud activa')
 'use client'
 
-import type { ToastType } from '../../infrastructure/store/uiStore'
-import { useUIStore } from '../../infrastructure/store/uiStore'
+import { toast } from 'sonner'
 
 export function useToast() {
-  const addToast = useUIStore(state => state.addToast)
-
-  const show = (type: ToastType, message: string, duration = 4000) =>
-    addToast({ type, message, duration })
-
   return {
-    success: (message: string, duration?: number) => show('success', message, duration),
-    error:   (message: string, duration?: number) => show('error',   message, duration ?? 5000),
-    info:    (message: string, duration?: number) => show('info',    message, duration),
-    warning: (message: string, duration?: number) => show('warning', message, duration),
-    custom:  addToast,
+    success: (message: string, duration?: number) =>
+      toast.success(message, { duration: duration ?? 4000 }),
+    error: (message: string, duration?: number) =>
+      toast.error(message, { duration: duration ?? 5000 }),
+    info: (message: string, duration?: number) =>
+      toast.info(message, { duration: duration ?? 4000 }),
+    warning: (message: string, duration?: number) =>
+      toast.warning(message, { duration: duration ?? 4000 }),
   }
 }

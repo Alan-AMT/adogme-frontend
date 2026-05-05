@@ -10,6 +10,7 @@
 "use client";
 
 import { useDogForm, DOG_FORM_STEPS } from "../application/hooks/useDogForm";
+import { useToast } from "@/modules/shared/application/hooks/useToast";
 import { Stepper } from "@/modules/shared/components/ui/Stepper";
 import { BasicDataStep } from "./dog-form-steps/BasicDataStep";
 import { PersonalityStep } from "./dog-form-steps/PersonalityStep";
@@ -33,6 +34,7 @@ const STEPPER_STEPS = DOG_FORM_STEPS.map((s) => ({
 
 export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
   const form = useDogForm(dogId);
+  const toast = useToast();
   const { user, hydrate } = useAuthStore();
   useEffect(() => {
     if (user && user.role == "shelter") {
@@ -58,6 +60,16 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
   const isEdit = dogId !== undefined;
   const isLast = form.currentStep === DOG_FORM_STEPS.length - 1;
 
+  async function handleSubmit(): Promise<boolean> {
+    const ok = await form.submit();
+    if (ok) {
+      toast.success(isEdit ? "Perro actualizado correctamente" : "Perro registrado correctamente");
+    } else {
+      toast.error("No se pudo guardar el perro. Revisa los datos e intenta de nuevo.");
+    }
+    return ok;
+  }
+
   // Pasos "completados" = todos los anteriores al actual
   const completedSteps = Array.from({ length: form.currentStep }, (_, i) => i);
 
@@ -70,6 +82,44 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
 
   function handleNext() {
     form.nextStep(); // valida el paso actual; si hay errores, no avanza
+  }
+
+  if (isEdit && form.isLoadingDog) {
+    return (
+      <div
+        className="sv-form"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1rem",
+          minHeight: 320,
+          padding: "3rem 1rem",
+        }}
+      >
+        <span
+          className="material-symbols-outlined"
+          style={{
+            fontSize: 36,
+            color: "#ff6b6b",
+            animation: "spin 1s linear infinite",
+          }}
+        >
+          progress_activity
+        </span>
+        <p
+          style={{
+            fontSize: "0.9rem",
+            fontWeight: 700,
+            color: "#52525b",
+            margin: 0,
+          }}
+        >
+          Cargando datos del perro...
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -172,8 +222,9 @@ export default function ShelterDogFormView({ dogId }: { dogId?: string }) {
           submitError={form.submitError}
           uploadProgress={form.uploadProgress}
           isDraft={form.isDraft}
-          submit={form.submit}
+          submit={handleSubmit}
           saveDraft={form.saveDraft}
+          prevStep={form.prevStep}
         />
       )}
 

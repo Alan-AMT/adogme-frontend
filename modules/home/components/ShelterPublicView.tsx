@@ -3,18 +3,54 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { getShelterBySlug } from "@/modules/shared/mockData/shelters.mock";
-import { MOCK_DOGS } from "@/modules/shared/mockData/dogs.mock";
+import { useEffect, useState } from "react";
+import type { DogListItem } from "@/modules/shared/domain/Dog";
+import type { Shelter } from "@/modules/shared/domain/Shelter";
+import { shelterService } from "@/modules/shelter/infrastructure/ShelterServiceFactory";
 import "../styles/shelterPublic.css";
 
 interface Props {
-  slug: string;
+  id: string;
 }
 
-export default function ShelterPublicView({ slug }: Props) {
-  const shelter = getShelterBySlug(slug);
+export default function ShelterPublicView({ id }: Props) {
+  const [shelter, setShelter] = useState<Shelter | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [dogs, setDogs] = useState<DogListItem[]>([]);
 
-  if (!shelter || !shelter.aprobado) {
+  useEffect(() => {
+    setLoading(true);
+    setError(false);
+    shelterService
+      .getShelterById(id)
+      .then(setShelter)
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    shelterService
+      .getShelterDogs(id, { estado: "disponible", page: 1, limit: 10 })
+      .then((res) => setDogs(res.data))
+      .catch(() => setDogs([]));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="sp-not-found">
+        <span
+          className="material-symbols-outlined sp-not-found__icon"
+          style={{ animation: "spin 1s linear infinite" }}
+        >
+          progress_activity
+        </span>
+        <p className="sp-not-found__desc">Cargando refugio…</p>
+      </div>
+    );
+  }
+
+  if (error || !shelter || !shelter.aprobado) {
     return (
       <div className="sp-not-found">
         <span className="material-symbols-outlined sp-not-found__icon">
@@ -33,10 +69,6 @@ export default function ShelterPublicView({ slug }: Props) {
       </div>
     );
   }
-
-  const dogs = MOCK_DOGS.filter(
-    (d) => d.refugioId === shelter.id && d.estado === "disponible"
-  );
 
   return (
     <div>
@@ -67,7 +99,10 @@ export default function ShelterPublicView({ slug }: Props) {
           <div className="sp-banner__info">
             <h1 className="sp-banner__name">{shelter.nombre}</h1>
             <p className="sp-banner__city">
-              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 15 }}
+              >
                 location_on
               </span>
               {shelter.alcaldia ?? shelter.ubicacion}
@@ -116,7 +151,16 @@ export default function ShelterPublicView({ slug }: Props) {
               <div className="sp-dogs-header">
                 <div className="sp-dogs-header__left">
                   <span className="sp-dogs-header__count">
-                    <span className="material-symbols-outlined" style={{ fontSize: 11, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 11" }}>pets</span>
+                    <span
+                      className="material-symbols-outlined"
+                      style={{
+                        fontSize: 11,
+                        fontVariationSettings:
+                          "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 11",
+                      }}
+                    >
+                      pets
+                    </span>
                     {dogs.length} disponible{dogs.length !== 1 ? "s" : ""}
                   </span>
                   <h2 className="sp-section-title">
@@ -125,15 +169,24 @@ export default function ShelterPublicView({ slug }: Props) {
                 </div>
                 <Link href="/perros" className="sp-dogs-all-link">
                   Ver todos
-                  <span className="material-symbols-outlined" style={{ fontSize: 15 }}>arrow_forward</span>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 15 }}
+                  >
+                    arrow_forward
+                  </span>
                 </Link>
               </div>
               <div className="sp-dogs-grid">
                 {dogs.map((dog) => (
-                  <Link key={dog.id} href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, '-')}`} className="sp-dog-card">
+                  <Link
+                    key={dog.id}
+                    href={`/perros/${dog.id}`}
+                    className="sp-dog-card"
+                  >
                     <div className="sp-dog-card__media">
                       <Image
-                        src={dog.foto ?? ''}
+                        src={dog.foto ?? ""}
                         alt={dog.nombre}
                         fill
                         className="sp-dog-card__img"
@@ -158,11 +211,15 @@ export default function ShelterPublicView({ slug }: Props) {
             <h3 className="sp-contact-title">Contacto</h3>
 
             <a href={`tel:${shelter.telefono}`} className="sp-contact-item">
-              <span className="material-symbols-outlined sp-contact-icon">call</span>
+              <span className="material-symbols-outlined sp-contact-icon">
+                call
+              </span>
               {shelter.telefono}
             </a>
             <a href={`mailto:${shelter.correo}`} className="sp-contact-item">
-              <span className="material-symbols-outlined sp-contact-icon">mail</span>
+              <span className="material-symbols-outlined sp-contact-icon">
+                mail
+              </span>
               {shelter.correo}
             </a>
             <div className="sp-contact-item">
@@ -183,7 +240,10 @@ export default function ShelterPublicView({ slug }: Props) {
                       rel="noopener noreferrer"
                       className="sp-social-link"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: 13 }}
+                      >
                         photo_camera
                       </span>
                       Instagram
@@ -196,7 +256,10 @@ export default function ShelterPublicView({ slug }: Props) {
                       rel="noopener noreferrer"
                       className="sp-social-link"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: 13 }}
+                      >
                         thumb_up
                       </span>
                       Facebook
@@ -209,7 +272,10 @@ export default function ShelterPublicView({ slug }: Props) {
                       rel="noopener noreferrer"
                       className="sp-social-link"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: 13 }}
+                      >
                         language
                       </span>
                       Sitio web
@@ -228,11 +294,14 @@ export default function ShelterPublicView({ slug }: Props) {
                 {shelter.donationConfig.descripcionCausa}
               </p>
               <Link
-                href={`/refugios/${shelter.slug}/donar`}
+                href={`/refugios/${shelter.id}/donar`}
                 className="sp-donate-btn"
               >
                 Donar ahora
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 16 }}
+                >
                   favorite
                 </span>
               </Link>

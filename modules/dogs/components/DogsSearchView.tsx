@@ -12,6 +12,7 @@ import type {
   EnergyLevel,
 } from "../../shared/domain/Dog";
 import { useDogs } from "../application/hooks/useDogs";
+import { BreedSelect } from "@/modules/shared/components/ui/BreedSelect";
 import "../styles/catalog.css";
 
 /* ── Helpers ── */
@@ -56,36 +57,10 @@ function Chip({ label, active, onClick }: ChipProps) {
   );
 }
 
-type SelectProps = {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (v: string) => void;
-};
-function FilterSelect({ label, value, options, onChange }: SelectProps) {
-  return (
-    <div className="cat-select-wrap">
-      <label className="cat-select-label">{label}</label>
-      <select
-        className="cat-select"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        <option value="">Todos</option>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
 /* ── Dog Card ── */
 function DogCard({ dog }: { dog: DogListItem }) {
   return (
-    <Link href={`/perros/${dog.nombre.toLowerCase().replace(/\s+/g, "-")}`} className="cat-dog-frame group">
+    <Link href={`/perros/${dog.id}`} className="cat-dog-frame group">
       <div className="cat-dog-panel">
         {/* Imagen */}
         <div className="cat-dog-media">
@@ -216,8 +191,6 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
     clearFilters,
     searchText,
     setSearchText,
-    razas,
-    refugios,
     activeCount,
     totalResults,
     pagination,
@@ -379,27 +352,16 @@ export default function DogsSearchView({ initialFilters }: { initialFilters?: Do
 
       {/* Raza */}
       <div className="cat-filter-group">
-        <FilterSelect
-          label="Raza"
-          value={filters.raza ?? ""}
-          options={razas.map((r) => ({ value: r, label: r }))}
-          onChange={(v) => setFilter("raza", v || undefined)}
-        />
-      </div>
-
-      {/* Refugio */}
-      <div className="cat-filter-group">
-        <FilterSelect
-          label="Refugio"
-          value={filters.refugioId?.toString() ?? ""}
-          options={refugios.map((r) => ({
-            value: r.id.toString(),
-            label: r.nombre,
-          }))}
-          onChange={(v) =>
-            setFilter("refugioId", v || undefined)
-          }
-        />
+        <div className="cat-select-wrap">
+          <label className="cat-select-label" htmlFor="filter-raza">Raza</label>
+          <BreedSelect
+            id="filter-raza"
+            value={filters.raza ?? ""}
+            onChange={(v) => setFilter("raza", v || undefined)}
+            placeholder="Buscar raza..."
+            allowCreate={false}
+          />
+        </div>
       </div>
 
       {/* Clear */}

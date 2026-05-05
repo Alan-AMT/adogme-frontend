@@ -14,7 +14,6 @@ export type { DonationConfig };
 
 export interface Shelter {
   id: string;
-  userOwnerId: string;
   nombre: string;
   descripcion: string;
   correo: string;
@@ -32,7 +31,6 @@ export interface Shelter {
   status: ShelterStatus;
 
   // Campos enriquecidos (del backend extendido o calculados)
-  slug: string; // para URLs amigables: /refugios/huellitas-mx
   redesSociales?: {
     facebook?: string;
     instagram?: string;
@@ -55,7 +53,6 @@ export type ShelterListItem = Pick<
   Shelter,
   | "id"
   | "nombre"
-  | "slug"
   | "alcaldia"
   | "ubicacion"
   | "logo"

@@ -1,33 +1,123 @@
 // modules/home/infrastructure/HomeService.ts
-// Implementación real — usa apiClient + API_ENDPOINTS para consistencia.
 
-import { apiClient }     from "@/modules/shared/infrastructure/api/apiClient";
+import { calcularEdadCategoria } from "@/modules/shared/domain";
+import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import type { AdoptionStory } from "../domain/AdoptionStory";
-import type { DogCard }       from "../domain/DogCard";
-import type { ShelterCard }   from "../domain/ShelterCard";
-import type { IHomeService }  from "./IHomeService";
+import type { DogCard } from "../domain/DogCard";
+import type { PaginatedShelterCards } from "../domain/ShelterCard";
+import type { IHomeService } from "./IHomeService";
 
-const HOME_LIMITS = {
-  dogs:     4,
-  shelters: 5,
-  stories:  3,
-} as const;
+// ─── API Response Types ───────────────────────────────────────────────────────
+
+type DogFindAllCatalog = {
+  id: string;
+  shelterId: string;
+  name: string;
+  age: number;
+  breed: string;
+  size: string;
+  sex: string;
+  energyLevel: string;
+  status: string;
+  photo: string | null;
+  goodWithKids: boolean;
+  goodWithDogs: boolean;
+  needsYard: boolean;
+  shelterName: string | null;
+};
+
+type ShelterFindAll = {
+  id: string;
+  name: string;
+  municipality: string | null;
+  fullAddress: string | null;
+  schedule: string | null;
+  logo: string | null;
+  imageUrl: string | null;
+};
+
+type ShelterListPaginatedApiResponse = {
+  data: ShelterFindAll[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+};
+
+// ─── Label helpers ────────────────────────────────────────────────────────────
+
+function nivelEnergiaLabel(nivel: string): string {
+  const map: Record<string, string> = {
+    baja: "Bajo", moderada: "Moderado", alta: "Alto", muy_alta: "Muy alto",
+  };
+  return map[nivel] ?? nivel;
+}
+
+function estadoLabel(estado: string): string {
+  const map: Record<string, string> = {
+    disponible: "Disponible",
+    en_proceso: "En adopción",
+    adoptado: "Adoptado",
+    no_disponible: "No disponible",
+  };
+  return map[estado] ?? estado;
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 export class HomeService implements IHomeService {
   async getMainDogs(): Promise<DogCard[]> {
-    // El backend aún no soporta paginación: traemos todos y recortamos en cliente.
-    const { data } = await apiClient.get<DogCard[]>(API_ENDPOINTS.DOGS.LIST);
-    return data.slice(0, HOME_LIMITS.dogs);
+    try {
+      const { data } = await apiClient.get<DogFindAllCatalog[]>(
+        API_ENDPOINTS.DOGS.PORTRAIT,
+      );
+      return data.map(d => ({
+        id:              d.id,
+        nombre:          d.name,
+        raza:            d.breed,
+        edad:            Math.max(1, Math.round(d.age / 12)),
+        tamano:          d.size.charAt(0).toUpperCase() + d.size.slice(1),
+        nivelEnergia:    nivelEnergiaLabel(d.energyLevel),
+        estado:          estadoLabel(d.status),
+        imageUrl:        d.photo ?? "",
+        tamanoRaw:       d.size,
+        nivelEnergiaRaw: d.energyLevel,
+        edadCat:         calcularEdadCategoria(d.age),
+      }));
+    } catch (e) {
+      throw new Error("Error al obtener perros destacados", { cause: e });
+    }
   }
 
-  async getHomeSheltersList(): Promise<ShelterCard[]> {
-    const { data } = await apiClient.get<ShelterCard[]>(API_ENDPOINTS.SHELTERS.LIST);
-    return data.slice(0, HOME_LIMITS.shelters);
+  async getHomeSheltersList(page: number, limit: number): Promise<PaginatedShelterCards> {
+    try {
+      const { data } = await apiClient.get<ShelterListPaginatedApiResponse>(
+        API_ENDPOINTS.SHELTERS.LIST,
+        { params: { limit, page } },
+      );
+      return {
+        data: data.data.map(s => ({
+          id:                   s.id,
+          nombre:               s.name,
+          alcaldia:             s.municipality,
+          logo:                 s.logo ?? "",
+          imagenPortada:        s.imageUrl ?? "",
+          adopcionesRealizadas: 0,
+          perrosDisponibles:    0,
+          calificacion:         undefined,
+        })),
+        total:      data.total,
+        page:       data.page,
+        totalPages: data.totalPages,
+        limit:      data.limit,
+      };
+    } catch (e) {
+      throw new Error("Error al obtener refugios", { cause: e });
+    }
   }
 
   async getLatestStories(): Promise<AdoptionStory[]> {
-    // TODO: agregar STORIES en API_ENDPOINTS cuando exista el microservicio.
-    return [];
+    throw new Error("Not implemented");
   }
 }

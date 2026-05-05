@@ -1,4 +1,5 @@
 // modules/auth/infrastructure/AuthService.ts
+import axios from "axios";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
@@ -18,11 +19,30 @@ export class AuthService implements IAuthService {
       email: credentials.email,
       password: credentials.password,
     };
-    const res = await apiClient.post<{
-      user: AuthResponse["user"];
-      accessToken: string;
-      refreshToken: string;
-    }>(API_ENDPOINTS.AUTH.LOGIN, payload);
+
+    let res;
+    try {
+      res = await apiClient.post<{
+        user: AuthResponse["user"];
+        accessToken: string;
+        refreshToken: string;
+      }>(API_ENDPOINTS.AUTH.LOGIN, payload);
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        const status = e.response?.status;
+        if (status === 401 || status === 400)
+          throw new Error(
+            "Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo.",
+          );
+        if (status === 404)
+          throw new Error("No encontramos una cuenta con ese correo.");
+        if (status === 429)
+          throw new Error(
+            "Demasiados intentos fallidos. Espera unos minutos antes de intentar de nuevo.",
+          );
+      }
+      throw new Error("No pudimos iniciar sesión. Intenta de nuevo más tarde.");
+    }
 
     const { user, accessToken, refreshToken } = res.data;
 

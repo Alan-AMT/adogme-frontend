@@ -4,6 +4,7 @@
 
 import type {
   Dog,
+  DogImage,
   DogListItem,
   PersonalityTag,
   Vaccination,
@@ -12,7 +13,16 @@ import { calcularEdadCategoria } from "../domain/Dog";
 
 // ─── Rutas de imágenes por raza ───────────────────────────────────────────────
 
-const IMGS = {
+function toMockImages(urls: string[]): DogImage[] {
+  return urls.map((url, i) => ({
+    id: `mock-img-${url.split("/").pop()}-${i}`,
+    dogId: "",
+    url,
+    status: "accepted" as const,
+  }));
+}
+
+const IMG_URLS = {
   labrador: ["/assets/dogs/dog1.jpg"],
   beagle: ["/assets/dogs/dog2.jpg"],
   husky: ["/assets/dogs/dog3.jpg"],
@@ -21,6 +31,17 @@ const IMGS = {
   golden: ["/assets/dogs/dog6.jpg"],
   salchicha: ["/assets/dogs/dog7.jpg"],
   bulldog: ["/assets/dogs/dog8.jpg"],
+};
+
+const IMGS: Record<keyof typeof IMG_URLS, DogImage[]> = {
+  labrador: toMockImages(IMG_URLS.labrador),
+  beagle: toMockImages(IMG_URLS.beagle),
+  husky: toMockImages(IMG_URLS.husky),
+  mestizo: toMockImages(IMG_URLS.mestizo),
+  pitbull: toMockImages(IMG_URLS.pitbull),
+  golden: toMockImages(IMG_URLS.golden),
+  salchicha: toMockImages(IMG_URLS.salchicha),
+  bulldog: toMockImages(IMG_URLS.bulldog),
 };
 
 // ─── Logos de refugios ────────────────────────────────────────────────────────
@@ -57,7 +78,12 @@ const TAGS: Record<string, PersonalityTag> = {
   },
   curioso: { id: "4", label: "Curioso", icon: "search", categoria: "caracter" },
   leal: { id: "5", label: "Leal", icon: "favorite", categoria: "caracter" },
-  energico: { id: "6", label: "Enérgico", icon: "bolt", categoria: "actividad" },
+  energico: {
+    id: "6",
+    label: "Enérgico",
+    icon: "bolt",
+    categoria: "actividad",
+  },
   relajado: {
     id: "7",
     label: "Relajado",
@@ -70,7 +96,12 @@ const TAGS: Record<string, PersonalityTag> = {
     icon: "pets",
     categoria: "socializacion",
   },
-  timido: { id: "9", label: "Tímido", icon: "hide", categoria: "socializacion" },
+  timido: {
+    id: "9",
+    label: "Tímido",
+    icon: "hide",
+    categoria: "socializacion",
+  },
   independiente: {
     id: "10",
     label: "Independiente",
@@ -171,7 +202,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "1",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Max",
     raza: "Labrador",
@@ -194,7 +224,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.labrador[0],
+    foto: IMGS.labrador[0].url,
     fotos: IMGS.labrador,
     edadCategoria: calcularEdadCategoria(24),
     compatibilidad: 0,
@@ -204,7 +234,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "2",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Luna",
     raza: "Beagle",
@@ -227,7 +256,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_BASICAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.beagle[0],
+    foto: IMGS.beagle[0].url,
     fotos: IMGS.beagle,
     edadCategoria: calcularEdadCategoria(8),
     compatibilidad: 0,
@@ -237,7 +266,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "3",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Thor",
     raza: "Husky Siberiano",
@@ -260,7 +288,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_INCOMPLETAS,
     salud: "Vacunado, necesita refuerzo de leptospirosis",
-    foto: IMGS.husky[0],
+    foto: IMGS.husky[0].url,
     fotos: IMGS.husky,
     edadCategoria: calcularEdadCategoria(36),
     compatibilidad: 0,
@@ -270,7 +298,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "4",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Coco",
     raza: "Mestizo",
@@ -293,7 +320,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, desparasitada, esterilizada",
-    foto: IMGS.mestizo[0],
+    foto: IMGS.mestizo[0].url,
     fotos: IMGS.mestizo,
     edadCategoria: calcularEdadCategoria(60),
     compatibilidad: 0,
@@ -303,7 +330,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "5",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Rocky",
     raza: "Pitbull",
@@ -326,7 +352,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.pitbull[0],
+    foto: IMGS.pitbull[0].url,
     fotos: IMGS.pitbull,
     edadCategoria: calcularEdadCategoria(18),
     compatibilidad: 0,
@@ -336,7 +362,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "6",
-    userOwnerId: "owner-1",
     refugioId: "1",
     nombre: "Bella",
     raza: "Golden Retriever",
@@ -358,7 +383,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.golden[0],
+    foto: IMGS.golden[0].url,
     fotos: IMGS.golden,
     edadCategoria: calcularEdadCategoria(48),
     compatibilidad: 0,
@@ -371,7 +396,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "7",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Churro",
     raza: "Salchicha",
@@ -394,7 +418,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_INCOMPLETAS,
     salud: "Primera vacuna aplicada, pendiente refuerzo",
-    foto: IMGS.salchicha[0],
+    foto: IMGS.salchicha[0].url,
     fotos: IMGS.salchicha,
     edadCategoria: calcularEdadCategoria(6),
     compatibilidad: 0,
@@ -404,7 +428,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "8",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Nala",
     raza: "Bulldog Francés",
@@ -427,7 +450,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, desparasitada, problema respiratorio leve",
-    foto: IMGS.bulldog[0],
+    foto: IMGS.bulldog[0].url,
     fotos: IMGS.bulldog,
     edadCategoria: calcularEdadCategoria(30),
     compatibilidad: 0,
@@ -437,7 +460,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "9",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Lobo",
     raza: "Mestizo",
@@ -460,7 +482,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "mediano",
     vacunas: VAC_BASICAS,
     salud: "Vacunado, artritis leve en patas traseras",
-    foto: IMGS.mestizo[0],
+    foto: IMGS.mestizo[0].url,
     fotos: IMGS.mestizo,
     edadCategoria: calcularEdadCategoria(84),
     compatibilidad: 0,
@@ -470,7 +492,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "10",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Mia",
     raza: "Beagle",
@@ -493,7 +514,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.beagle[0],
+    foto: IMGS.beagle[0].url,
     fotos: IMGS.beagle,
     edadCategoria: calcularEdadCategoria(12),
     compatibilidad: 0,
@@ -503,7 +524,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "11",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Simba",
     raza: "Labrador",
@@ -526,7 +546,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_BASICAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.labrador[0],
+    foto: IMGS.labrador[0].url,
     fotos: IMGS.labrador,
     edadCategoria: calcularEdadCategoria(15),
     compatibilidad: 0,
@@ -536,7 +556,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "12",
-    userOwnerId: "owner-2",
     refugioId: "2",
     nombre: "Canela",
     raza: "Golden Retriever",
@@ -559,7 +578,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, hipotiroidismo controlado con medicación",
-    foto: IMGS.golden[0],
+    foto: IMGS.golden[0].url,
     fotos: IMGS.golden,
     edadCategoria: calcularEdadCategoria(96),
     compatibilidad: 0,
@@ -572,7 +591,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "13",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Dante",
     raza: "Pitbull",
@@ -595,7 +613,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.pitbull[0],
+    foto: IMGS.pitbull[0].url,
     fotos: IMGS.pitbull,
     edadCategoria: calcularEdadCategoria(20),
     compatibilidad: 0,
@@ -605,7 +623,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "14",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Fiona",
     raza: "Husky Siberiano",
@@ -633,7 +650,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_BASICAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.husky[0],
+    foto: IMGS.husky[0].url,
     fotos: IMGS.husky,
     edadCategoria: calcularEdadCategoria(10),
     compatibilidad: 0,
@@ -643,7 +660,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "15",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Pepito",
     raza: "Salchicha",
@@ -666,7 +682,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_INCOMPLETAS,
     salud: "Primera vacuna aplicada",
-    foto: IMGS.salchicha[0],
+    foto: IMGS.salchicha[0].url,
     fotos: IMGS.salchicha,
     edadCategoria: calcularEdadCategoria(5),
     compatibilidad: 0,
@@ -676,7 +692,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "16",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Princesa",
     raza: "Bulldog Francés",
@@ -699,7 +714,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, esterilizada",
-    foto: IMGS.bulldog[0],
+    foto: IMGS.bulldog[0].url,
     fotos: IMGS.bulldog,
     edadCategoria: calcularEdadCategoria(42),
     compatibilidad: 0,
@@ -709,7 +724,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "17",
-    userOwnerId: "owner-3",
     refugioId: "3",
     nombre: "Bruno",
     raza: "Labrador",
@@ -731,7 +745,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.labrador[0],
+    foto: IMGS.labrador[0].url,
     fotos: IMGS.labrador,
     edadCategoria: calcularEdadCategoria(55),
     compatibilidad: 0,
@@ -744,7 +758,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "18",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Kira",
     raza: "Mestizo",
@@ -767,7 +780,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "mediano",
     vacunas: VAC_BASICAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.mestizo[0],
+    foto: IMGS.mestizo[0].url,
     fotos: IMGS.mestizo,
     edadCategoria: calcularEdadCategoria(14),
     compatibilidad: 0,
@@ -777,7 +790,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "19",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Oreo",
     raza: "Bulldog Francés",
@@ -800,7 +812,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_INCOMPLETAS,
     salud: "Primera vacuna esta semana",
-    foto: IMGS.bulldog[0],
+    foto: IMGS.bulldog[0].url,
     fotos: IMGS.bulldog,
     edadCategoria: calcularEdadCategoria(3),
     compatibilidad: 0,
@@ -810,7 +822,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "20",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Sasha",
     raza: "Husky Siberiano",
@@ -833,7 +844,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, esterilizada",
-    foto: IMGS.husky[0],
+    foto: IMGS.husky[0].url,
     fotos: IMGS.husky,
     edadCategoria: calcularEdadCategoria(72),
     compatibilidad: 0,
@@ -843,7 +854,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "21",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Rex",
     raza: "Pitbull",
@@ -865,7 +875,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.pitbull[0],
+    foto: IMGS.pitbull[0].url,
     fotos: IMGS.pitbull,
     edadCategoria: calcularEdadCategoria(18),
     compatibilidad: 0,
@@ -875,7 +885,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "22",
-    userOwnerId: "owner-4",
     refugioId: "4",
     nombre: "Gala",
     raza: "Golden Retriever",
@@ -898,7 +907,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.golden[0],
+    foto: IMGS.golden[0].url,
     fotos: IMGS.golden,
     edadCategoria: calcularEdadCategoria(36),
     compatibilidad: 0,
@@ -911,7 +920,6 @@ export const MOCK_DOGS: Dog[] = [
 
   {
     id: "23",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Toby",
     raza: "Beagle",
@@ -934,7 +942,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.beagle[0],
+    foto: IMGS.beagle[0].url,
     fotos: IMGS.beagle,
     edadCategoria: calcularEdadCategoria(48),
     compatibilidad: 0,
@@ -944,7 +952,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "24",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Nina",
     raza: "Mestizo",
@@ -967,7 +974,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_INCOMPLETAS,
     salud: "Vacunada, primera dosis",
-    foto: IMGS.mestizo[0],
+    foto: IMGS.mestizo[0].url,
     fotos: IMGS.mestizo,
     edadCategoria: calcularEdadCategoria(7),
     compatibilidad: 0,
@@ -977,7 +984,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "25",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Duke",
     raza: "Labrador",
@@ -1000,7 +1006,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, displasia leve en cadera",
-    foto: IMGS.labrador[0],
+    foto: IMGS.labrador[0].url,
     fotos: IMGS.labrador,
     edadCategoria: calcularEdadCategoria(60),
     compatibilidad: 0,
@@ -1010,7 +1016,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "26",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Panda",
     raza: "Bulldog Francés",
@@ -1033,7 +1038,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_BASICAS,
     salud: "Vacunado, desparasitado",
-    foto: IMGS.bulldog[0],
+    foto: IMGS.bulldog[0].url,
     fotos: IMGS.bulldog,
     edadCategoria: calcularEdadCategoria(22),
     compatibilidad: 0,
@@ -1043,7 +1048,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "27",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Alaska",
     raza: "Husky Siberiano",
@@ -1071,7 +1075,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_BASICAS,
     salud: "Vacunada, desparasitada",
-    foto: IMGS.husky[0],
+    foto: IMGS.husky[0].url,
     fotos: IMGS.husky,
     edadCategoria: calcularEdadCategoria(16),
     compatibilidad: 0,
@@ -1081,7 +1085,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "28",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Manchas",
     raza: "Mestizo",
@@ -1104,7 +1107,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "mediano",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunado, sordera parcial",
-    foto: IMGS.mestizo[0],
+    foto: IMGS.mestizo[0].url,
     fotos: IMGS.mestizo,
     edadCategoria: calcularEdadCategoria(108),
     compatibilidad: 0,
@@ -1114,7 +1117,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "29",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Frida",
     raza: "Salchicha",
@@ -1137,7 +1139,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "corto",
     vacunas: VAC_COMPLETAS,
     salud: "Vacunada, esterilizada",
-    foto: IMGS.salchicha[0],
+    foto: IMGS.salchicha[0].url,
     fotos: IMGS.salchicha,
     edadCategoria: calcularEdadCategoria(28),
     compatibilidad: 0,
@@ -1147,7 +1149,6 @@ export const MOCK_DOGS: Dog[] = [
   },
   {
     id: "30",
-    userOwnerId: "owner-5",
     refugioId: "5",
     nombre: "Goldie",
     raza: "Golden Retriever",
@@ -1170,7 +1171,7 @@ export const MOCK_DOGS: Dog[] = [
     largoPelaje: "largo",
     vacunas: VAC_INCOMPLETAS,
     salud: "Primera vacuna aplicada, pendiente esquema completo",
-    foto: IMGS.golden[0],
+    foto: IMGS.golden[0].url,
     fotos: IMGS.golden,
     edadCategoria: calcularEdadCategoria(4),
     compatibilidad: 0,
@@ -1184,9 +1185,6 @@ export const MOCK_DOGS: Dog[] = [
 
 export const getDogById = (id: string): Dog | undefined =>
   MOCK_DOGS.find((d) => d.id === id);
-
-export const getDogBySlug = (slug: string): Dog | undefined =>
-  MOCK_DOGS.find((d) => d.nombre.toLowerCase().replace(/\s+/g, "-") === slug);
 
 export const getDogsByShelterId = (refugioId: string): Dog[] =>
   MOCK_DOGS.filter((d) => d.refugioId === refugioId);

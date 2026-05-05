@@ -179,9 +179,9 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
             <div className="ad-dog-card__body">
               <p className="ad-dog-card__name">{request.perroNombre ?? 'Perro'}</p>
               <p className="ad-dog-card__shelter">{request.refugioNombre ?? 'Refugio'}</p>
-              {request.perroSlug && (
+              {request.perroId && (
                 <Link
-                  href={`/perros/${request.perroSlug}`}
+                  href={`/perros/${request.perroId}`}
                   className="ad-dog-card__link"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 15 }}>open_in_new</span>

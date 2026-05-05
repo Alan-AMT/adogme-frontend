@@ -81,7 +81,6 @@ export interface AdoptionRequest {
   // Datos relacionados (joins — para mostrar en UI)
   perroNombre?: string;
   perroFoto?: string;
-  perroSlug?: string;
   refugioNombre?: string;
   adoptanteNombre?: string;
   adoptanteCorreo?: string;

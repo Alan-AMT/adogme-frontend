@@ -10,7 +10,7 @@ import {
 } from "../../shared/mockData/shelters.mock";
 import type { AdoptionStory } from "../domain/AdoptionStory";
 import type { DogCard } from "../domain/DogCard";
-import type { ShelterCard } from "../domain/ShelterCard";
+import type { PaginatedShelterCards } from "../domain/ShelterCard";
 import type { IHomeService } from "./IHomeService";
 
 // ─── Delay helper ─────────────────────────────────────────────────────────────
@@ -71,11 +71,9 @@ export class MockHomeService implements IHomeService {
         id:         d.id,
         nombre:     d.nombre,
         raza:       d.raza,
-        descripcion: d.descripcion,
         edad:       Math.max(1, Math.round(d.edad / 12)),
         tamano:     d.tamano.charAt(0).toUpperCase() + d.tamano.slice(1),
         nivelEnergia: nivelEnergiaLabel(d.nivelEnergia),
-        salud:      d.salud,
         estado:     estadoLabel(d.estado),
         imageUrl:   d.foto ?? '',
         tamanoRaw:  d.tamano,
@@ -84,26 +82,29 @@ export class MockHomeService implements IHomeService {
       }));
   }
 
-  async getHomeSheltersList(): Promise<ShelterCard[]> {
+  async getHomeSheltersList(page: number, limit: number): Promise<PaginatedShelterCards> {
     await delay(400);
-    return SHARED_SHELTERS.map(s => ({
+    const all = SHARED_SHELTERS.map(s => ({
       id:                   s.id,
       nombre:               s.nombre,
-      slug:                 s.slug,
-      ubicacion:            s.ubicacion,
-      alcaldia:             s.alcaldia ?? s.ubicacion,
-      descripcion:          s.descripcion,
-      correo:               s.correo,
-      telefono:             s.telefono,
       logo:                 s.logo,
       imagenPortada:        s.imagenPortada,
-      fechaRegistro:        s.fechaRegistro,
-      aprobado:             s.aprobado,
-      imageUrl:             s.imagenPortada,
+      alcaldia:             s.alcaldia ?? s.ubicacion,
       adopcionesRealizadas: s.adopcionesRealizadas ?? 0,
       perrosDisponibles:    s.perrosDisponibles ?? 0,
       calificacion:         s.calificacion,
     }));
+    const total      = all.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const safePage   = Math.min(Math.max(1, page), totalPages);
+    const start      = (safePage - 1) * limit;
+    return {
+      data:       all.slice(start, start + limit),
+      total,
+      page:       safePage,
+      totalPages,
+      limit,
+    };
   }
 
   async getLatestStories(): Promise<AdoptionStory[]> {

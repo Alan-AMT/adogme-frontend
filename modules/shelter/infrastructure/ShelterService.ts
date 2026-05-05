@@ -1,74 +1,39 @@
 import {
   AdoptionRequest,
   AdoptionRequestListItem,
-  calcularEdadCategoria,
   Dog,
   DogFilters,
+  DogStatus,
   DonationConfig,
   PaginatedDogs,
   RequestStatus,
   Shelter,
 } from "@/modules/shared/domain";
 import {
+  DashboardDogsByStatus,
+  DashboardDogsStats,
+  DashboardRequestsStats,
   DogCreateData,
+  DogUpdateData,
   IShelterService,
-  ShelterDashboardStats,
+  ShelterUpdatePayload,
 } from "./IShelterService";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
-import { getPersonalityTagByLabel } from "@/modules/shared/utils/constants";
 import {
-  CreateDogApiResponse,
-  CreateDogWithUploadUrlsApiResponse,
-  // GetDogsApiResponse,
   GetShelterProfileApiResponse,
   UpdateShelterApiResponse,
 } from "./ApiResponses";
-
-function parseDog(data: CreateDogApiResponse): Dog {
-  return {
-    id: data.id,
-    userOwnerId: data.userOwnerId,
-    refugioId: data.shelterId,
-    nombre: data.name,
-    raza: data.breed,
-    raza2: data.breed2 ?? undefined,
-    edad: data.age,
-    sexo: data.sex,
-    tamano: data.size,
-    nivelEnergia: data.energyLevel,
-    descripcion: data.description,
-    estado: data.status,
-    personalidad: data.personality.flatMap((p) => {
-      const tag = getPersonalityTagByLabel(p.label);
-      return tag ? [tag] : [];
-    }),
-    aptoNinos: data.goodWithKids,
-    aptoPerros: data.goodWithDogs,
-    aptoGatos: data.goodWithCats,
-    castrado: data.sterilized,
-    necesitaJardin: data.needsYard,
-    estaVacunado: data.isVaccinated,
-    estaDesparasitado: data.isDewormed,
-    largoPelaje: data.furLength,
-    vacunas: data.vaccinations.map((v) => ({
-      id: v.id,
-      nombre: v.name,
-      fecha: new Date(v.date).toISOString(),
-      verificada: v.verified,
-      proximaDosis: v.nextDose ? new Date(v.nextDose).toISOString() : undefined,
-    })),
-    salud: data.health,
-    fotos: [],
-    edadCategoria: calcularEdadCategoria(data.age),
-    fechaRegistro: new Date(data.createdAt).toDateString(),
-    fechaActualizacion: new Date(data.updatedAt).toDateString(),
-    pesoKg: data.weightKg ?? undefined,
-    foto: data.photo ?? undefined,
-    refugioNombre: data.shelterName ?? undefined,
-    refugioLogo: data.shelterLogo ?? undefined,
-  };
-}
+import {
+  CreateDogApiResponse,
+  CreateDogWithUploadUrlsApiResponse,
+  DogListItemApiResponse,
+  GetDogsApiResponse,
+} from "@/modules/dogs/infrastructure/ApiResponses";
+import {
+  parseDog,
+  parseDogListItem,
+} from "@/modules/dogs/infrastructure/parseDog";
 
 export class ShelterService implements IShelterService {
   async getShelterProfile(refugioId: string): Promise<Shelter> {
@@ -91,17 +56,21 @@ export class ShelterService implements IShelterService {
         },
         alcaldia: data.municipality ?? "",
         ubicacion: data.municipality ?? "",
-        userOwnerId: data.userOwnerId,
         direccionCompleta: data.fullAddress ?? "",
         schedule: data.schedule ?? "",
         aprobado: data.approved,
         logo: data.logo ?? "",
         imagenPortada: data.imageUrl ?? "",
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
-        slug: "",
         cuotaAdopcion: data.adoptionFee ?? 0,
         donationConfig: {
-          aceptaDonaciones: true,
+          aceptaDonaciones: data.acceptsDonations,
+          banco: data.donationBankName,
+          cuentaClabe: data.donationClabe,
+          descripcionCausa: data.donationCauseText,
+          mercadoPagoLink: data.donationMercadoPagoLink,
+          paypalLink: data.donationPaypalLink,
+          titularCuenta: data.donationAccountHolder,
         } as DonationConfig,
       };
       return shelter;
@@ -113,8 +82,8 @@ export class ShelterService implements IShelterService {
 
   async updateShelterProfile(
     refugioId: string,
-    shelterUpdate: Partial<Shelter>,
-  ): Promise<Shelter> {
+    shelterUpdate: ShelterUpdatePayload,
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }> {
     try {
       const { data } = await apiClient.put<UpdateShelterApiResponse>(
         API_ENDPOINTS.SHELTERS.UPDATE(refugioId),
@@ -130,40 +99,53 @@ export class ShelterService implements IShelterService {
           facebook: shelterUpdate.redesSociales?.facebook,
           instagram: shelterUpdate.redesSociales?.instagram,
           twitter: shelterUpdate.redesSociales?.twitter,
-          logo: shelterUpdate.logo,
-          imageUrl: shelterUpdate.imagenPortada,
+          newLogo: shelterUpdate.newLogo ?? null,
+          newImageUrl: shelterUpdate.newImageUrl ?? null,
           adoptionFee: shelterUpdate.cuotaAdopcion ?? 0,
+          acceptsDonations: shelterUpdate.donationConfig?.aceptaDonaciones,
+          donationCauseText: shelterUpdate.donationConfig?.descripcionCausa,
+          donationClabe: shelterUpdate.donationConfig?.cuentaClabe,
+          donationBankName: shelterUpdate.donationConfig?.banco,
+          donationAccountHolder: shelterUpdate.donationConfig?.titularCuenta,
+          donationPaypalLink: shelterUpdate.donationConfig?.paypalLink,
+          donationMercadoPagoLink:
+            shelterUpdate.donationConfig?.mercadoPagoLink,
         },
       );
+      const s = data.shelter;
       const updated: Shelter = {
-        id: data.id,
-        nombre: data.name,
-        status: data.status,
-        descripcion: data.description ?? "",
-        telefono: data.phone ?? "",
-        correo: data.email ?? "",
+        id: s.id,
+        nombre: s.name,
+        status: s.status,
+        descripcion: s.description ?? "",
+        telefono: s.phone ?? "",
+        correo: s.email ?? "",
         redesSociales: {
-          facebook: data.facebook ?? "",
-          instagram: data.instagram ?? "",
-          twitter: data.twitter ?? "",
-          web: data.website ?? "",
+          facebook: s.facebook ?? "",
+          instagram: s.instagram ?? "",
+          twitter: s.twitter ?? "",
+          web: s.website ?? "",
         },
-        alcaldia: data.municipality ?? "",
-        ubicacion: data.municipality ?? "",
-        userOwnerId: data.userOwnerId,
-        direccionCompleta: data.fullAddress ?? "",
-        schedule: data.schedule ?? "",
-        aprobado: data.approved,
-        logo: data.logo ?? "",
-        imagenPortada: data.imageUrl ?? "",
-        fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
-        slug: "",
-        cuotaAdopcion: data.adoptionFee ?? 0,
+        alcaldia: s.municipality ?? "",
+        ubicacion: s.municipality ?? "",
+        direccionCompleta: s.fullAddress ?? "",
+        schedule: s.schedule ?? "",
+        aprobado: s.approved,
+        logo: s.logo ?? "",
+        imagenPortada: s.imageUrl ?? "",
+        fechaRegistro: new Date(s.createdAt).toLocaleDateString("en-GB"),
+        cuotaAdopcion: s.adoptionFee ?? 0,
         donationConfig: {
-          aceptaDonaciones: true,
+          aceptaDonaciones: s.acceptsDonations,
+          banco: s.donationBankName,
+          cuentaClabe: s.donationClabe,
+          descripcionCausa: s.donationCauseText,
+          mercadoPagoLink: s.donationMercadoPagoLink,
+          paypalLink: s.donationPaypalLink,
+          titularCuenta: s.donationAccountHolder,
         } as DonationConfig,
       };
-      return updated;
+      return { shelter: updated, uploadUrls: data.uploadUrls ?? [] };
     } catch (e) {
       console.log(e);
       throw Error("No se pudo actualizar el perfil del refugio");
@@ -214,7 +196,7 @@ export class ShelterService implements IShelterService {
               }))
             : [],
           health: payload.salud,
-          amountImages: payload.fotos?.length ?? 0,
+          amountImagesToCreate: payload.fotos?.length ?? 0,
           breed2: payload.raza2 ?? null,
           shelterName: payload.refugioNombre,
           shelterLogo: payload.refugioLogo,
@@ -223,7 +205,6 @@ export class ShelterService implements IShelterService {
         { timeout: 60_000 },
       );
       return { dog: parseDog(data.dog), uploadUrls: data.uploadUrls };
-      // return { dog: parseDog(data.dog), uploadUrls: data.uploadUrls };
     } catch (e) {
       console.log(e);
       throw Error("Error al crear perro");
@@ -275,9 +256,12 @@ export class ShelterService implements IShelterService {
     }
   }
 
-  async updateDog(id: string, payload: DogCreateData): Promise<Dog> {
+  async updateDog(
+    id: string,
+    payload: DogUpdateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }> {
     try {
-      const { data } = await apiClient.put<CreateDogApiResponse>(
+      const { data } = await apiClient.put<CreateDogWithUploadUrlsApiResponse>(
         API_ENDPOINTS.DOGS.UPDATE(id),
         {
           name: payload.nombre,
@@ -317,17 +301,28 @@ export class ShelterService implements IShelterService {
           shelterName: payload.refugioNombre,
           shelterLogo: payload.refugioLogo,
           adoptionFee: payload.cuotaAdopcion,
+          amountImagesToCreate: payload.amountImagesToCreate ?? 0,
+          imagesToDelete: payload.imagesToDelete ?? [],
+          updatedMainImageId: payload.updatedMainImageId ?? null,
         },
+        { timeout: 60_000 },
       );
-      return parseDog(data);
-      return {} as Dog;
+      return { dog: parseDog(data.dog), uploadUrls: data.uploadUrls };
     } catch (e) {
+      console.log(e);
       throw Error("Error al actualizar perro");
     }
   }
 
-  deleteDog(id: string): Promise<void> {
-    throw Error("Not implemented");
+  async deleteDog(id: string): Promise<void> {
+    try {
+      await apiClient.delete(API_ENDPOINTS.DOGS.DELETE(id), {
+        timeout: 30_000,
+      });
+    } catch (e) {
+      console.log(e);
+      throw Error("Error al eliminar perro");
+    }
   }
 
   async getDogs(refugioId: string): Promise<Dog[]> {
@@ -358,38 +353,34 @@ export class ShelterService implements IShelterService {
     filters?: DogFilters,
   ): Promise<PaginatedDogs> {
     try {
-      const { data } = await apiClient.get<CreateDogApiResponse[]>(
+      const params: Record<string, string | number> = {};
+      if (filters?.estado) params.status = filters.estado;
+      if (filters?.search) params.search = filters.search;
+      if (filters?.page) params.page = filters.page;
+      if (filters?.limit) params.limit = filters.limit;
+
+      const { data } = await apiClient.get<GetDogsApiResponse>(
         API_ENDPOINTS.DOGS.BY_SHELTER(refugioId),
-        // {
-        //   params: {
-        //     status:    filters?.estado,
-        //     search:    filters?.search,
-        //     page:      filters?.page,
-        //     limit:     filters?.limit,
-        //     sortBy:    filters?.sortBy,
-        //     sortOrder: filters?.sortOrder,
-        //   },
-        // },
+        { params },
       );
       return {
-        data: data.map(parseDog),
-        total: data.length,
-        page: 1,
-        totalPages: 1,
-        limit: 10,
-        // data: data.data.map(parseDog),
-        // total: data.data.length,
-        // page: data.page,
-        // totalPages: data.totalPages,
-        // limit: data.limit,
+        data: data.data.map(parseDogListItem),
+        total: data.total,
+        page: data.page,
+        totalPages: data.totalPages,
+        limit: data.limit,
       };
     } catch (e) {
       throw Error("Error al obtener los perros del refugio");
     }
   }
 
-  togglePublish(id: string): Promise<Dog> {
-    throw Error("Not implemented");
+  async updateDogStatus(dogId: string, status: DogStatus): Promise<void> {
+    try {
+      await apiClient.patch(API_ENDPOINTS.DOGS.STATUS(dogId), { status });
+    } catch (e) {
+      throw Error("Error al actualizar el estado del perro");
+    }
   }
 
   getShelterRequests(refugioId: string): Promise<AdoptionRequestListItem[]> {
@@ -407,22 +398,38 @@ export class ShelterService implements IShelterService {
     throw Error("Not implemented");
   }
 
-  getRecentRequests(
-    refugioId: string,
-    limit?: number,
-  ): Promise<AdoptionRequestListItem[]> {
-    try {
-      return Promise.resolve([]);
-    } catch (e) {
-      throw Error("Not implemented");
-    }
-  }
-
   getRequestById(id: string): Promise<AdoptionRequest | null> {
     throw Error("Not implemented");
   }
 
-  getDashboardStats(refugioId: string): Promise<ShelterDashboardStats> {
-    throw Error("Not implemented");
+  async getDashboardDogsStats(
+    shelterId: string,
+  ): Promise<DashboardDogsStats> {
+    try {
+      const { data } = await apiClient.get<{
+        recentDogs: DogListItemApiResponse[];
+        dogsByStatus: DashboardDogsByStatus;
+      }>(API_ENDPOINTS.DOGS.GET_SHELTER_DASHBOARD_DOGS_STATS(shelterId));
+      return {
+        recentDogs: data.recentDogs.map(parseDogListItem),
+        dogsByStatus: data.dogsByStatus,
+      };
+    } catch (e) {
+      throw Error("No se pudieron obtener las estadísticas de perros del refugio.");
+    }
+  }
+
+  async getDashboardRequestsStats(
+    _shelterId: string,
+  ): Promise<DashboardRequestsStats> {
+    // TODO: el endpoint del MS de solicitudes aún no está disponible.
+    // Cuando se implemente, llamar a
+    //   API_ENDPOINTS.ADOPTIONS.GET_SHELTER_DASHBOARD_REQUESTS_STATS(_shelterId)
+    return {
+      solicitudesPendientes: 0,
+      solicitudesEnRevision: 0,
+      solicitudesCompletadas: 0,
+      recentRequests: [],
+    };
   }
 }

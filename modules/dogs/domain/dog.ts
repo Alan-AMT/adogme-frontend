@@ -3,6 +3,7 @@
 
 export type {
   Dog,
+  DogImage,
   DogListItem,
   DogFilters,
   PaginatedDogs,

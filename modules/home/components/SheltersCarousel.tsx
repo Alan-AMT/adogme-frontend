@@ -3,17 +3,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useHomeShelters } from "../application/hooks/useHomeContent";
+import { useCarouselShelters } from "../application/hooks/useHomeContent";
 import type { ShelterCard } from "../domain/ShelterCard";
 import "../styles/homeShelters.css";
 
 // ─── Featured card (large, left column, spans 2 rows on desktop) ──────────────
 
 function FeaturedCard({ s }: { s: ShelterCard }) {
-  const cover = s.imagenPortada || s.imageUrl || "/assets/shelters/shelter1.jpg";
+  const cover = s.imagenPortada || "/assets/shelters/shelter1.jpg";
   return (
     <div className="hs-featured-wrap">
-      <Link href={`/refugios/${s.slug}`} className="hs-featured">
+      <Link href={`/refugios/${s.id}`} className="hs-featured">
         <Image
           src={cover}
           alt={`Imagen de ${s.nombre}`}
@@ -47,14 +47,18 @@ function FeaturedCard({ s }: { s: ShelterCard }) {
           </p>
 
           <div className="hs-featured__stats">
-            <div className="hs-featured__stat">
-              <span className="hs-featured__stat-val">{s.adopcionesRealizadas}</span>
-              <span className="hs-featured__stat-lbl">Adopciones</span>
-            </div>
-            <div className="hs-featured__stat">
-              <span className="hs-featured__stat-val">{s.perrosDisponibles}</span>
-              <span className="hs-featured__stat-lbl">En espera</span>
-            </div>
+            {s.adopcionesRealizadas > 0 && (
+              <div className="hs-featured__stat">
+                <span className="hs-featured__stat-val">{s.adopcionesRealizadas}</span>
+                <span className="hs-featured__stat-lbl">Adopciones</span>
+              </div>
+            )}
+            {s.perrosDisponibles > 0 && (
+              <div className="hs-featured__stat">
+                <span className="hs-featured__stat-val">{s.perrosDisponibles}</span>
+                <span className="hs-featured__stat-lbl">En espera</span>
+              </div>
+            )}
             {s.calificacion && (
               <div className="hs-featured__stat">
                 <span className="hs-featured__stat-val">{s.calificacion.toFixed(1)}</span>
@@ -78,9 +82,9 @@ function FeaturedCard({ s }: { s: ShelterCard }) {
 // ─── Small card (right side grid) ─────────────────────────────────────────────
 
 function SmallCard({ s }: { s: ShelterCard }) {
-  const cover = s.imagenPortada || s.imageUrl || "/assets/shelters/shelter1.jpg";
+  const cover = s.imagenPortada || "/assets/shelters/shelter1.jpg";
   return (
-    <Link href={`/refugios/${s.slug}`} className="hs-small">
+    <Link href={`/refugios/${s.id}`} className="hs-small">
       <div className="hs-small__media">
         <Image
           src={cover}
@@ -112,7 +116,9 @@ function SmallCard({ s }: { s: ShelterCard }) {
           </span>
           {s.alcaldia}
         </p>
-        <p className="hs-small__stat">{s.adopcionesRealizadas} adopciones</p>
+        {s.adopcionesRealizadas > 0 && (
+          <p className="hs-small__stat">{s.adopcionesRealizadas} adopciones</p>
+        )}
       </div>
     </Link>
   );
@@ -135,7 +141,7 @@ function Skeleton() {
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 export default function HomeSheltersSection() {
-  const { shelters, loading } = useHomeShelters();
+  const { shelters, loading } = useCarouselShelters();
   const [featured, ...rest] = shelters;
   const smallCards = rest.slice(0, 4);
 

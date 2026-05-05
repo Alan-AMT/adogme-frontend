@@ -6,16 +6,19 @@
 // Los cambios son visibles durante la sesión; al recargar se pierde el estado.
 
 import type {
-  IShelterService,
-  ShelterDashboardStats,
+  DashboardDogsStats,
+  DashboardRequestsStats,
   DogCreateData,
   DogUpdateData,
+  IShelterService,
 } from "./IShelterService";
 import type { Shelter } from "../../shared/domain/Shelter";
 import type {
   Dog,
   DogFilters,
+  DogImage,
   DogListItem,
+  DogStatus,
   PaginatedDogs,
 } from "../../shared/domain/Dog";
 import { calcularEdadCategoria } from "../../shared/domain/Dog";
@@ -33,6 +36,16 @@ import { MOCK_ADOPTION_REQUESTS } from "../../shared/mockData/adoptions.mock";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const delay = (ms = 300) => new Promise<void>((r) => setTimeout(r, ms));
+
+/** Envuelve URLs sueltas en DogImage[] para el read model del Dog */
+function urlsToDogImages(urls: string[], dogId: string): DogImage[] {
+  return urls.map((url, i) => ({
+    id: `${dogId}-img-${i}`,
+    dogId,
+    url,
+    status: "pending" as const,
+  }));
+}
 
 /** Convierte un Dog completo al shape DogListItem para getShelterDogs */
 function toDogListItem(d: Dog): DogListItem {
@@ -83,10 +96,14 @@ export class MockShelterService implements IShelterService {
     return { ...shelter };
   }
 
+  async getShelterById(id: string): Promise<Shelter> {
+    return this.getShelterProfile(id);
+  }
+
   async updateShelterProfile(
     refugioId: string,
     shelterUpdate: Partial<Shelter>,
-  ): Promise<Shelter> {
+  ): Promise<{ shelter: Shelter; uploadUrls: string[] }> {
     await delay(400);
     const idx = _shelters.findIndex((s) => s.id === refugioId);
     if (idx === -1) throw new Error(`Refugio ${refugioId} no encontrado`);
@@ -101,39 +118,45 @@ export class MockShelterService implements IShelterService {
       updated,
       ..._shelters.slice(idx + 1),
     ];
-    return { ...updated };
+    return { shelter: { ...updated }, uploadUrls: [] };
   }
 
   // ── Dashboard ───────────────────────────────────────────────────────────────
 
-  async getDashboardStats(refugioId: string): Promise<ShelterDashboardStats> {
+  async getDashboardDogsStats(
+    shelterId: string,
+  ): Promise<DashboardDogsStats> {
     await delay(250);
 
-    const dogs = _dogs.filter((d) => d.refugioId === refugioId);
-    const shelter = _shelters.find((s) => s.id === refugioId);
-    const reqs = _requests.filter((r) => r.refugioId === refugioId);
+    const dogs = _dogs.filter((d) => d.refugioId === shelterId);
+
+    const recentDogs = [...dogs]
+      .sort((a, b) =>
+        (b.fechaRegistro ?? "").localeCompare(a.fechaRegistro ?? ""),
+      )
+      .slice(0, 5)
+      .map(toDogListItem);
 
     return {
-      perrosTotales: dogs.length,
-      perrosDisponibles: dogs.filter((d) => d.estado === "disponible").length,
-      perrosEnProceso: dogs.filter((d) => d.estado === "en_proceso").length,
-      adopcionesTotales: shelter?.adopcionesRealizadas ?? 0,
-      solicitudesPendientes: reqs.filter((r) => r.estado === "pending").length,
-      solicitudesEnRevision: reqs.filter((r) => r.estado === "in_review")
-        .length,
-      calificacion: shelter?.calificacion,
+      recentDogs,
+      dogsByStatus: {
+        disponible: dogs.filter((d) => d.estado === "disponible").length,
+        en_proceso: dogs.filter((d) => d.estado === "en_proceso").length,
+        adoptado: dogs.filter((d) => d.estado === "adoptado").length,
+        no_disponible: dogs.filter((d) => d.estado === "no_disponible").length,
+      },
     };
   }
 
-  async getRecentRequests(
-    refugioId: string,
-    limit = 5,
-  ): Promise<AdoptionRequestListItem[]> {
+  async getDashboardRequestsStats(
+    shelterId: string,
+  ): Promise<DashboardRequestsStats> {
     await delay(200);
-    return _requests
-      .filter((r) => r.refugioId === refugioId)
+
+    const reqs = _requests.filter((r) => r.refugioId === shelterId);
+    const recentRequests: AdoptionRequestListItem[] = [...reqs]
       .sort((a, b) => b.fecha.localeCompare(a.fecha))
-      .slice(0, limit)
+      .slice(0, 5)
       .map((r) => ({
         id: r.id,
         adoptanteId: r.adoptanteId,
@@ -146,6 +169,13 @@ export class MockShelterService implements IShelterService {
         refugioNombre: r.refugioNombre,
         adoptanteNombre: r.adoptanteNombre,
       }));
+
+    return {
+      solicitudesPendientes: reqs.filter((r) => r.estado === "pending").length,
+      solicitudesEnRevision: reqs.filter((r) => r.estado === "in_review").length,
+      solicitudesCompletadas: reqs.filter((r) => r.estado === "approved").length,
+      recentRequests,
+    };
   }
 
   // ── Perros — lectura ────────────────────────────────────────────────────────
@@ -201,9 +231,10 @@ export class MockShelterService implements IShelterService {
 
     const now = new Date().toISOString().split("T")[0];
 
+    const newDogId = String(Math.random());
+    const fotosUrls = payload.fotos ?? (payload.foto ? [payload.foto] : []);
     const newDog: Dog = {
-      id: String(Math.random()),
-      userOwnerId: "current-user",
+      id: newDogId,
       refugioId: payload.refugioId,
       nombre: payload.nombre,
       raza: payload.raza,
@@ -227,7 +258,7 @@ export class MockShelterService implements IShelterService {
       vacunas: payload.vacunas ?? [],
       salud: payload.salud,
       foto: payload.foto,
-      fotos: payload.fotos ?? (payload.foto ? [payload.foto] : []),
+      fotos: urlsToDogImages(fotosUrls, newDogId),
       edadCategoria: calcularEdadCategoria(payload.edad),
       compatibilidad: 0,
       refugioNombre: shelter?.nombre,
@@ -256,23 +287,56 @@ export class MockShelterService implements IShelterService {
     void files;
   }
 
-  async updateDog(id: string, data: DogUpdateData): Promise<Dog> {
+  async updateDog(
+    id: string,
+    data: DogUpdateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }> {
     await delay(400);
     const idx = _dogs.findIndex((d) => d.id === id);
     if (idx === -1) throw new Error(`Perro ${id} no encontrado`);
 
     const prev = _dogs[idx];
     const edad = data.edad ?? prev.edad;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {
+      fotos: _ignoredFotos,
+      amountImagesToCreate,
+      imagesToDelete,
+      ...rest
+    } = data;
+
+    // 1) Aplicar borrado de imágenes existentes
+    const idsAEliminar = new Set(imagesToDelete ?? []);
+    const fotosRestantes = prev.fotos.filter(
+      (img) => !idsAEliminar.has(img.id),
+    );
+
+    // 2) Reservar N "slots" nuevos (mock: tras el upload, sus URLs serán reales)
+    const nuevasFotos = Array.from(
+      { length: amountImagesToCreate ?? 0 },
+      (_v, i) => ({
+        id: `${prev.id}-img-new-${Date.now()}-${i}`,
+        dogId: prev.id,
+        url: `https://mock-gcs/${prev.id}/${Date.now()}-${i}.jpg`,
+        status: "pending" as const,
+      }),
+    );
+
     const updated: Dog = {
       ...prev,
-      ...data,
+      ...rest,
+      fotos: [...fotosRestantes, ...nuevasFotos],
       edadCategoria: calcularEdadCategoria(edad),
       id: prev.id,
       refugioId: prev.refugioId,
     };
 
     _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
-    return { ...updated };
+
+    const uploadUrls = nuevasFotos.map(
+      (_f, i) => `https://mock-gcs/upload/${prev.id}/${i}`,
+    );
+    return { dog: { ...updated }, uploadUrls };
   }
 
   async deleteDog(id: string): Promise<void> {
@@ -282,18 +346,11 @@ export class MockShelterService implements IShelterService {
     _dogs = _dogs.filter((d) => d.id !== id);
   }
 
-  async togglePublish(id: string): Promise<Dog> {
+  async updateDogStatus(dogId: string, status: DogStatus): Promise<void> {
     await delay(350);
-    const idx = _dogs.findIndex((d) => d.id === id);
-    if (idx === -1) throw new Error(`Perro ${id} no encontrado`);
-
-    const prev = _dogs[idx];
-    const nuevoEstado =
-      prev.estado === "disponible" ? "no_disponible" : "disponible";
-    const updated: Dog = { ...prev, estado: nuevoEstado };
-
-    _dogs = [..._dogs.slice(0, idx), updated, ..._dogs.slice(idx + 1)];
-    return { ...updated };
+    const idx = _dogs.findIndex((d) => d.id === dogId);
+    if (idx === -1) throw new Error(`Perro ${dogId} no encontrado`);
+    _dogs = _dogs.map((d, i) => i === idx ? { ...d, estado: status } : d);
   }
 
   // ── Solicitudes ─────────────────────────────────────────────────────────────

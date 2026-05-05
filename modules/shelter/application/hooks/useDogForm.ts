@@ -42,6 +42,15 @@ export type DogFormStep = (typeof DOG_FORM_STEPS)[number]["id"];
 // ─── Tipo del formulario ──────────────────────────────────────────────────────
 // Incluye todos los campos editables por el refugio (espejo de DogCreateData sin refugioId)
 
+/**
+ * Slot de foto en la galería del form.
+ * - existing: imagen ya guardada en backend (modo edición). `imageId` apunta a DogImage.id.
+ * - new: imagen nueva pendiente de subir a GCS. `url` es un blob URL local.
+ */
+export type PhotoSlot =
+  | { kind: "existing"; url: string; imageId: string }
+  | { kind: "new"; url: string; file: File };
+
 export interface DogFormData {
   // Step 0 — Datos básicos
   nombre: string;
@@ -76,9 +85,9 @@ export interface DogFormData {
   vacunas: Vaccination[];
 
   // Step 4 — Fotos
-  foto: string; // URL principal (blob URL, solo para display)
-  fotos: string[]; // galería completa (blob URLs, solo para display)
-  fotosFiles: File[]; // archivos crudos para subir a GCS (no se persiste en draft)
+  foto: string; // URL de la portada (derivada de fotos[0]?.url)
+  fotos: PhotoSlot[]; // galería ordenada (mezcla de existing + new)
+  imagenesAEliminar: string[]; // edit mode: IDs de existing slots eliminados
 }
 
 const FORM_DEFAULTS: DogFormData = {
@@ -108,7 +117,7 @@ const FORM_DEFAULTS: DogFormData = {
   vacunas: [],
   foto: "",
   fotos: [],
-  fotosFiles: [],
+  imagenesAEliminar: [],
 };
 
 // ─── Validadores por paso ────────────────────────────────────────────────────
@@ -142,13 +151,16 @@ function loadDraft(dogId: string | undefined): DogFormData | null {
     const raw = localStorage.getItem(draftKey(dogId));
     if (!raw) return null;
     const parsed = JSON.parse(raw) as DogFormData;
-    // Los blob URLs y los File no sobreviven a un reload del browser.
-    // Forzamos al usuario a volver a cargar las fotos al retomar el draft.
+    // Solo los slots `existing` sobreviven al reload (los `new` tienen blob URLs +
+    // File que no son serializables). El usuario debe re-agregar imágenes nuevas.
+    const existingSlots: PhotoSlot[] = (parsed.fotos ?? []).filter(
+      (s): s is Extract<PhotoSlot, { kind: "existing" }> => s?.kind === "existing",
+    );
     return {
       ...parsed,
-      foto: "",
-      fotos: [],
-      fotosFiles: [],
+      fotos: existingSlots,
+      foto: existingSlots[0]?.url ?? "",
+      imagenesAEliminar: parsed.imagenesAEliminar ?? [],
     };
   } catch {
     return null;
@@ -158,8 +170,10 @@ function loadDraft(dogId: string | undefined): DogFormData | null {
 function saveDraftToStorage(dogId: string | undefined, data: DogFormData) {
   if (typeof window === "undefined") return;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { fotosFiles: _files, ...serializable } = data;
+    const serializable = {
+      ...data,
+      fotos: data.fotos.filter((s) => s.kind === "existing"),
+    };
     localStorage.setItem(draftKey(dogId), JSON.stringify(serializable));
   } catch {
     /* ignore */
@@ -188,6 +202,7 @@ export interface UseDogFormReturn {
   formData: DogFormData;
   errors: Record<string, string>;
   isDraft: boolean;
+  isLoadingDog: boolean;
   isSubmitting: boolean;
   submitError: string | null;
   uploadProgress: UploadProgress | null;
@@ -215,6 +230,9 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
   const [formData, setFormData] = useState<DogFormData>(FORM_DEFAULTS);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDraft, setIsDraft] = useState(false);
+  const [isLoadingDog, setIsLoadingDog] = useState<boolean>(
+    dogId !== undefined,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
@@ -230,10 +248,14 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
     if (draft) {
       setFormData(draft);
       setIsDraft(true);
+      setIsLoadingDog(false);
       return;
     }
 
-    if (!dogId) return;
+    if (!dogId) {
+      setIsLoadingDog(false);
+      return;
+    }
 
     let cancelled = false;
     shelterService
@@ -263,13 +285,23 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           largoPelaje: dog.largoPelaje,
           salud: dog.salud,
           vacunas: dog.vacunas ?? [],
-          foto: dog.foto ?? "",
-          fotos: dog.fotos ?? (dog.foto ? [dog.foto] : []),
+          foto: dog.foto ?? dog.fotos?.[0]?.url ?? "",
+          fotos: (dog.fotos ?? [])
+            .filter((img) => img.status !== "rejected")
+            .map<PhotoSlot>((img) => ({
+              kind: "existing",
+              url: img.url,
+              imageId: img.id,
+            })),
+          imagenesAEliminar: [],
         });
       })
       .catch((e) => {
         if (!cancelled)
           setSubmitError((e as Error).message ?? "Error al cargar el perro");
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingDog(false);
       });
 
     return () => {
@@ -361,8 +393,18 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
+      // Archivos pendientes de subir, en el orden actual del form
+      const newSlots = formData.fotos.filter(
+        (s): s is Extract<PhotoSlot, { kind: "new" }> => s.kind === "new",
+      );
+
       if (dogId) {
         // Modo edición
+        // La portada es siempre fotos[0]. Si es existing → su imageId; si es new → null.
+        const cover = formData.fotos[0];
+        const updatedMainImageId =
+          cover?.kind === "existing" ? cover.imageId : null;
+
         const updateData: DogUpdateData = {
           nombre: formData.nombre,
           edad: formData.edad,
@@ -375,7 +417,6 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           nivelEnergia: formData.nivelEnergia || undefined,
           descripcion: formData.descripcion,
           foto: formData.foto || undefined,
-          fotos: formData.fotos,
           estaVacunado: formData.estaVacunado,
           estaDesparasitado: formData.estaDesparasitado,
           largoPelaje: formData.largoPelaje,
@@ -390,8 +431,23 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           vacunas: formData.vacunas,
           refugioId: formData.refugioId,
           cuotaAdopcion: formData.cuotaAdopcion ?? 0,
+          amountImagesToCreate: newSlots.length,
+          imagesToDelete: formData.imagenesAEliminar,
+          updatedMainImageId,
         };
-        await shelterService.updateDog(dogId, updateData);
+        const { uploadUrls } = await shelterService.updateDog(
+          dogId,
+          updateData,
+        );
+
+        if (newSlots.length > 0) {
+          setUploadProgress({ current: 0, total: newSlots.length });
+          await shelterService.uploadDogImages(
+            newSlots.map((s) => s.file),
+            uploadUrls,
+            (current, total) => setUploadProgress({ current, total }),
+          );
+        }
       } else {
         // Modo crear — los campos vacíos no son posibles aquí por la validación
         const createData: DogCreateData = {
@@ -405,7 +461,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           nivelEnergia: formData.nivelEnergia as EnergyLevel,
           descripcion: formData.descripcion,
           foto: formData.foto || undefined,
-          fotos: formData.fotos,
+          fotos: formData.fotos.map((s) => s.url),
           estaVacunado: formData.estaVacunado,
           estaDesparasitado: formData.estaDesparasitado,
           largoPelaje: formData.largoPelaje,
@@ -424,13 +480,10 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
         };
         const { uploadUrls } = await shelterService.createDog(createData);
 
-        // Subida de imágenes a GCS usando las signed URLs del backend.
-        // El orden de fotosFiles coincide con el orden de fotos y de uploadUrls.
-        const totalFiles = formData.fotosFiles.length;
-        if (totalFiles > 0) {
-          setUploadProgress({ current: 0, total: totalFiles });
+        if (newSlots.length > 0) {
+          setUploadProgress({ current: 0, total: newSlots.length });
           await shelterService.uploadDogImages(
-            formData.fotosFiles,
+            newSlots.map((s) => s.file),
             uploadUrls,
             (current, total) => setUploadProgress({ current, total }),
           );
@@ -455,6 +508,7 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
     formData,
     errors,
     isDraft,
+    isLoadingDog,
     isSubmitting,
     submitError,
     uploadProgress,

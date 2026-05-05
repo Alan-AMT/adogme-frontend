@@ -14,6 +14,13 @@ import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 
 export type DogStatusFilter = 'all' | DogStatus
 
+export interface DogsPagination {
+  page:       number
+  totalPages: number
+  total:      number
+  limit:      number
+}
+
 export interface UseShelterDogsReturn {
   // Estado
   dogs:            DogListItem[]
@@ -22,20 +29,22 @@ export interface UseShelterDogsReturn {
   selectedDog:     DogListItem | null
   statusFilter:    DogStatusFilter
   search:          string
+  pagination:      DogsPagination
 
   // Filtros
   setStatusFilter: (f: DogStatusFilter) => void
   setSearch:       (s: string) => void
   setSelectedDog:  (d: DogListItem | null) => void
+  setPage:         (p: number) => void
 
   // Lectura
   refetch:         () => Promise<void>
 
   // Mutaciones
-  createDog:     (data: DogCreateData) => Promise<void>
-  updateDog:     (id: string, data: DogUpdateData) => Promise<void>
-  deleteDog:     (id: string) => Promise<void>
-  togglePublish: (id: string) => Promise<void>
+  createDog:        (data: DogCreateData) => Promise<void>
+  updateDog:        (id: string, data: DogUpdateData) => Promise<void>
+  deleteDog:        (id: string) => Promise<void>
+  updateDogStatus:  (dogId: string, status: DogStatus) => Promise<void>
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -48,12 +57,34 @@ export function useShelterDogs(): UseShelterDogsReturn {
     if (!shelterId) hydrate()
   }, [])
 
-  const [dogs,         setDogs]         = useState<DogListItem[]>([])
-  const [isLoading,    setIsLoading]    = useState(true)
-  const [error,        setError]        = useState<string | null>(null)
-  const [selectedDog,  setSelectedDog]  = useState<DogListItem | null>(null)
-  const [statusFilter, setStatusFilter] = useState<DogStatusFilter>('all')
-  const [search,       setSearch]       = useState('')
+  const [dogs,            setDogs]            = useState<DogListItem[]>([])
+  const [isLoading,       setIsLoading]       = useState(true)
+  const [error,           setError]           = useState<string | null>(null)
+  const [selectedDog,     setSelectedDog]     = useState<DogListItem | null>(null)
+  const [statusFilter,    setStatusFilterRaw] = useState<DogStatusFilter>('all')
+  const [search,          setSearchRaw]       = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [page,            setPage]            = useState(1)
+  const [pagination,      setPagination]      = useState<DogsPagination>({
+    page: 1, totalPages: 1, total: 0, limit: 0,
+  })
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 600)
+    return () => clearTimeout(t)
+  }, [search])
+
+  // Cambiar filtros vuelve a la primera página (resetea junto al cambio para
+  // evitar una doble carga al cambiar de status estando en una página > 1)
+  const setStatusFilter = useCallback((f: DogStatusFilter) => {
+    setStatusFilterRaw(f)
+    setPage(1)
+  }, [])
+
+  const setSearch = useCallback((s: string) => {
+    setSearchRaw(s)
+    setPage(1)
+  }, [])
 
   // ── Carga (lectura) ──────────────────────────────────────────────────────────
 
@@ -64,16 +95,23 @@ export function useShelterDogs(): UseShelterDogsReturn {
     try {
       const result = await shelterService.getShelterDogs(shelterId, {
         estado: statusFilter === 'all' ? undefined : statusFilter,
-        search: search || undefined,
-        limit:  100,
+        search: debouncedSearch || undefined,
+        page,
+        limit: 20,
       })
       setDogs(result.data)
+      setPagination({
+        page:       result.page,
+        totalPages: result.totalPages,
+        total:      result.total,
+        limit:      result.limit,
+      })
     } catch (e: unknown) {
       setError((e as Error).message ?? 'Error al cargar perros')
     } finally {
       setIsLoading(false)
     }
-  }, [shelterId, statusFilter, search])
+  }, [shelterId, statusFilter, debouncedSearch, page])
 
   useEffect(() => { load() }, [load])
 
@@ -113,10 +151,10 @@ export function useShelterDogs(): UseShelterDogsReturn {
     }
   }, [selectedDog, load])
 
-  const togglePublish = useCallback(async (id: string) => {
+  const updateDogStatus = useCallback(async (dogId: string, status: DogStatus) => {
     setError(null)
     try {
-      await shelterService.togglePublish(id)
+      await shelterService.updateDogStatus(dogId, status)
       await load()
     } catch (e: unknown) {
       setError((e as Error).message ?? 'Error al cambiar el estado del perro')
@@ -126,9 +164,9 @@ export function useShelterDogs(): UseShelterDogsReturn {
 
   return {
     dogs, isLoading, error, selectedDog,
-    statusFilter, search,
-    setStatusFilter, setSearch, setSelectedDog,
+    statusFilter, search, pagination,
+    setStatusFilter, setSearch, setSelectedDog, setPage,
     refetch: load,
-    createDog, updateDog, deleteDog, togglePublish,
+    createDog, updateDog, deleteDog, updateDogStatus,
   }
 }

@@ -1,19 +1,25 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { dogService } from "../../../../modules/dogs/infrastructure/DogServiceFactory";
+import { DogNotFoundError } from "../../../../modules/dogs/infrastructure/IDogService";
 import DogDetailView from "../../../../modules/dogs/components/DogDetailView";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ dogId: string }> };
+
+async function loadDog(dogId: string) {
+  try {
+    return await dogService.getDogById(dogId);
+  } catch (e) {
+    if (e instanceof DogNotFoundError) notFound();
+    throw e;
+  }
+}
 
 // ── SEO dinámico ──────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const dog = await dogService.getDogBySlug(slug);
-
-  if (!dog) {
-    return { title: "Perro no encontrado | aDOGme" };
-  }
+  const { dogId } = await params;
+  const dog = await loadDog(dogId);
 
   const edadLabel =
     dog.edad < 12
@@ -38,10 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function DogDetail({ params }: Props) {
-  const { slug } = await params;
-  const dog = await dogService.getDogBySlug(slug);
-
-  if (!dog) notFound();
+  const { dogId } = await params;
+  const dog = await loadDog(dogId);
 
   return <DogDetailView dog={dog} />;
 }
