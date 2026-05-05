@@ -40,44 +40,64 @@ export const API_ENDPOINTS = {
   },
 
   DOGS: {
-    LIST:        `${BASE_DOGS}/dogs-ms/dogs`,
-    DETAIL:      (id: number) => `${BASE_DOGS}/dogs-ms/dogs/${id}`,
-    BY_ID:       (id: string) => `${BASE_DOGS}/dogs-ms/dog/${id}`,
-    BY_SLUG:     (slug: string) => `${BASE_DOGS}/dogs-ms/dog/slug/${slug}`,
-    BY_SHELTER:  (id: string) => `${BASE_DOGS}/dogs-ms/dogs/shelter/${id}`,
-    PORTRAIT:    `${BASE_DOGS}/dogs-ms/dogs/portrait`,
-    CREATE:      `${BASE_DOGS}/dogs-ms/dog`,
-    UPDATE:      (id: string) => `${BASE_DOGS}/dogs-ms/dog/${id}`,
-    DELETE:      (id: string) => `${BASE_DOGS}/dogs-ms/dog/${id}`,
-    UPLOAD_MEDIA:`${BASE_DOGS}/api/media/upload`,
+    // LIST: `http://localhost:3001/dogs-ms/dogs`,
+    // DETAIL: (id: number) => `http://localhost:3001/dogs-ms/dogs/${id}`,
+    // BY_ID: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
+    // BY_SHELTER: (id: string) =>
+    //   `http://localhost:3001/dogs-ms/dogs/shelter/${id}`,
+    // CREATE: `http://localhost:3001/dogs-ms/dog`,
+    // UPDATE: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
+    // DELETE: (id: number) => `http://localhost:3001/dogs-ms/dog/${id}`,
+    // UPLOAD_MEDIA: `http://localhost:3001/api/media/upload`,
+    LIST: `${BASE}/dogs-ms/dogs`,
+    PORTRAIT: `${BASE}/dogs-ms/dogs/portrait`,
+    DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
+    BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
+    GET_SHELTER_DASHBOARD_DOGS_STATS: (id: string) =>
+      `${BASE}/dogs-ms/dogs/shelter/${id}/stats`,
+    CREATE: `${BASE}/dogs-ms/dog`,
+    UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    STATUS: (id: string) => `${BASE}/dogs-ms/dog/${id}/status`,
+    UPLOAD_MEDIA: `${BASE}/api/media/upload`,
   },
 
   SHELTERS: {
-    LIST:         `${BASE_SHELTERS}/shelters-ms/shelters`,
-    CREATE:       `${BASE_SHELTERS}/shelters-ms/shelter`,
-    DETAIL:       (id: number | string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}`,
-    BY_ID:        (id: string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}`,
-    BY_OWNER:     (userId: string) => `${BASE_SHELTERS}/shelters-ms/shelter/user/${userId}`,
-    UPDATE:       (id: number | string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}`,
-    STATS:        (id: number | string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}/stats`,
-    UPLOAD_LOGO:  `${BASE_SHELTERS}/api/media/shelter/logo`,
-    UPLOAD_COVER: `${BASE_SHELTERS}/api/media/shelter/cover`,
+    LIST: `${BASE}/shelters-ms/shelters`,
+    CREATE: `${BASE}/shelters-ms/shelter`,
+    DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    BY_ID: (id: string) => `${BASE}/shelters-ms/shelter/${id}`,
+    BY_OWNER: (userId: string) => `${BASE}/shelters-ms/shelter/user/${userId}`,
+    UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    UPLOAD_LOGO: `${BASE}/api/media/shelter/logo`,
+    UPLOAD_COVER: `${BASE}/api/media/shelter/cover`,
+    // LIST: `http://localhost:3002/shelters-ms/shelters`,
+    // CREATE: `http://localhost:3002/shelters-ms/shelter`,
+    // DETAIL: (id: number | string) =>
+    //   `http://localhost:3002/shelters-ms/shelter/${id}`,
+    // BY_ID: (id: string) => `http://localhost:3002/shelters-ms/shelter/${id}`,
+    // UPDATE: (id: number | string) =>
+    //   `http://localhost:3002/shelters-ms/shelter/${id}`,
+    // STATS: (id: number | string) =>
+    //   `http://localhost:3002/api/shelters/${id}/stats`,
+    // UPLOAD_LOGO: `http://localhost:3002/api/media/shelter/logo`,
+    // BY_OWNER: (userId: string) =>
+    //   `http://localhost:3002/shelters-ms/shelter/user/${userId}`,
+    // UPLOAD_COVER: `http://localhost:3002/api/media/shelter/cover`,
   },
 
   ADOPTIONS: {
-    LIST:          `${BASE_ADOPTIONS}/api/adoptions`,
-    BY_ADOPTANTE:  `${BASE_ADOPTIONS}/api/adoptions/me`,
-    BY_SHELTER:    (id: number) => `${BASE_ADOPTIONS}/api/adoptions/shelter/${id}`,
-    DETAIL:        (id: number) => `${BASE_ADOPTIONS}/api/adoptions/${id}`,
-    CREATE:        `${BASE_ADOPTIONS}/api/adoptions`,
-    UPDATE_STATUS: (id: number) => `${BASE_ADOPTIONS}/api/adoptions/${id}/status`,
-    CANCEL:        (id: number) => `${BASE_ADOPTIONS}/api/adoptions/${id}/cancel`,
-  },
-
-  ML: {
-    PROCESS_QUESTIONNAIRE: `${BASE_ML}/predict/process-questionnaire`,
-    COMPATIBLE_DOGS:       `${BASE_ML}/predict/compatible-dogs`,
-    GENERAL_RECOMMENDATIONS: `${BASE_ML}/insights/general-recommendations`,
+    LIST: `${BASE}/api/adoptions`,
+    BY_ADOPTANTE: `${BASE}/api/adoptions/me`,
+    BY_SHELTER: (id: number) => `${BASE}/api/adoptions/shelter/${id}`,
+    DETAIL: (id: number) => `${BASE}/api/adoptions/${id}`,
+    CREATE: `${BASE}/api/adoptions`,
+    UPDATE_STATUS: (id: number) => `${BASE}/api/adoptions/${id}/status`,
+    CANCEL: (id: number) => `${BASE}/api/adoptions/${id}/cancel`,
+    // TODO: endpoint del MS de solicitudes — aún no está listo en backend.
+    // GET_SHELTER_DASHBOARD_REQUESTS_STATS: (id: string) =>
+    //   `${BASE}/applications-ms/applications/shelter/${id}/stats`,
   },
 
   // Conserva los nombres viejos por compatibilidad si algo aún los importa.
