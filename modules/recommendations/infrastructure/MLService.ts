@@ -110,7 +110,7 @@ export class MLService implements IMLService {
   ): Promise<MLRecommendationResponse> {
     // ML calcula user_vector
     const { data } = await mlHttp.post<ProcessQuestionnaireResponse>(
-      API_ENDPOINTS.ML.PROCESS_QUESTIONNAIRE,
+      API_ENDPOINTS.RECOMMENDATIONS.PROCESS_QUESTIONNAIRE,
       answers,
     )
     const userVector = data.user_vector
@@ -146,7 +146,7 @@ export class MLService implements IMLService {
 
     //  Top-N matches del ML
     const { data: matchesRes } = await mlHttp.post<CompatibleDogsResponse>(
-      `${API_ENDPOINTS.ML.COMPATIBLE_DOGS}?top_n=${TOP_N}`,
+      API_ENDPOINTS.RECOMMENDATIONS.COMPATIBLE_DOGS(TOP_N),
       { user_vector: userVector },
     )
     const matches = matchesRes.results ?? []
