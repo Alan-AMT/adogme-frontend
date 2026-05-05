@@ -22,6 +22,7 @@ import {
   getTokenFromCookie,
   setRefreshTokenCookie,
   setTokenCookie,
+  setUserProfileCache,
   setWindowTokens,
 } from "../auth/tokenManager";
 
@@ -50,7 +51,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   refreshToken: null,
   isAuthenticated: false,
 
-  setUser: (user) => set({ user, isAuthenticated: true }),
+  setUser: (user) => {
+    set({ user, isAuthenticated: true });
+    // Persistir el perfil enriquecido del adoptante en localStorage para que
+    // sobreviva al refresh sin depender de un fetch a /me que pueda fallar.
+    if (user?.role === "applicant" && user.id) {
+      const adoptante = user as Adoptante;
+      setUserProfileCache(user.id, {
+        applicantId: adoptante.applicantId,
+        phone:       adoptante.phone,
+        address:     adoptante.address,
+        avatarUrl:   adoptante.avatarUrl,
+        postalCode:  adoptante.postalCode,
+        userVector:  adoptante.userVector ?? null,
+      });
+    }
+  },
 
   setTokens: (accessToken, refreshToken) => {
     setTokenCookie(accessToken);
@@ -75,14 +91,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   hydrate: async () => {
     // Phase 1 — identity (always synchronous, no network)
-    const token = getTokenFromCookie();
+    const token = getTokenFromCookie(); //obtener el token de las cookies
     if (!token) return;
 
     const user = decodeUserFromToken(token);
     if (!user) {
       clearTokenCookies();
       return;
-    }
+    } //decodifica el token para obtener la información del usuario. Si el token no es válido, limpia las cookies y sale.
 
     const refreshToken = getRefreshTokenFromCookie();
     setWindowTokens(token, refreshToken ?? undefined);
@@ -111,7 +127,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     if (user.role === "applicant") {
-      const profile = getUserProfileCache(user.id);
+      const profile = getUserProfileCache(user.id); // se obtiene el perfil enriquecido del adoptante desde localStorage usando su ID. Si existe, se combina con la identidad base para formar el objeto enriched. 
       if (profile) {
         enriched = {
           ...enriched,

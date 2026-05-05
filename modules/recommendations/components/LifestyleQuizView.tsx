@@ -27,7 +27,7 @@ export default function LifestyleQuizView() {
     nextStep,
     prevStep,
     submitQuiz,
-  } = useLifestyleQuiz()
+  } = useLifestyleQuiz() // hook que maneja el estado del quiz, respuestas, validaciones y envío.
 
   const isFirstStep = currentStep === 0
   const isLastStep  = currentStep === TOTAL_STEPS - 1
@@ -36,7 +36,7 @@ export default function LifestyleQuizView() {
 
   async function handleSubmit() {
     const result = await submitQuiz()
-    if (result) router.push('/mi-match')
+    if (result) router.push('/mi-match') //te manda a las recomendaciones
   }
 
   return (

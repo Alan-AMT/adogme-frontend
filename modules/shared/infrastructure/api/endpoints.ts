@@ -1,119 +1,122 @@
 // modules/shared/infrastructure/api/endpoints.ts
 // ─────────────────────────────────────────────────────────────────────────────
 // ÚNICO lugar donde viven las URLs de la API.
-// Los MockServices ignoran este archivo hoy.
-// Cuando NEXT_PUBLIC_USE_MOCK=false, SOLO este archivo cambia las rutas.
+//
+// En PRODUCCIÓN: todos los MS están detrás de un único gateway.
+//   → cambia las constantes a `process.env.NEXT_PUBLIC_API_URL` y listo.
+//
+// En LOCAL: cada MS corre en su puerto, las URLs son absolutas y completas.
+//   → modificar acá cuando un puerto cambie.
+//
+// Cualquier servicio (AuthService, ApiDogService, MLService, etc.) usa
+// apiClient con la URL completa que viene de aquí. apiClient.baseURL = ""
+// porque las URLs ya son absolutas.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
-const ML = process.env.NEXT_PUBLIC_ML_API_URL ?? "";
+// ─── Bases por microservicio ─────────────────────────────────────────────────
+// LOCAL: hardcodeamos el puerto de cada MS.
+// PROD:  reemplazar por process.env.NEXT_PUBLIC_API_URL (un único gateway).
+
+const BASE_AUTH       = "http://localhost:3006";  // auth-ms
+const BASE_APPLICANTS = "http://localhost:3009";  // applicants-ms
+const BASE_DOGS       = "http://localhost:3002";  // dogs-ms
+const BASE_SHELTERS   = "http://localhost:8080";  // shelters-ms
+const BASE_ADOPTIONS  = "http://localhost:3006";  // adoptions-ms (placeholder)
+const BASE_ML         = "http://localhost:8000";  // ml-ms
+const BASE_CHATBOT    = "http://localhost:8006";  // chatbot
+const BASE_ADMIN      = "http://localhost:3006";  // admin (placeholder)
+
+// ─── Endpoints ───────────────────────────────────────────────────────────────
 
 export const API_ENDPOINTS = {
   AUTH: {
-    // LOGIN: `http://localhost:3001/auth-ms/user/login`,
-    // REGISTER: `http://localhost:3001/auth-ms/adopter`,
-    // REGISTER_SHELTER: `http://localhost:3001/auth-ms/shelter`,
-    // REFRESH: `http://localhost:3001/auth-ms/user/update-tokens`,
-    // LOGOUT: `http://localhost:3001/api/auth/logout`,
-    // FORGOT: `http://localhost:3001/api/auth/forgot-password`,
-    // RESET: `http://localhost:3001/api/auth/reset-password`,
-    // ME: `http://localhost:3001/api/auth/me`,
-    LOGIN: `${BASE}/auth-ms/user/login`,
-    REGISTER: `${BASE}/auth-ms/adopter`,
-    REGISTER_SHELTER: `${BASE}/auth-ms/shelter`,
-    REFRESH: `${BASE}/auth-ms/user/update-tokens`,
-    LOGOUT: `${BASE}/api/auth/logout`,
-    FORGOT: `${BASE}/api/auth/forgot-password`,
-    RESET: `${BASE}/api/auth/reset-password`,
+    LOGIN:            `${BASE_AUTH}/auth-ms/user/login`,
+    REGISTER:         `${BASE_AUTH}/auth-ms/adopter`,
+    REGISTER_SHELTER: `${BASE_AUTH}/auth-ms/shelter`,
+    REFRESH:          `${BASE_AUTH}/auth-ms/user/update-tokens`,
+    LOGOUT:           `${BASE_AUTH}/auth-ms/user/logout`,
+    FORGOT:           `${BASE_AUTH}/auth-ms/user/forgot-password`,
+    RESET:            `${BASE_AUTH}/auth-ms/user/reset-password`,
   },
 
   DOGS: {
-    // LIST: `http://localhost:3001/dogs-ms/dogs`,
-    // DETAIL: (id: number) => `http://localhost:3001/dogs-ms/dogs/${id}`,
-    // BY_ID: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
-    // BY_SHELTER: (id: string) =>
-    //   `http://localhost:3001/dogs-ms/dogs/shelter/${id}`,
-    // CREATE: `http://localhost:3001/dogs-ms/dog`,
-    // UPDATE: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
-    // DELETE: (id: number) => `http://localhost:3001/dogs-ms/dog/${id}`,
-    // UPLOAD_MEDIA: `http://localhost:3001/api/media/upload`,
-    LIST: `${BASE}/dogs-ms/dogs`,
-    PORTRAIT: `${BASE}/dogs-ms/dogs/portrait`,
-    DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
-    BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
-    CREATE: `${BASE}/dogs-ms/dog`,
-    UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    UPLOAD_MEDIA: `${BASE}/api/media/upload`,
+    LIST:        `${BASE_DOGS}/dogs-ms/dogs`,
+    DETAIL:      (id: number) => `${BASE_DOGS}/dogs-ms/dogs/${id}`,
+    BY_ID:       (id: string) => `${BASE_DOGS}/dogs-ms/dog/${id}`,
+    BY_SLUG:     (slug: string) => `${BASE_DOGS}/dogs-ms/dog/slug/${slug}`,
+    BY_SHELTER:  (id: string) => `${BASE_DOGS}/dogs-ms/dogs/shelter/${id}`,
+    PORTRAIT:    `${BASE_DOGS}/dogs-ms/dogs/portrait`,
+    CREATE:      `${BASE_DOGS}/dogs-ms/dog`,
+    UPDATE:      (id: string) => `${BASE_DOGS}/dogs-ms/dog/${id}`,
+    DELETE:      (id: string) => `${BASE_DOGS}/dogs-ms/dog/${id}`,
+    UPLOAD_MEDIA:`${BASE_DOGS}/api/media/upload`,
   },
 
   SHELTERS: {
-    LIST: `${BASE}/shelters-ms/shelters`,
-    CREATE: `${BASE}/shelters-ms/shelter`,
-    DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    BY_ID: (id: string) => `${BASE}/shelters-ms/shelter/${id}`,
-    BY_OWNER: (userId: string) => `${BASE}/shelters-ms/shelter/user/${userId}`,
-    UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    STATS: (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
-    UPLOAD_LOGO: `${BASE}/api/media/shelter/logo`,
-    UPLOAD_COVER: `${BASE}/api/media/shelter/cover`,
-    // LIST: `http://localhost:3002/shelters-ms/shelters`,
-    // CREATE: `http://localhost:3002/shelters-ms/shelter`,
-    // DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    // BY_ID: (id: string) => `http://localhost:3002/shelters-ms/shelter/${id}`,
-    // UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    // STATS: (id: number | string) => `${BASE}/api/shelters/${id}/stats`,
-    // UPLOAD_LOGO: `http://localhost:3002/api/media/shelter/logo`,
-    // BY_OWNER: (userId: string) =>
-    //   `http://localhost:3002/shelters-ms/shelter/user/${userId}`,
-    // UPLOAD_COVER: `http://localhost:3002/api/media/shelter/cover`,
+    LIST:         `${BASE_SHELTERS}/shelters-ms/shelters`,
+    CREATE:       `${BASE_SHELTERS}/shelters-ms/shelter`,
+    DETAIL:       (id: number | string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}`,
+    BY_ID:        (id: string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}`,
+    BY_OWNER:     (userId: string) => `${BASE_SHELTERS}/shelters-ms/shelter/user/${userId}`,
+    UPDATE:       (id: number | string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}`,
+    STATS:        (id: number | string) => `${BASE_SHELTERS}/shelters-ms/shelter/${id}/stats`,
+    UPLOAD_LOGO:  `${BASE_SHELTERS}/api/media/shelter/logo`,
+    UPLOAD_COVER: `${BASE_SHELTERS}/api/media/shelter/cover`,
   },
 
   ADOPTIONS: {
-    LIST: `${BASE}/api/adoptions`,
-    BY_ADOPTANTE: `${BASE}/api/adoptions/me`,
-    BY_SHELTER: (id: number) => `${BASE}/api/adoptions/shelter/${id}`,
-    DETAIL: (id: number) => `${BASE}/api/adoptions/${id}`,
-    CREATE: `${BASE}/api/adoptions`,
-    UPDATE_STATUS: (id: number) => `${BASE}/api/adoptions/${id}/status`,
-    CANCEL: (id: number) => `${BASE}/api/adoptions/${id}/cancel`,
+    LIST:          `${BASE_ADOPTIONS}/api/adoptions`,
+    BY_ADOPTANTE:  `${BASE_ADOPTIONS}/api/adoptions/me`,
+    BY_SHELTER:    (id: number) => `${BASE_ADOPTIONS}/api/adoptions/shelter/${id}`,
+    DETAIL:        (id: number) => `${BASE_ADOPTIONS}/api/adoptions/${id}`,
+    CREATE:        `${BASE_ADOPTIONS}/api/adoptions`,
+    UPDATE_STATUS: (id: number) => `${BASE_ADOPTIONS}/api/adoptions/${id}/status`,
+    CANCEL:        (id: number) => `${BASE_ADOPTIONS}/api/adoptions/${id}/cancel`,
   },
 
+  ML: {
+    PROCESS_QUESTIONNAIRE: `${BASE_ML}/predict/process-questionnaire`,
+    COMPATIBLE_DOGS:       `${BASE_ML}/predict/compatible-dogs`,
+    GENERAL_RECOMMENDATIONS: `${BASE_ML}/insights/general-recommendations`,
+  },
+
+  // Conserva los nombres viejos por compatibilidad si algo aún los importa.
   RECOMMENDATIONS: {
-    GENERATE: `${ML}/api/ml/recommendations`,
-    BY_ADOPTANTE: `${ML}/api/ml/recommendations/me`,
-    QUIZ: `${BASE}/api/quiz`,
-    QUIZ_DETAIL: (id: number) => `${BASE}/api/quiz/${id}`,
+    GENERATE:     `${BASE_ML}/predict/compatible-dogs`,
+    BY_ADOPTANTE: `${BASE_ML}/api/ml/recommendations/me`,
+    QUIZ:         `${BASE_APPLICANTS}/api/quiz`,
+    QUIZ_DETAIL:  (id: number) => `${BASE_APPLICANTS}/api/quiz/${id}`,
   },
 
   CHATBOT: {
-    MESSAGE: `${BASE}/api/chatbot/message`,
-    HISTORY: `${BASE}/api/chatbot/history`,
+    MESSAGE: `${BASE_CHATBOT}/api/chatbot/message`,
+    HISTORY: `${BASE_CHATBOT}/api/chatbot/history`,
   },
 
   FAVORITES: {
-    LIST: `${BASE}/api/favorites`,
-    ADD: (dogId: number) => `${BASE}/api/favorites/${dogId}`,
-    REMOVE: (dogId: number) => `${BASE}/api/favorites/${dogId}`,
+    LIST:   `${BASE_APPLICANTS}/api/favorites`,
+    ADD:    (dogId: number) => `${BASE_APPLICANTS}/api/favorites/${dogId}`,
+    REMOVE: (dogId: number) => `${BASE_APPLICANTS}/api/favorites/${dogId}`,
   },
 
   APPLICANTS: {
-    REGISTER: `${BASE}/applicants-ms/applicant`,
-    ME: `${BASE}/applicants-ms/applicant/me`,
-    // REGISTER: `http://localhost:3001/applicants-ms/applicant`,
-    UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
+    REGISTER: `${BASE_APPLICANTS}/applicants-ms/applicant`,
+    ME:       `${BASE_APPLICANTS}/applicants-ms/applicant/me`,
+    UPDATE:   (userId: string) => `${BASE_APPLICANTS}/applicants-ms/applicant/${userId}`,
+    // TODO(backend): PATCH para persistir el user_vector cuando el endpoint exista.
+    UPDATE_USER_VECTOR: (userId: string) =>
+      `${BASE_APPLICANTS}/applicants-ms/applicant/${userId}/user-vector`,
   },
 
   ADMIN: {
-    STATS: `${BASE}/api/admin/stats`,
-    SHELTERS: `${BASE}/api/admin/shelters`,
-    SHELTER_DETAIL: (id: number) => `${BASE}/api/admin/shelters/${id}`,
-    APPROVE_SHELTER: (id: number) => `${BASE}/api/admin/shelters/${id}/approve`,
-    REJECT_SHELTER: (id: number) => `${BASE}/api/admin/shelters/${id}/reject`,
-    DOGS: `${BASE}/api/admin/dogs`,
-    DOG_DETAIL: (id: number) => `${BASE}/api/admin/dogs/${id}`,
-    USERS: `${BASE}/api/admin/users`,
-    CONTENT: `${BASE}/api/admin/content`,
+    STATS:           `${BASE_ADMIN}/api/admin/stats`,
+    SHELTERS:        `${BASE_ADMIN}/api/admin/shelters`,
+    SHELTER_DETAIL:  (id: number) => `${BASE_ADMIN}/api/admin/shelters/${id}`,
+    APPROVE_SHELTER: (id: number) => `${BASE_ADMIN}/api/admin/shelters/${id}/approve`,
+    REJECT_SHELTER:  (id: number) => `${BASE_ADMIN}/api/admin/shelters/${id}/reject`,
+    DOGS:            `${BASE_ADMIN}/api/admin/dogs`,
+    DOG_DETAIL:      (id: number) => `${BASE_ADMIN}/api/admin/dogs/${id}`,
+    USERS:           `${BASE_ADMIN}/api/admin/users`,
+    CONTENT:         `${BASE_ADMIN}/api/admin/content`,
   },
 } as const;

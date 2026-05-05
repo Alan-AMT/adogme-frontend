@@ -16,8 +16,6 @@ import '../styles/recommendations.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const RESULTS_KEY = (id: string | number) => `ml-results-${id}`
-
 function compatClass(score: number): string {
   if (score >= 75) return 'rec-card__compat--high'
   if (score >= 50) return 'rec-card__compat--mid'
@@ -210,13 +208,13 @@ function formatGenDate(iso: string): string {
 // ─── Vista principal ──────────────────────────────────────────────────────────
 
 export function RecommendationsView() {
-  const { user } = useAuthStore()
+  const { user } = useAuthStore() // se obtiene desde el authStore
   const [result, setResult]   = useState<MLRecommendationResponse | null>(null)
   const [loaded, setLoaded]   = useState(false)
   const [error,  setError]    = useState<string | null>(null)
 
-  // Si user.userVector ya existe (vino en /me y vive en cookie),
-  // pedimos top matches directo. Si no existe, EmptyState invita al quiz.
+//este useEffect es en caso de que el userVector ya este en la authStore
+// es decir viva en las cookies.
   useEffect(() => {
     if (!user?.id) { setLoaded(true); return }
 
@@ -224,12 +222,6 @@ export function RecommendationsView() {
       user.role === 'applicant' ? user.userVector ?? null : null
 
     if (!userVector) {
-      // Fallback transitorio: leer del localStorage si el quiz lo dejó ahí
-      // (mientras applicants-ms no devuelve userVector en /me).
-      try {
-        const raw = localStorage.getItem(RESULTS_KEY(user.id))
-        if (raw) setResult(JSON.parse(raw) as MLRecommendationResponse)
-      } catch { /* noop */ }
       setLoaded(true)
       return
     }
@@ -273,6 +265,7 @@ export function RecommendationsView() {
           )}
         </div>
 
+        
         <Link href="/mi-match/quiz" className="rec-header__update">
           <span
             className="material-symbols-outlined"
