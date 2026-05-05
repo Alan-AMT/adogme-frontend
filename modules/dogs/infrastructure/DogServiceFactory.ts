@@ -17,4 +17,4 @@ function createDogService(): IDogService {
 }
 
 /** Singleton — importar siempre desde aquí, nunca instanciar el servicio directamente */
-export const dogService: IDogService = createDogService();
+export const dogService: IDogService = createDogService()

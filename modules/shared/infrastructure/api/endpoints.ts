@@ -22,9 +22,9 @@ export const API_ENDPOINTS = {
     REGISTER: `${BASE}/auth-ms/adopter`,
     REGISTER_SHELTER: `${BASE}/auth-ms/shelter`,
     REFRESH: `${BASE}/auth-ms/user/update-tokens`,
-    LOGOUT: `${BASE}/api/auth/logout`,
-    FORGOT: `${BASE}/api/auth/forgot-password`,
-    RESET: `${BASE}/api/auth/reset-password`,
+    LOGOUT: `${BASE}/auth-ms/user/logout`,
+    FORGOT: `${BASE}/auth-ms/user/forgot-password`,
+    RESET: `${BASE}/auth-ms/user/reset-password`,
   },
 
   DOGS: {
@@ -89,7 +89,7 @@ export const API_ENDPOINTS = {
   },
 
   RECOMMENDATIONS: {
-    GENERATE: `${ML}/api/ml/recommendations`,
+    GENERATE: `${ML}/predict/compatible-dogs`,
     BY_ADOPTANTE: `${ML}/api/ml/recommendations/me`,
     QUIZ: `${BASE}/api/quiz`,
     QUIZ_DETAIL: (id: number) => `${BASE}/api/quiz/${id}`,
@@ -109,8 +109,10 @@ export const API_ENDPOINTS = {
   APPLICANTS: {
     REGISTER: `${BASE}/applicants-ms/applicant`,
     ME: `${BASE}/applicants-ms/applicant/me`,
-    // REGISTER: `http://localhost:3001/applicants-ms/applicant`,
     UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
+    // TODO(backend): PATCH para persistir el user_vector cuando el endpoint exista.
+    UPDATE_USER_VECTOR: (userId: string) =>
+      `${BASE}/applicants-ms/applicant/${userId}/user-vector`,
   },
 
   ADMIN: {

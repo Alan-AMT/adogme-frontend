@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
+import { mlService } from '../infrastructure/MLServiceFactory'
 import type {
   MLRecommendationResponse,
   DogRecommendation,
@@ -14,8 +15,6 @@ import type {
 import '../styles/recommendations.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const RESULTS_KEY = (id: string | number) => `ml-results-${id}`
 
 function compatClass(score: number): string {
   if (score >= 75) return 'rec-card__compat--high'
@@ -209,18 +208,34 @@ function formatGenDate(iso: string): string {
 // ─── Vista principal ──────────────────────────────────────────────────────────
 
 export function RecommendationsView() {
-  const { user } = useAuthStore()
-  const [result, setResult]               = useState<MLRecommendationResponse | null>(null)
-  const [loaded, setLoaded]               = useState(false)
+  const { user } = useAuthStore() // se obtiene desde el authStore
+  const [result, setResult]   = useState<MLRecommendationResponse | null>(null)
+  const [loaded, setLoaded]   = useState(false)
+  const [error,  setError]    = useState<string | null>(null)
 
+//este useEffect es en caso de que el userVector ya este en la authStore
+// es decir viva en las cookies.
   useEffect(() => {
     if (!user?.id) { setLoaded(true); return }
-    try {
-      const raw = localStorage.getItem(RESULTS_KEY(user.id))
-      if (raw) setResult(JSON.parse(raw) as MLRecommendationResponse)
-    } catch { /* noop */ }
-    setLoaded(true)
-  }, [user?.id])
+
+    const userVector =
+      user.role === 'applicant' ? user.userVector ?? null : null
+
+    if (!userVector) {
+      setLoaded(true)
+      return
+    }
+
+    setLoaded(false)
+    mlService
+      .getMatchesByUserVector(user.id, userVector)
+      .then(setResult)
+      .catch(err => {
+        console.error('[mi-match] getMatchesByUserVector failed:', err)
+        setError(err instanceof Error ? err.message : 'Error al cargar matches')
+      })
+      .finally(() => setLoaded(true))
+  }, [user?.id, user?.role === 'applicant' ? user.userVector : null])
 
   if (!loaded) return <LoadingSkeleton />
 
@@ -250,6 +265,7 @@ export function RecommendationsView() {
           )}
         </div>
 
+        
         <Link href="/mi-match/quiz" className="rec-header__update">
           <span
             className="material-symbols-outlined"
@@ -271,6 +287,24 @@ export function RecommendationsView() {
             auto_awesome
           </span>
           <p className="rec-summary__text">{result.resumen}</p>
+        </div>
+      )}
+
+      {/* Error (cuando getMatchesByUserVector falla) */}
+      {error && !hasResults && (
+        <div
+          style={{
+            padding: '1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '0.75rem',
+            color: '#b91c1c',
+            fontSize: '0.85rem',
+            margin: '0 auto 1rem',
+            maxWidth: 600,
+          }}
+        >
+          {error}
         </div>
       )}
 

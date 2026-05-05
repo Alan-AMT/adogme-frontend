@@ -66,4 +66,23 @@ export class ProfileService implements IProfileService {
   ): Promise<void> {
     throw new Error("Not implemented");
   }
+
+  /**
+   * TODO(backend): cuando exista PATCH /applicants-ms/applicant/:id/user-vector,
+   * descomentar el bloque y borrar el throw.
+   *
+   *   await apiClient.patch(
+   *     API_ENDPOINTS.APPLICANTS.UPDATE_USER_VECTOR(applicantId),
+   *     { userVector },
+   *   )
+   *
+   * Por ahora el método queda declarado para que el flujo del quiz lo invoque
+   * y solo lance error que el caller maneja (no bloquea el render de matches).
+   */
+  async updateUserVector(
+    _applicantId: string,
+    _userVector: [number, number, number, number],
+  ): Promise<void> {
+    throw new Error("updateUserVector: endpoint pendiente en applicants-ms");
+  }
 }

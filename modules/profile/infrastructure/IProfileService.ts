@@ -19,4 +19,14 @@ export interface IProfileService {
 
   /** Guarda/actualiza las preferencias ML del usuario */
   saveLifestylePreferences(userId: string, answers: LifestyleQuizAnswers): Promise<void>
+
+  /**
+   * Persiste el user_vector calculado por el ML en el adoptante.
+   * En backend será PATCH /applicants-ms/applicant/:id/user-vector.
+   * El FE toma applicantId del authStore (cookie).
+   */
+  updateUserVector(
+    applicantId: string,
+    userVector: [number, number, number, number],
+  ): Promise<void>
 }

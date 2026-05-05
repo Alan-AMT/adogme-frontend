@@ -83,4 +83,18 @@ export class MockProfileService implements IProfileService {
     if (typeof window === 'undefined') return
     localStorage.setItem(LIFESTYLE_KEY(userId), JSON.stringify(answers))
   }
+
+  // ── updateUserVector ──────────────────────────────────────────────────────────
+  // Mock: persiste en localStorage para que la lógica del quiz funcione local.
+  // El servicio real reemplaza esto con un PATCH al BE.
+  async updateUserVector(
+    applicantId: string,
+    userVector: [number, number, number, number],
+  ): Promise<void> {
+    await delay(200)
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem(`uv-${applicantId}`, JSON.stringify(userVector))
+    } catch { /* noop */ }
+  }
 }
