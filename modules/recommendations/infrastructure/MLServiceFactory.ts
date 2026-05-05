@@ -1,6 +1,14 @@
 // modules/recommendations/infrastructure/MLServiceFactory.ts
+// Selecciona implementación de IMLService según env:
+//   NEXT_PUBLIC_USE_MOCK=true  → MockMLService (sin red)
+//   default                    → MLService real (HTTP al microservicio ML)
+
 import type { IMLService } from './IMLService'
+import { MLService }     from './MLService'
 import { MockMLService } from './MockMLService'
 
-export const mlService: IMLService = new MockMLService()
-// swap por implementación real (API call al backend ML) cuando exista
+const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+
+export const mlService: IMLService = useMock
+  ? new MockMLService()
+  : new MLService()

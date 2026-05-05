@@ -90,19 +90,19 @@ function mockMlScore(dog: Dog): number {
 
 // ─── Razones del match ────────────────────────────────────────────────────────
 
-function buildReasons(userVec: number[], dogVec: number[], score: number) {
+function buildReasons(userVec: number[], dogVec: number[], _score: number) {
   const categories = [
-    { label: 'actividad',   idx: 0 },
-    { label: 'espacio',     idx: 1 },
-    { label: 'experiencia', idx: 2 },
-    { label: 'cuidados',    idx: 3 },
-  ] as const
+    { id: 'activity'   as const, label: 'actividad',   idx: 0 },
+    { id: 'housing'    as const, label: 'espacio',     idx: 1 },
+    { id: 'experience' as const, label: 'experiencia', idx: 2 },
+    { id: 'care'       as const, label: 'cuidados',    idx: 3 },
+  ]
 
   return categories.map(cat => {
     const diff = Math.abs(userVec[cat.idx] - dogVec[cat.idx])
     const esPositivo = diff < 1.5
     return {
-      categoria: cat.label,
+      categoria: cat.id,
       texto: esPositivo
         ? `Tu perfil de ${cat.label} es compatible con este perro`
         : `Hay diferencia en ${cat.label} — considera si se adapta a tu estilo`,
@@ -182,5 +182,21 @@ export class MockMLService implements IMLService {
       fechaGeneracion: now,
       version:         VERSION,
     }
+  }
+
+  // En el mock no tenemos un user_vector "canónico", pero respetamos el contrato.
+  // Si te llaman con un userVector pre-existente, regeneramos con respuestas
+  // neutras (3) y luego reordenamos contra ese vector.
+  async getMatchesByUserVector(
+    adoptanteId: string,
+    _userVector: [number, number, number, number],
+  ): Promise<MLRecommendationResponse> {
+    const neutral: LifestyleQuizAnswers = {
+      q1: 3, q2: 3, q3: 3, q4: 3, q5: 3,
+      q6: 3, q7: 3, q8: 3, q9: 3, q10: 3,
+      q11: 3, q12: 3, q13: 3, q14: 3, q15: 3,
+      q16: 3, q17: 3, q18: 3, q19: 3, q20: 3,
+    }
+    return this.generateRecommendations(adoptanteId, neutral)
   }
 }

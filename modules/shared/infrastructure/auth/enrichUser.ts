@@ -15,6 +15,29 @@ import {
   setUserProfileCache,
 } from "./tokenManager";
 
+// ─── x-apigateway-api-userinfo header ─────────────────────────────────────────
+// En producción, el GCP API Gateway valida el JWT y le inyecta a los MS internos
+// este header con el payload del user codificado en Base64URL. En local sin
+// gateway, lo simulamos para que los guards del BE funcionen igual.
+
+function toBase64Url(input: string): string {
+  // btoa solo acepta latin-1, así que codificamos UTF-8 a bytes primero.
+  const utf8Bytes = new TextEncoder().encode(input);
+  let binary = "";
+  utf8Bytes.forEach(b => { binary += String.fromCharCode(b); });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function buildUserInfoHeader(user: { id: string; role: string; name?: string; email?: string }): string {
+  const payload = {
+    id:    user.id,
+    role:  user.role,
+    name:  user.name ?? "",
+    email: user.email ?? "",
+  };
+  return toBase64Url(JSON.stringify(payload));
+}
+
 // ─── Shelter enrichment ───────────────────────────────────────────────────────
 
 async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
@@ -24,6 +47,7 @@ async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
       "Content-Type": "application/json",
       "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
       Authorization: `Bearer ${window.__authToken}`,
+      "x-apigateway-api-userinfo": buildUserInfoHeader(user),
     },
   });
 
@@ -66,6 +90,7 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
       "Content-Type": "application/json",
       "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
       Authorization: `Bearer ${window.__authToken}`,
+      "x-apigateway-api-userinfo": buildUserInfoHeader(user),
     },
   });
 
@@ -78,6 +103,12 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
   const applicantId: string = profile.id;
   const postalCode: string | undefined = profile.address;
   const avatarUrl: string | undefined = profile.avatarUrl ?? profile.avatar;
+  // applicants-ms puede devolver el userVector en el campo `vector` o `userVector`.
+  const userVectorRaw = profile.vector ?? profile.userVector ?? null;
+  const userVector =
+    Array.isArray(userVectorRaw) && userVectorRaw.length === 4
+      ? (userVectorRaw as [number, number, number, number])
+      : null;
 
   // Persist to Web Storage API for fast hydration on refresh
   setUserProfileCache(user.id, {
@@ -86,9 +117,10 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
     avatarUrl,
     applicantId,
     postalCode,
+    userVector,
   });
 
-  return { ...user, phone, address, avatarUrl, applicantId, postalCode };
+  return { ...user, phone, address, avatarUrl, applicantId, postalCode, userVector };
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

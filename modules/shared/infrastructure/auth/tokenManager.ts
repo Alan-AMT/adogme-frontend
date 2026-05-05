@@ -164,6 +164,7 @@ export interface UserProfileCache {
   address?: string;
   avatarUrl?: string;
   postalCode?: string;
+  userVector?: [number, number, number, number] | null;
 }
 
 export function setUserProfileCache(
