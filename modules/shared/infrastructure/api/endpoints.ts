@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
     LOGOUT: `${BASE}/auth-ms/user/logout`,
     FORGOT: `${BASE}/auth-ms/user/forgot-password`,
     RESET: `${BASE}/auth-ms/user/reset-password`,
+    CHANGE_PASSWORD: `${BASE}/auth-ms/user/change-password`,
   },
 
   DOGS: {

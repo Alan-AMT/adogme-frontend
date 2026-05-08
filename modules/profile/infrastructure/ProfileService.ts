@@ -47,10 +47,13 @@ export class ProfileService implements IProfileService {
 
   async changePassword(
     _userId: string,
-    _currentPassword: string,
-    _newPassword: string,
+    currentPassword: string,
+    newPassword: string,
   ): Promise<void> {
-    throw new Error("Not implemented");
+    await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+      currentPassword,
+      newPassword,
+    });
   }
 
   async updateUserVector(
