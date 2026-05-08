@@ -1,4 +1,5 @@
 // modules/profile/infrastructure/ProfileService.ts
+import axios from "axios";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import type { Adoptante } from "@/modules/shared/domain/User";
@@ -50,10 +51,17 @@ export class ProfileService implements IProfileService {
     currentPassword: string,
     newPassword: string,
   ): Promise<void> {
-    await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
-      currentPassword,
-      newPassword,
-    });
+    try {
+      await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+        currentPassword,
+        newPassword,
+      });
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 400) {
+        throw new Error("La contraseña actual no es válida.");
+      }
+      throw err;
+    }
   }
 
   async updateUserVector(

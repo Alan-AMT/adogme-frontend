@@ -121,7 +121,13 @@ apiClient.interceptors.response.use(
     };
 
     // 401 — safety-net refresh (clock drift, server-side revocation)
-    if (error.response?.status === 401 && !original._retry) {
+    // Skip refresh for auth endpoints (login, register) — a 401 there is a real credential error
+    const isAuthEndpoint =
+      original.url?.includes("/auth-ms/user/login") ||
+      original.url?.includes("/auth-ms/adopter") ||
+      original.url?.includes("/auth-ms/shelter");
+
+    if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true;
       try {
         const newToken = await performTokenRefresh();
