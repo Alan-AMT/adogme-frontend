@@ -75,7 +75,7 @@ export default function ShelterPublicView({ id }: Props) {
       {/* ── Banner ── */}
       <div className="sp-banner">
         <Image
-          src={shelter.imagenPortada}
+          src={shelter.imagenPortada || '/assets/shelters/shelter1-cover.jpg'}
           alt={`Banner de ${shelter.nombre}`}
           fill
           className="sp-banner__img"
@@ -85,16 +85,14 @@ export default function ShelterPublicView({ id }: Props) {
         <div className="sp-banner__overlay" />
 
         <div className="sp-banner__content">
-          {shelter.logo && (
-            <div className="sp-banner__logo">
-              <Image
-                src={shelter.logo}
-                alt={`Logo ${shelter.nombre}`}
-                fill
-                style={{ objectFit: "contain", padding: "6px" }}
-              />
-            </div>
-          )}
+          <div className="sp-banner__logo">
+            <Image
+              src={shelter.logo || '/assets/avatars/avatar-shelter.png'}
+              alt={`Logo ${shelter.nombre}`}
+              fill
+              style={{ objectFit: "contain", padding: "6px" }}
+            />
+          </div>
 
           <div className="sp-banner__info">
             <h1 className="sp-banner__name">{shelter.nombre}</h1>
@@ -186,7 +184,7 @@ export default function ShelterPublicView({ id }: Props) {
                   >
                     <div className="sp-dog-card__media">
                       <Image
-                        src={dog.foto ?? ""}
+                        src={dog.foto || '/assets/dogs/dog1.jpg'}
                         alt={dog.nombre}
                         fill
                         className="sp-dog-card__img"

@@ -10,7 +10,7 @@ import "../styles/homeShelters.css";
 // ─── Featured card (large, left column, spans 2 rows on desktop) ──────────────
 
 function FeaturedCard({ s }: { s: ShelterCard }) {
-  const cover = s.imagenPortada || "/assets/shelters/shelter1.jpg";
+  const cover = s.imagenPortada || "/assets/shelters/shelter1-cover.jpg";
   return (
     <div className="hs-featured-wrap">
       <Link href={`/refugios/${s.id}`} className="hs-featured">
@@ -82,7 +82,7 @@ function FeaturedCard({ s }: { s: ShelterCard }) {
 // ─── Small card (right side grid) ─────────────────────────────────────────────
 
 function SmallCard({ s }: { s: ShelterCard }) {
-  const cover = s.imagenPortada || "/assets/shelters/shelter1.jpg";
+  const cover = s.imagenPortada || "/assets/shelters/shelter1-cover.jpg";
   return (
     <Link href={`/refugios/${s.id}`} className="hs-small">
       <div className="hs-small__media">

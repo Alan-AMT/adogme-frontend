@@ -72,7 +72,7 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
             <div className="dp-photo-panel">
               <div className="dp-photo-inner">
                 <Image
-                  src={dog.foto ?? ''}
+                  src={dog.foto || '/assets/dogs/dog1.jpg'}
                   alt={`Foto de ${dog.nombre}`}
                   fill
                   className="dp-photo-img"

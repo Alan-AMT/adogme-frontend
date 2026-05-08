@@ -228,37 +228,36 @@ p {
 /* =========================
    QuickFilterChips — infinite marquee
    ========================= */
-@keyframes chips-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-25%); }
-}
-
 .chips-track-wrapper {
   overflow: hidden;
-  /* fade edges */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 8%,
-    black 92%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 8%,
-    black 92%,
-    transparent 100%
-  );
+  position: relative;
+}
+
+/* fade edges via pseudo-elements */
+.chips-track-wrapper::before,
+.chips-track-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 8%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.chips-track-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.chips-track-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
 }
 
 .chips-track {
   display: flex;
-  gap: 0.5rem;           /* gap-2 */
+  gap: 0.5rem;
   width: max-content;
-  animation: chips-scroll 34s linear infinite;
-}
-
-.chips-track:hover {
-  animation-play-state: paused;
+  will-change: transform;
 }

@@ -26,7 +26,7 @@ export function ShelterBanner({ shelter, showContactInfo = false }: ShelterBanne
       {/* ── Imagen de portada ── */}
       <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 32vw, 380px)', background: '#1a1a2e' }}>
         <Image
-          src={shelter.imagenPortada}
+          src={shelter.imagenPortada || '/assets/shelters/shelter1-cover.jpg'}
           alt={`Portada de ${shelter.nombre}`}
           fill
           priority
@@ -63,7 +63,7 @@ export function ShelterBanner({ shelter, showContactInfo = false }: ShelterBanne
             boxShadow: '0 8px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4)',
           }}>
             <Image
-              src={shelter.logo}
+              src={shelter.logo || '/assets/avatars/avatar-shelter.png'}
               alt={`Logo de ${shelter.nombre}`}
               fill
               className="object-cover object-center"

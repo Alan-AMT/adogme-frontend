@@ -1,5 +1,5 @@
-// modules/home/components/QuickFilterChips.tsx
-// Fila de filtros rápidos — marquee infinito entre hero y sección de perros
+"use client";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { Icon } from "@/modules/shared/components/ui/Icon";
 
@@ -20,8 +20,6 @@ const CHIPS: Chip[] = [
   { label: "Con niños", icon: "child_care",       href: "/perros?aptoNinos=true"        },
 ];
 
-// 4 copias con spacer entre cada una.
-// La animación mueve -25% (= 1 copia), garantizando cobertura total del viewport.
 function ChipSet({ offset }: { offset: number }) {
   return (
     <>
@@ -40,17 +38,57 @@ function ChipSet({ offset }: { offset: number }) {
           {chip.label}
         </Link>
       ))}
-      {/* spacer entre tandas */}
       <span className="inline-block w-20 shrink-0" aria-hidden="true" />
     </>
   );
 }
 
+const DURATION_MS = 34000;
+
 export default function QuickFilterChips() {
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    let x = 0;
+    let lastTime: number | null = null;
+    let paused = false;
+    let rafId: number;
+
+    const tick = (now: number) => {
+      if (!paused) {
+        if (lastTime !== null) {
+          const oneSet = track.scrollWidth / 4;
+          x -= (oneSet / DURATION_MS) * (now - lastTime);
+          if (x <= -oneSet) x += oneSet;
+          track.style.transform = `translate3d(${x}px, 0, 0)`;
+        }
+        lastTime = now;
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+
+    const pause  = () => { paused = true; };
+    const resume = () => { paused = false; lastTime = null; };
+
+    track.addEventListener("mouseenter", pause);
+    track.addEventListener("mouseleave", resume);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      track.removeEventListener("mouseenter", pause);
+      track.removeEventListener("mouseleave", resume);
+    };
+  }, []);
+
   return (
     <section className="border-y border-zinc-100 bg-white py-3">
       <div className="chips-track-wrapper">
-        <div className="chips-track">
+        <div className="chips-track" ref={trackRef}>
           <ChipSet offset={0} />
           <ChipSet offset={100} />
           <ChipSet offset={200} />
