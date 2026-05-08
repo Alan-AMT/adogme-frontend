@@ -379,7 +379,7 @@ export default function ShelterRegisterView() {
     <AuthLayout
       rightKicker="registro de refugio"
       rightKickerIcon="home_work"
-      rightTitle="Únete a la red de refugios verificados de la GAM"
+      rightTitle="Únete a la red de refugios verificados"
       rightDesc="Registra tu refugio para publicar perros en adopción y gestionar solicitudes de manera segura y transparente."
       rightList={[
         "Perfil de refugio verificado y confiable",

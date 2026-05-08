@@ -89,7 +89,7 @@ const DROPDOWN_ADMIN = [
 
 const TICKER_MESSAGES = [
   "Adopta, no compres, dales una segunda oportunidad",
-  "Refugios verificados en la GAM",
+  "Refugios verificados",
   "Cada adopción transforma dos vidas",
   "Encuentra tu match perfecto en minutos",
 ];

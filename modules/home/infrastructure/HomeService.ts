@@ -118,6 +118,31 @@ export class HomeService implements IHomeService {
   }
 
   async getLatestStories(): Promise<AdoptionStory[]> {
-    throw new Error("Not implemented");
+    return [
+      {
+        id: 1,
+        dogName: "Luna",
+        adopterName: "Sofía Ramírez",
+        storyShort:
+          "Perdí a mi perra de 15 años y pensé que no podría querer a otro perro. Luna llegó al refugio después de ser encontrada en la calle, asustada y desnutrida. El día que la vi, me miró fijo a los ojos y algo se rompió dentro de mí. Hoy duerme en mi cama y me recibe cada noche como si fuera la primera vez.",
+        imageUrl: "/historia1.jpg",
+      },
+      {
+        id: 2,
+        dogName: "Canelo",
+        adopterName: "Marco Antonio Jiménez",
+        storyShort:
+          "Canelo tenía 9 años cuando lo fui a ver. Me dijeron que los perros mayores casi nunca se adoptan. Me lo llevé esa misma tarde. En sus últimos tres años no le faltó nada: caminatas, cobija propia y alguien que lo esperara en casa. Él me enseñó que el tiempo que nos queda vale más que el tiempo que nos falta.",
+        imageUrl: "/historia2.png.avif",
+      },
+      {
+        id: 3,
+        dogName: "Pinta",
+        adopterName: "Valeria Moreno",
+        storyShort:
+          "Pinta tardó dos meses en dejarme tocarla. Vivía escondida debajo del sillón, temblando ante cualquier ruido. No la forcé. Un día se acercó sola, apoyó el hocico en mi rodilla y cerró los ojos. Ese momento lo voy a cargar siempre. Ahora me sigue a todos lados y ladra cuando llego tarde.",
+        imageUrl: "/historia3.png.avif",
+      },
+    ];
   }
 }

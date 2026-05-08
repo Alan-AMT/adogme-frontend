@@ -10,10 +10,9 @@ import { Input } from "../../shared/components/ui/Input";
 import { Button } from "../../shared/components/ui/Button";
 import { Alert } from "../../shared/components/ui/Alert";
 import { Toggle } from "../../shared/components/ui/Toggle";
-import { Spinner } from "../../shared/components/ui/Spinner";
 import { useProfile } from "../application/hooks/useProfile";
 import type { Adoptante } from "../../shared/domain/User";
-import type { LifestyleQuizAnswers } from "@/modules/shared/domain/LifestyleProfile";
+import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
 import "../styles/profile.css";
 import "../../recommendations/styles/quiz.css";
 
@@ -45,29 +44,6 @@ const ROLE_LABEL: Record<string, string> = {
   applicant: "Adoptante",
   shelter: "Refugio",
   admin: "Administrador",
-};
-
-const LIFESTYLE_DEFAULTS: LifestyleQuizAnswers = {
-  q1: 3,
-  q2: 3,
-  q3: 3,
-  q4: 3,
-  q5: 3,
-  q6: 3,
-  q7: 3,
-  q8: 3,
-  q9: 3,
-  q10: 3,
-  q11: 3,
-  q12: 3,
-  q13: 3,
-  q14: 3,
-  q15: 3,
-  q16: 3,
-  q17: 3,
-  q18: 3,
-  q19: 3,
-  q20: 3,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -449,38 +425,16 @@ function TabSecurity() {
 // ── TabPreferences ────────────────────────────────────────────────────────────
 
 const CATEGORY_LABELS = [
-  {
-    label: "Actividad",
-    icon: "directions_run",
-    keys: ["q1", "q2", "q3", "q4", "q5"] as const,
-  },
-  {
-    label: "Hogar",
-    icon: "home",
-    keys: ["q6", "q7", "q8", "q9", "q10"] as const,
-  },
-  {
-    label: "Experiencia",
-    icon: "school",
-    keys: ["q11", "q12", "q13", "q14", "q15"] as const,
-  },
-  {
-    label: "Recursos",
-    icon: "favorite",
-    keys: ["q16", "q17", "q18", "q19", "q20"] as const,
-  },
+  { label: "Actividad",   icon: "directions_run", idx: 0 },
+  { label: "Hogar",       icon: "home",           idx: 1 },
+  { label: "Experiencia", icon: "school",         idx: 2 },
+  { label: "Recursos",    icon: "favorite",       idx: 3 },
 ];
 
-function categoryAvg(
-  answers: LifestyleQuizAnswers,
-  keys: readonly (keyof LifestyleQuizAnswers)[],
-): number {
-  const vals = keys.map((k) => answers[k] as number);
-  return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
-}
-
 function TabPreferences() {
-  const { lifestyle, loadingPreferences, isApplicant } = useProfile();
+  const { isApplicant } = useProfile();
+  const user = useAuthStore((s) => s.user);
+  const userVector = user?.role === "applicant" ? (user as Adoptante).userVector ?? null : null;
 
   if (!isApplicant) {
     return (
@@ -495,17 +449,6 @@ function TabPreferences() {
             ellas personalizamos las recomendaciones de perros.
           </p>
         </div>
-      </div>
-    );
-  }
-
-  if (loadingPreferences) {
-    return (
-      <div
-        className="pf-card"
-        style={{ display: "flex", justifyContent: "center", padding: "4rem" }}
-      >
-        <Spinner size="lg" />
       </div>
     );
   }
@@ -565,7 +508,7 @@ function TabPreferences() {
                   lineHeight: 1.2,
                 }}
               >
-                {lifestyle
+                {userVector
                   ? "Perfil de compatibilidad activo"
                   : "Completa el cuestionario de compatibilidad"}
               </p>
@@ -577,7 +520,7 @@ function TabPreferences() {
                   marginTop: "0.15rem",
                 }}
               >
-                {lifestyle
+                {userVector
                   ? "20 preguntas · 4 categorías · actualizado"
                   : "El quiz de 20 preguntas mejora la precisión de tu match"}
               </p>
@@ -606,13 +549,13 @@ function TabPreferences() {
             >
               quiz
             </span>
-            {lifestyle ? "Volver a llenar el quiz" : "Llenar quiz"}
+            {userVector ? "Volver a llenar el quiz" : "Llenar quiz"}
           </Link>
         </div>
       </div>
 
       {/* ── Resumen de scores por categoría ── */}
-      {lifestyle && (
+      {userVector && (
         <div className="pf-card">
           <h2 className="pf-card__title">
             <span className="material-symbols-outlined">bar_chart</span>
@@ -627,7 +570,7 @@ function TabPreferences() {
             }}
           >
             {CATEGORY_LABELS.map((cat) => {
-              const avg = categoryAvg(lifestyle, cat.keys);
+              const avg = Math.round(userVector[cat.idx] * 10) / 10;
               const pct = Math.round((avg / 5) * 100);
               return (
                 <div key={cat.label}>

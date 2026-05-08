@@ -2,7 +2,6 @@
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import type { Adoptante } from "@/modules/shared/domain/User";
-import type { LifestyleQuizAnswers } from "@/modules/shared/domain/LifestyleProfile";
 import type { IProfileService, ProfileUser } from "./IProfileService";
 import type { ProfileUpdateData } from "../domain/ProfileTypes";
 
@@ -50,19 +49,6 @@ export class ProfileService implements IProfileService {
     _userId: string,
     _currentPassword: string,
     _newPassword: string,
-  ): Promise<void> {
-    throw new Error("Not implemented");
-  }
-
-  async getLifestylePreferences(
-    _userId: string,
-  ): Promise<LifestyleQuizAnswers | null> {
-    throw new Error("Not implemented");
-  }
-
-  async saveLifestylePreferences(
-    _userId: string,
-    _answers: LifestyleQuizAnswers,
   ): Promise<void> {
     throw new Error("Not implemented");
   }
