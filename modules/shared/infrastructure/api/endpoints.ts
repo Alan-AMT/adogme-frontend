@@ -115,9 +115,8 @@ export const API_ENDPOINTS = {
     REGISTER: `${BASE}/applicants-ms/applicant`,
     ME: `${BASE}/applicants-ms/applicant/me`,
     UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
-    // TODO(backend): PATCH para persistir el user_vector cuando el endpoint exista.
     UPDATE_USER_VECTOR: (userId: string) =>
-      `${BASE}/applicants-ms/applicant/${userId}/user-vector`,
+      `${BASE}/applicants-ms/user/${userId}/vector`,
   },
 
   ADMIN: {
