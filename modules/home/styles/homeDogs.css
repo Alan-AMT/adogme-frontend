@@ -67,7 +67,7 @@
   transform: translateY(-1px);
 }
 
-/* ── Grid — sin sidebar, 4 columnas en desktop ── */
+/* ── Grid — 1 col mobile, 2 col tablet, 3 col desktop, 4 col wide ── */
 .home-dogs__grid {
   display: grid;
   gap: 1.25rem;
@@ -81,6 +81,12 @@
 }
 
 @media (min-width: 900px) {
+  .home-dogs__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
   .home-dogs__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -153,11 +159,16 @@
   padding: 1rem;
 }
 
-/* Badge estado — posición absoluta arriba derecha */
+/* Fila nombre + badge en flex para evitar solapamiento */
+.home-dog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .home-dog-badge {
-  position: absolute;
-  top: 0.85rem;
-  right: 0.85rem;
+  flex-shrink: 0;
 }
 
 .home-dog-name {
@@ -165,8 +176,8 @@
   font-weight: 900;
   color: var(--fg, #18181b);
   line-height: 1.2;
-  padding-right: 4.5rem;
   letter-spacing: -0.01em;
+  min-width: 0;
 }
 
 .home-dog-breed {

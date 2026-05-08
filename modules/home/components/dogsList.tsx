@@ -56,11 +56,12 @@ function DogCard({ dog }: { dog: DogCard }) {
 
         {/* Body */}
         <div className="home-dog-body">
-          <div className="home-dog-badge">
-            <EstadoBadge estado={dog.estado} />
+          <div className="home-dog-header">
+            <h3 className="home-dog-name">{dog.nombre}</h3>
+            <div className="home-dog-badge">
+              <EstadoBadge estado={dog.estado} />
+            </div>
           </div>
-
-          <h3 className="home-dog-name">{dog.nombre}</h3>
           <p className="home-dog-breed">{dog.raza}</p>
 
           <div className="home-dog-infoList">
