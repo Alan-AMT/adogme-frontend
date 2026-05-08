@@ -6,7 +6,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
-const ML = process.env.NEXT_PUBLIC_ML_API_URL ?? "";
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -75,6 +74,12 @@ export const API_ENDPOINTS = {
     // UPLOAD_COVER: `http://localhost:3002/api/media/shelter/cover`,
   },
 
+  ML: {
+    PROCESS_QUESTIONNAIRE: `${BASE}/ml-ms/predict/process-questionnaire`,
+    COMPATIBLE_DOGS: `${BASE}/ml-ms/predict/compatible-dogs`,
+    GENERAL_RECOMMENDATIONS: `${BASE}/ml-ms/insights/general-recommendations`,
+  },
+
   ADOPTIONS: {
     LIST: `${BASE}/api/adoptions`,
     BY_ADOPTANTE: `${BASE}/api/adoptions/me`,
@@ -89,8 +94,8 @@ export const API_ENDPOINTS = {
   },
 
   RECOMMENDATIONS: {
-    GENERATE: `${ML}/predict/compatible-dogs`,
-    BY_ADOPTANTE: `${ML}/api/ml/recommendations/me`,
+    GENERATE: `${BASE}/predict/compatible-dogs`,
+    BY_ADOPTANTE: `${BASE}/api/ml/recommendations/me`,
     QUIZ: `${BASE}/api/quiz`,
     QUIZ_DETAIL: (id: number) => `${BASE}/api/quiz/${id}`,
   },

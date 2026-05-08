@@ -17,18 +17,12 @@ import type {
   MatchReason,
   QuizCategory,
 } from '@/modules/shared/domain/LifestyleProfile'
-import axios from 'axios'
 import { dogService }     from '@/modules/dogs/infrastructure/DogServiceFactory'
 import { profileService } from '@/modules/profile/infrastructure/ProfileServiceFactory'
 import { useAuthStore }   from '@/modules/shared/infrastructure/store/authStore'
 import { API_ENDPOINTS }  from '@/modules/shared/infrastructure/api/endpoints'
+import { apiClient }      from '@/modules/shared/infrastructure/api/apiClient'
 import type { IMLService } from './IMLService'
-
-
-const mlHttp = axios.create({
-  timeout: 15_000,
-  headers: { 'Content-Type': 'application/json' },
-})
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -109,7 +103,7 @@ export class MLService implements IMLService {
     answers:     QuizSubmitPayload,
   ): Promise<MLRecommendationResponse> {
     // ML calcula user_vector
-    const { data } = await mlHttp.post<ProcessQuestionnaireResponse>(
+    const { data } = await apiClient.post<ProcessQuestionnaireResponse>(
       API_ENDPOINTS.ML.PROCESS_QUESTIONNAIRE,
       answers,
     )
@@ -145,7 +139,7 @@ export class MLService implements IMLService {
   ): Promise<MLRecommendationResponse> {
 
     //  Top-N matches del ML
-    const { data: matchesRes } = await mlHttp.post<CompatibleDogsResponse>(
+    const { data: matchesRes } = await apiClient.post<CompatibleDogsResponse>(
       `${API_ENDPOINTS.ML.COMPATIBLE_DOGS}?top_n=${TOP_N}`,
       { user_vector: userVector },
     )
