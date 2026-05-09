@@ -9,7 +9,14 @@
       "Bash(wc -l \"c:/Users/orteg/OneDrive/Escritorio/adogme-frontend/app/\\(public\\)/page.tsx\")",
       "Bash(npx tsc *)",
       "Bash(awk -F'[\\(\\):]' '{print $1}')",
-      "Bash(grep -E \"\\\\.\\(tsx?|jsx?|css|scss\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx?|jsx?|css|scss\\)$\")",
+      "Bash(npm install *)",
+      "Bash(awk -F'\\(' '{print $1}')",
+      "Bash(git stash *)",
+      "Bash(mv /Users/alanmunoz/Developer/escuela/adogme-frontend/modules/shared/components/ui/RadioGroup.tsx /tmp/RadioGroup.tsx.bak)",
+      "Bash(mv /Users/alanmunoz/Developer/escuela/adogme-frontend/modules/shared/components/ui/CheckboxGroup.tsx /tmp/CheckboxGroup.tsx.bak)",
+      "Bash(tee /tmp/tsc-out.log)",
+      "Read(//private/tmp/**)"
     ]
   }
 }

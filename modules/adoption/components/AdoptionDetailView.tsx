@@ -10,6 +10,7 @@ import { Spinner } from '../../shared/components/ui/Spinner'
 import { useRequestDetail } from '../application/hooks/useMyRequests'
 import { getShelterById } from '@/modules/shared/mockData/shelters.mock'
 import type { RequestStatus } from '../../shared/domain/AdoptionRequest'
+import FormSummarySections from './FormSummarySections'
 import '../styles/adoptionForm.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -28,25 +29,6 @@ const STATUS_DESC: Record<RequestStatus, string> = {
   approved:  '¡Enhorabuena! El refugio aprobó tu solicitud. Te contactarán para coordinar la entrega.',
   rejected:  'El refugio no pudo aprobar esta solicitud en este momento.',
   cancelled: 'Esta solicitud fue cancelada.',
-}
-
-const HOUSING_LABEL: Record<string, string> = {
-  casa:         'Casa',
-  departamento: 'Departamento',
-  casa_campo:   'Casa de campo / Rancho',
-  otro:         'Otro',
-}
-
-const ACTIVITY_LABEL: Record<string, string> = {
-  sedentario: 'Sedentario',
-  moderado:   'Moderado',
-  activo:     'Activo',
-  muy_activo: 'Muy activo',
-}
-
-function yesNo(v: boolean | undefined): string {
-  if (v === undefined) return '—'
-  return v ? 'Sí' : 'No'
 }
 
 function formatDate(iso: string, withTime = false): string {
@@ -311,76 +293,17 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
             </div>
           </div>
 
-          {/* Formulario — Datos personales */}
-          <div className="ad-card">
-            <h2 className="ad-card__title">
-              <span className="material-symbols-outlined">person</span>
-              Datos personales
-            </h2>
-            <DataRow label="Nombre"    value={request.adoptanteNombre ?? ''} />
-            <DataRow label="Correo"    value={request.adoptanteCorreo ?? ''} />
-          </div>
+          {/* Formulario — todas las secciones */}
+          <FormSummarySections formulario={f} />
 
-          {/* Vivienda */}
-          {f.vivienda && (
-            <div className="ad-card">
-              <h2 className="ad-card__title">
-                <span className="material-symbols-outlined">home</span>
-                Vivienda
-              </h2>
-              <DataRow label="Tipo"              value={HOUSING_LABEL[f.vivienda.tipo] ?? f.vivienda.tipo} />
-              <DataRow label="Propietario"       value={yesNo(f.vivienda.esPropietario)} />
-              {f.vivienda.esPropietario === false && (
-                <DataRow label="Permite animales" value={yesNo(f.vivienda.permiteAnimales)} />
-              )}
-              <DataRow label="Jardín / patio"    value={yesNo(f.vivienda.tieneJardin)} />
-              {f.vivienda.tieneJardin && f.vivienda.tamanoJardinM2 !== undefined && (
-                <DataRow label="Tamaño jardín"   value={`${f.vivienda.tamanoJardinM2} m²`} />
-              )}
-              {f.vivienda.tieneJardin !== undefined && (
-                <DataRow label="Barda / cerca"   value={yesNo(f.vivienda.tieneRejaOCerca)} />
-              )}
-            </div>
-          )}
-
-          {/* Rutina */}
-          <div className="ad-card">
-            <h2 className="ad-card__title">
-              <span className="material-symbols-outlined">schedule</span>
-              Estilo de vida
-            </h2>
-            <DataRow label="Horas en casa / día" value={f.horasEnCasa ? `${f.horasEnCasa} hrs` : ''} />
-            <DataRow label="Actividad física"    value={ACTIVITY_LABEL[f.actividadFisica ?? ''] ?? f.actividadFisica ?? ''} />
-            <DataRow label="Niños en el hogar"   value={yesNo(f.conviveConNinos)} />
-            <DataRow label="Otras mascotas"      value={yesNo(f.conviveConMascotas)} />
-            {f.conviveConMascotas && f.descripcionMascotas && (
-              <DataRow label="Descripción mascotas" value={f.descripcionMascotas} />
-            )}
-          </div>
-
-          {/* Experiencia */}
-          <div className="ad-card">
-            <h2 className="ad-card__title">
-              <span className="material-symbols-outlined">pets</span>
-              Experiencia y motivación
-            </h2>
-            <DataRow label="Experiencia previa"  value={yesNo(f.experienciaPrevia)} />
-            {f.experienciaPrevia && f.descripcionExperiencia && (
-              <DataRow label="Descripción"       value={f.descripcionExperiencia} />
-            )}
-            <DataRow label="Motivación"          value={f.motivacion ?? ''} />
-          </div>
-
-          {/* Comentarios */}
+          {/* Comentarios — solo si hay contenido */}
           {request.comentarios && (
             <div className="ad-card">
               <h2 className="ad-card__title">
                 <span className="material-symbols-outlined">chat_bubble</span>
                 Comentarios adicionales
               </h2>
-              <p className="text-[0.9rem] text-[#3f3f46] font-[500] leading-relaxed">
-                {request.comentarios}
-              </p>
+              <DataRow label="Comentarios adicionales" value={request.comentarios} />
             </div>
           )}
 

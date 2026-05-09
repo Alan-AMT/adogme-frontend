@@ -1,263 +1,399 @@
 // modules/adoption/application/hooks/useAdoptionForm.ts
-// Estado multi-paso + validación + draft persistido en localStorage
+// Multi-paso con react-hook-form + persistencia de draft en localStorage.
 //
-// Pasos (0-based, según ADOPTION_STEPS):
-//   0 — Datos personales (readonly del authStore, sin campos en formData)
-//   1 — Vivienda          (vivienda: HousingInfo)
-//   2 — Rutina            (horasEnCasa, actividadFisica, conviveConNinos/Mascotas)
-//   3 — Experiencia       (motivacion, experienciaPrevia, descripcionExperiencia?)
-//   4 — Compromisos       (aceptaVisitaPrevia, aceptaTerminos, comentariosAdicionales?)
-//   5 — Resumen           (review — sin campos nuevos)
-'use client'
+// Diseño:
+//   - useForm sin resolver, modo onSubmit. Validación manual por step usando
+//     STEP_SCHEMAS[currentStep] (zod refinado).
+//   - Submit valida con adoptionFormSchema completo y, si falla, navega al
+//     primer step con errores.
+//   - Draft persistido con clave versionada `adoption-draft-v2-{perroId}` y
+//     debounce de 600ms. Restauración sync dentro de defaultValues.
+//   - Auto-clear de errores al cambiar el valor de un campo.
+"use client";
 
-import { useState, useEffect } from 'react'
-import type { AdoptionFormData, AdoptionRequest } from '../../../shared/domain/AdoptionRequest'
-import { adoptionService } from '../../infrastructure/AdoptionServiceFactory'
-import { useAuthStore } from '../../../shared/infrastructure/store/authStore'
-import type { FormDraft } from '../../domain/AdoptionRequest'
-import { ADOPTION_STEPS } from '../../domain/AdoptionRequest'
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import type { UseFormReturn, FieldPath } from "react-hook-form";
+
+import type {
+  AdoptionFormData,
+  AdoptionRequest,
+} from "../../../shared/domain/AdoptionRequest";
+import { ADOPTION_STEPS } from "../../../shared/domain/AdoptionRequest";
+import { STEP_SCHEMAS, adoptionFormSchema } from "../../domain/schemas";
+import { adoptionService } from "../../infrastructure/AdoptionServiceFactory";
+import { useAuthStore } from "../../../shared/infrastructure/store/authStore";
 
 // ─── Tipos expuestos ──────────────────────────────────────────────────────────
 
 export interface UseAdoptionFormOptions {
-  perroId:     string
-  perroNombre: string
-  refugioId:   string
+  perroId: string;
+  refugioId: string;
+  perroNombre?: string;
 }
 
-export interface UseAdoptionFormState {
-  currentStep:      number
-  formData:         Partial<AdoptionFormData>
-  errors:           Record<string, string>
-  isSubmitting:     boolean
-  savedAt:          string | null       // ISO — para mostrar «guardado hace X min»
-  submittedRequest: AdoptionRequest | null  // seteado al enviar con éxito
+export interface UseAdoptionFormReturn {
+  form: UseFormReturn<AdoptionFormData>;
+  currentStep: number;
+  totalSteps: number;
+  nextStep: () => Promise<boolean>;
+  prevStep: () => void;
+  goToStep: (step: number) => void;
+  submitForm: () => Promise<void>;
+  isSubmitting: boolean;
+  submittedRequest: AdoptionRequest | null;
+  savedAt: Date | null;
+  formError: string | null;
+  resetForm: () => void;
 }
-
-export interface UseAdoptionFormActions {
-  nextStep:    () => void
-  prevStep:    () => void
-  updateField: <K extends keyof AdoptionFormData>(key: K, value: AdoptionFormData[K]) => void
-  submitForm:  () => Promise<void>
-  resetForm:   () => void
-}
-
-export type UseAdoptionFormReturn = UseAdoptionFormState & UseAdoptionFormActions
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = ADOPTION_STEPS.length  // 6
+const TOTAL_STEPS = ADOPTION_STEPS.length; // 6
+const DEBOUNCE_MS = 600;
 
-// ─── Validación por paso ──────────────────────────────────────────────────────
+// Mapa: para cada step, qué campos top-level del form le pertenecen.
+// Solo se usa para auto-clear de errores y para localizar el primer step
+// con errores tras un submit completo. La validación real corre contra
+// STEP_SCHEMAS[currentStep].
+const STEP_FIELDS: (keyof AdoptionFormData)[][] = [
+  [
+    "nombreCompleto",
+    "edad",
+    "telefono",
+    "correo",
+    "ocupacion",
+    "direccion",
+    "redesSociales",
+  ],
+  ["vivienda", "entorno"],
+  ["rutina"],
+  ["mascotasActuales", "experienciaPrevia"],
+  [
+    "motivacion",
+    "siMudanza",
+    "siComportamientoNoEsperado",
+    "situacionesParaDevolver",
+    "capacidadEconomica",
+    "cuidadosMedicos",
+  ],
+  [
+    "aceptaAlimentacionVeterinaria",
+    "aceptaNoAbandono",
+    "aceptaContactarRefugio",
+    "aceptaSeguimiento",
+    "aceptaInfoVeridica",
+  ],
+];
 
-function validateStep(step: number, data: Partial<AdoptionFormData>): Record<string, string> {
-  const e: Record<string, string> = {}
+// ─── Tipos internos ───────────────────────────────────────────────────────────
 
-  switch (step) {
-    case 0:  // Datos personales — sólo lectura, sin campos en formData
-      break
+interface DraftPayload {
+  step: number;
+  data: Partial<AdoptionFormData>;
+  savedAt: string;
+}
 
-    case 1:  // Vivienda
-      if (!data.vivienda?.tipo)
-        e['vivienda.tipo'] = 'Selecciona el tipo de vivienda.'
-      if (data.vivienda?.esPropietario === false && data.vivienda?.permiteAnimales === undefined)
-        e['vivienda.permiteAnimales'] = 'Indica si tu arrendador permite animales.'
-      break
+// Valores iniciales — arrays no-undefined para que CheckboxGroup tenga algo
+// con qué hacer .includes() desde el primer render. El resto puede quedar
+// undefined (RHF tolera Partial<>).
+const INITIAL_VALUES: Partial<AdoptionFormData> = {
+  vivienda: { fotosVivienda: [] } as Partial<
+    AdoptionFormData["vivienda"]
+  > as AdoptionFormData["vivienda"],
+  rutina: { actividadesPlaneadas: [] } as Partial<
+    AdoptionFormData["rutina"]
+  > as AdoptionFormData["rutina"],
+};
 
-    case 2:  // Rutina
-      if (!data.horasEnCasa || data.horasEnCasa < 1)
-        e.horasEnCasa = 'Indica cuántas horas estás en casa (mínimo 1).'
-      if (!data.actividadFisica)
-        e.actividadFisica = 'Selecciona tu nivel de actividad física.'
-      if (data.conviveConNinos === undefined)
-        e.conviveConNinos = 'Indica si hay niños en el hogar.'
-      if (data.conviveConMascotas === undefined)
-        e.conviveConMascotas = 'Indica si convives con otras mascotas.'
-      break
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-    case 3:  // Experiencia
-      if (!data.motivacion?.trim())
-        e.motivacion = 'Cuéntanos por qué quieres adoptar a este perro.'
-      if (data.experienciaPrevia === undefined)
-        e.experienciaPrevia = 'Indica si has tenido mascotas anteriormente.'
-      break
-
-    case 4:  // Compromisos
-      if (!data.aceptaVisitaPrevia)
-        e.aceptaVisitaPrevia = 'Debes aceptar la visita previa al hogar.'
-      if (!data.aceptaTerminos)
-        e.aceptaTerminos = 'Debes aceptar los términos y condiciones de adopción.'
-      break
-
-    case 5:  // Resumen — sin campos nuevos
-      break
+function readDraft(key: string): DraftPayload | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      typeof parsed.step === "number" &&
+      parsed.data &&
+      typeof parsed.savedAt === "string"
+    ) {
+      return parsed as DraftPayload;
+    }
+  } catch {
+    // draft corrupto — lo ignoramos
   }
+  return null;
+}
 
-  return e
+function buildDefaults(draft: DraftPayload | null): Partial<AdoptionFormData> {
+  if (!draft) return INITIAL_VALUES;
+  return { ...INITIAL_VALUES, ...draft.data };
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export function useAdoptionForm({
-  perroId,
-  perroNombre,
-  refugioId,
-}: UseAdoptionFormOptions): UseAdoptionFormReturn {
+export function useAdoptionForm(
+  options: UseAdoptionFormOptions,
+): UseAdoptionFormReturn {
+  const { perroId, refugioId } = options;
 
-  const user     = useAuthStore(s => s.user)
-  const draftKey = `adoption-draft-${perroId}`
+  const user = useAuthStore((s) => s.user);
 
-  // ── Estado ────────────────────────────────────────────────────────────────
+  const draftKey = useMemo(() => `adoption-draft-v2-${perroId}`, [perroId]);
 
-  const [currentStep,      setCurrentStep]      = useState(0)
-  const [formData,         setFormData]         = useState<Partial<AdoptionFormData>>({})
-  const [errors,           setErrors]           = useState<Record<string, string>>({})
-  const [isSubmitting,     setIsSubmitting]     = useState(false)
-  const [savedAt,          setSavedAt]          = useState<string | null>(null)
-  const [submittedRequest, setSubmittedRequest] = useState<AdoptionRequest | null>(null)
+  // Lectura sync del draft — solo en el primer render.
+  // (useState con initializer fn lo garantiza.)
+  const initialDraftRef = useRef<DraftPayload | null>(null);
+  const [defaults] = useState<Partial<AdoptionFormData>>(() => {
+    const d = readDraft(draftKey);
+    initialDraftRef.current = d;
+    return buildDefaults(d);
+  });
 
-  // ── Carga el draft guardado al montar ─────────────────────────────────────
+  const form = useForm<AdoptionFormData>({
+    mode: "onSubmit",
+    defaultValues: defaults as AdoptionFormData,
+  });
+
+  const [currentStep, setCurrentStep] = useState<number>(
+    () => initialDraftRef.current?.step ?? 0,
+  );
+  const [savedAt, setSavedAt] = useState<Date | null>(() =>
+    initialDraftRef.current ? new Date(initialDraftRef.current.savedAt) : null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedRequest, setSubmittedRequest] =
+    useState<AdoptionRequest | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // ── Persistencia del draft (debounced) ────────────────────────────────────
+  // Mantenemos currentStep en una ref para no reinscribir la suscripción
+  // cada vez que cambia el step (eso aborta el watch en mitad del flujo).
+  const stepRef = useRef(currentStep);
+  useEffect(() => {
+    stepRef.current = currentStep;
+  }, [currentStep]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    try {
-      const raw = localStorage.getItem(draftKey)
-      if (!raw) return
-      const draft: FormDraft = JSON.parse(raw)
-      if (draft.perroId === perroId) {
-        setFormData(draft.data)
-        setCurrentStep(draft.step)
-        setSavedAt(draft.savedAt)
+    if (typeof window === "undefined") return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const sub = form.watch((values) => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        const payload: DraftPayload = {
+          step: stepRef.current,
+          data: values as Partial<AdoptionFormData>,
+          savedAt: new Date().toISOString(),
+        };
+        try {
+          localStorage.setItem(draftKey, JSON.stringify(payload));
+          setSavedAt(new Date(payload.savedAt));
+        } catch {
+          // quota excedida o storage deshabilitado — silencioso
+        }
+      }, DEBOUNCE_MS);
+    });
+
+    return () => {
+      sub.unsubscribe();
+      if (timer) clearTimeout(timer);
+    };
+  }, [form, draftKey]);
+
+  // ── Auto-clear de errores al editar un campo ──────────────────────────────
+  useEffect(() => {
+    const sub = form.watch((_v, info) => {
+      if (info.type === "change" && info.name) {
+        form.clearErrors(info.name as FieldPath<AdoptionFormData>);
       }
-    } catch {
-      // Draft corrupto o inválido — ignorar silenciosamente
+    });
+    return () => sub.unsubscribe();
+  }, [form]);
+
+  // ── Helpers de validación ─────────────────────────────────────────────────
+
+  /** Limpia los errores de todos los campos top-level de un step. */
+  const clearStepErrors = useCallback(
+    (step: number) => {
+      const fields = STEP_FIELDS[step] ?? [];
+      fields.forEach((f) => form.clearErrors(f as FieldPath<AdoptionFormData>));
+    },
+    [form],
+  );
+
+  /**
+   * Mapea issues de zod → form.setError. zod entrega path como (string|number)[];
+   * RHF acepta paths anidados con notación punto/índice. El cast a FieldPath
+   * es manual porque los paths se construyen en runtime.
+   */
+  const applyZodIssues = useCallback(
+    (issues: readonly { path: PropertyKey[]; message: string }[]) => {
+      issues.forEach((issue) => {
+        if (!issue.path.length) return;
+        const path = issue.path
+          .map((seg) => (typeof seg === "number" ? `${seg}` : String(seg)))
+          .join(".") as FieldPath<AdoptionFormData>;
+        form.setError(path, { type: "manual", message: issue.message });
+      });
+    },
+    [form],
+  );
+
+  // ── Navegación ────────────────────────────────────────────────────────────
+
+  const nextStep = useCallback(async (): Promise<boolean> => {
+    setFormError(null);
+    const values = form.getValues();
+    const result = await STEP_SCHEMAS[currentStep].safeParseAsync(values);
+
+    if (!result.success) {
+      clearStepErrors(currentStep);
+      applyZodIssues(result.error.issues);
+      return false;
     }
-  }, [draftKey, perroId])
 
-  // ── Helpers de persistencia ───────────────────────────────────────────────
+    clearStepErrors(currentStep);
+    setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+    return true;
+  }, [form, currentStep, clearStepErrors, applyZodIssues]);
 
-  function persist(step: number, data: Partial<AdoptionFormData>): void {
-    if (typeof window === 'undefined') return
-    const now   = new Date().toISOString()
-    const draft: FormDraft = { perroId, perroNombre, step, data, savedAt: now }
-    localStorage.setItem(draftKey, JSON.stringify(draft))
-    setSavedAt(now)
-  }
+  const prevStep = useCallback(() => {
+    setFormError(null);
+    setCurrentStep((s) => Math.max(s - 1, 0));
+  }, []);
 
-  function purgeDraft(): void {
-    if (typeof window === 'undefined') return
-    localStorage.removeItem(draftKey)
-    setSavedAt(null)
-  }
+  const goToStep = useCallback((step: number) => {
+    if (step < 0 || step >= TOTAL_STEPS) return;
+    // Solo permitimos retroceder o quedarse. Saltos hacia adelante deben pasar
+    // por nextStep para validar los intermedios.
+    setCurrentStep((s) => (step <= s ? step : s));
+    setFormError(null);
+  }, []);
 
-  // ── updateField ───────────────────────────────────────────────────────────
-  // Actualiza un campo del formulario, persiste el draft y limpia su error.
+  // ── Submit ────────────────────────────────────────────────────────────────
 
-  function updateField<K extends keyof AdoptionFormData>(
-    key: K,
-    value: AdoptionFormData[K],
-  ): void {
-    const next = { ...formData, [key]: value }
-    setFormData(next)
-    persist(currentStep, next)
-
-    // Limpia el error del campo si existía
-    const k = key as string
-    if (k in errors) {
-      setErrors(prev => {
-        const copy = { ...prev }
-        delete (copy as Record<string, string>)[k]
-        return copy
-      })
-    }
-  }
-
-  // ── nextStep ──────────────────────────────────────────────────────────────
-  // Valida el paso actual antes de avanzar.
-
-  function nextStep(): void {
-    const errs = validateStep(currentStep, formData)
-    if (Object.keys(errs).length) {
-      setErrors(errs)
-      return
-    }
-    setErrors({})
-    const next = Math.min(currentStep + 1, TOTAL_STEPS - 1)
-    setCurrentStep(next)
-    persist(next, formData)
-  }
-
-  // ── prevStep ──────────────────────────────────────────────────────────────
-
-  function prevStep(): void {
-    setErrors({})
-    setCurrentStep(s => Math.max(s - 1, 0))
-  }
-
-  // ── submitForm ────────────────────────────────────────────────────────────
-  // Valida compromisos (paso 4) y envía la solicitud.
-  // Si el servicio responde OK, limpia el draft y redirige.
-
-  async function submitForm(): Promise<void> {
-    // Valida paso 4 (compromisos) aunque estemos en el resumen (paso 5)
-    const errs = validateStep(4, formData)
-    if (Object.keys(errs).length) {
-      setErrors(errs)
-      setCurrentStep(4)
-      return
-    }
+  const submitForm = useCallback(async (): Promise<void> => {
+    setFormError(null);
 
     if (!user) {
-      setErrors({ _form: 'Debes iniciar sesión para enviar la solicitud.' })
-      return
+      setFormError("Debes iniciar sesión para enviar la solicitud");
+      return;
     }
 
-    setIsSubmitting(true)
-    setErrors({})
+    const values = form.getValues();
+    const parsed = await adoptionFormSchema.safeParseAsync(values);
 
+    if (!parsed.success) {
+      // Localiza el primer step con errores y navega allí.
+      const firstStep = parsed.error.issues
+        .map((i) => {
+          const top = i.path[0];
+          if (typeof top !== "string") return -1;
+          return STEP_FIELDS.findIndex((fields) =>
+            fields.includes(top as keyof AdoptionFormData),
+          );
+        })
+        .filter((idx) => idx >= 0)
+        .reduce<number | null>(
+          (min, idx) => (min === null || idx < min ? idx : min),
+          null,
+        );
+
+      // Limpia errores de todos los steps antes de re-aplicar (evita arrastre).
+      STEP_FIELDS.forEach((_, i) => clearStepErrors(i));
+      applyZodIssues(parsed.error.issues);
+
+      if (firstStep !== null) setCurrentStep(firstStep);
+      setFormError("Hay errores en el formulario, revisa los pasos marcados");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const request = await adoptionService.submit(
-        {
+      // const request = await adoptionService.submit(
+      //   {
+      //     perroId,
+      //     refugioId,
+      //     comentarios: '',
+      //     formulario:  parsed.data as AdoptionFormData,
+      //   },
+      //   user.id,
+      // )
+
+      const j = {
+        data: {
           perroId,
           refugioId,
-          comentarios: formData.comentariosAdicionales ?? '',
-          formulario:  formData as AdoptionFormData,
+          comentarios: "",
+          formulario: parsed.data as AdoptionFormData,
         },
-        user.id,
-      )
-      purgeDraft()
-      setSubmittedRequest(request)
+        user: user.id,
+      };
+
+      console.log(JSON.stringify(j, null, 2));
+
+      // Éxito — purgar draft y exponer la solicitud creada.
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem(draftKey);
+        } catch {
+          /* noop */
+        }
+      }
+      setSavedAt(null);
+      setSubmittedRequest(null);
+      // setSubmittedRequest(request);
     } catch (err) {
-      setErrors({
-        _form: err instanceof Error ? err.message : 'Error al enviar la solicitud.',
-      })
+      const msg =
+        err instanceof Error ? err.message : "Error al enviar la solicitud";
+      setFormError(msg);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  }, [
+    form,
+    user,
+    perroId,
+    refugioId,
+    draftKey,
+    clearStepErrors,
+    applyZodIssues,
+  ]);
 
-  // ── resetForm ─────────────────────────────────────────────────────────────
+  // ── Reset ─────────────────────────────────────────────────────────────────
 
-  function resetForm(): void {
-    purgeDraft()
-    setFormData({})
-    setCurrentStep(0)
-    setErrors({})
-  }
-
-  // ── Return ────────────────────────────────────────────────────────────────
+  const resetForm = useCallback(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(draftKey);
+      } catch {
+        /* noop */
+      }
+    }
+    form.reset(INITIAL_VALUES as AdoptionFormData);
+    setCurrentStep(0);
+    setSubmittedRequest(null);
+    setFormError(null);
+    setSavedAt(null);
+  }, [form, draftKey]);
 
   return {
+    form,
     currentStep,
-    formData,
-    errors,
-    isSubmitting,
-    savedAt,
-    submittedRequest,
+    totalSteps: TOTAL_STEPS,
     nextStep,
     prevStep,
-    updateField,
+    goToStep,
     submitForm,
+    isSubmitting,
+    submittedRequest,
+    savedAt,
+    formError,
     resetForm,
-  }
+  };
 }

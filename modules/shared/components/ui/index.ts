@@ -53,6 +53,12 @@ export type { AvatarShape, AvatarSize } from './Avatar'
 export { Checkbox } from './Checkbox'
 export { Toggle } from './Toggle'
 
+export { RadioGroup, YesNoRadio } from './RadioGroup'
+export type { RadioGroupOption, RadioGroupProps } from './RadioGroup'
+
+export { CheckboxGroup } from './CheckboxGroup'
+export type { CheckboxGroupOption, CheckboxGroupProps } from './CheckboxGroup'
+
 // ── Navegación / estructura ──────────────────────────────────────────────────
 export { Tabs } from './Tabs'
 export type { TabVariant } from './Tabs'
