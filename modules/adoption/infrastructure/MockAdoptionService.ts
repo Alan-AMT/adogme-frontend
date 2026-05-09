@@ -5,6 +5,7 @@
 import type {
   AdoptionRequest,
   AdoptionRequestListItem,
+  PaginatedResult,
   RequestStatus,
 } from "../../shared/domain/AdoptionRequest";
 import type {
@@ -121,7 +122,9 @@ export class MockAdoptionService implements IAdoptionService {
 
   // ── getMyRequests ────────────────────────────────────────────────────────────
 
-  async getMyRequests(adoptanteId: string): Promise<AdoptionRequestListItem[]> {
+  async getMyRequests(
+    adoptanteId: string,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>> {
     await delay(200, 400);
 
     // Busca en la copia mutable (incluye nuevas solicitudes del submit)
@@ -131,7 +134,13 @@ export class MockAdoptionService implements IAdoptionService {
     const base = own.length ? own : getRequestsByAdoptante(adoptanteId);
 
     // Ordena por fecha descendente (más reciente primero)
-    return base.sort((a, b) => b.fecha.localeCompare(a.fecha)).map(toListItem);
+    return {
+      limit: 12,
+      page: 1,
+      total: base.length,
+      totalPages: Math.ceil(base.length / 12),
+      data: base.sort((a, b) => b.fecha.localeCompare(a.fecha)).map(toListItem),
+    };
   }
 
   // ── getById ──────────────────────────────────────────────────────────────────
@@ -203,7 +212,7 @@ export class MockAdoptionService implements IAdoptionService {
   // ── cancel (acción del adoptante) ────────────────────────────────────────────
 
   // D2 — adoptanteId es requerido; no se admite default 0
-  async cancel(id: string): Promise<AdoptionRequest> {
+  async cancel(id: string, applicantId: string): Promise<AdoptionRequest> {
     await delay(300, 500);
 
     const req = _requests.find((r) => r.id === id);

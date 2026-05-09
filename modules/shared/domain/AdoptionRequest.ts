@@ -158,6 +158,16 @@ export interface AdoptionRequest {
   adoptanteNombre?: string;
 }
 
+// ─── Resultado paginado genérico ─────────────────────────────────────────────
+
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 // ─── Versión reducida para listas ────────────────────────────────────────────
 
 export type AdoptionRequestListItem = Pick<

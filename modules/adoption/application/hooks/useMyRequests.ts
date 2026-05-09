@@ -7,47 +7,73 @@ import type {
   AdoptionRequest,
   AdoptionRequestListItem,
 } from "../../../shared/domain/AdoptionRequest";
+import type { Adoptante } from "../../../shared/domain/User";
 import { adoptionService } from "../../infrastructure/AdoptionServiceFactory";
 import { useAuthStore } from "../../../shared/infrastructure/store/authStore";
 
 // ─── Lista de mis solicitudes ─────────────────────────────────────────────────
 
-export function useMyRequests() {
-  const user = useAuthStore((s) => s.user);
+export function useMyRequests(limit = 12) {
+  const applicantId = useAuthStore((s) =>
+    s.user?.role === "applicant"
+      ? (s.user as Adoptante).applicantId
+      : undefined,
+  );
 
   const [requests, setRequests] = useState<AdoptionRequestListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const load = useCallback(async () => {
-    if (!user) {
+    if (!applicantId) {
       setIsLoading(false);
       return;
     }
     setIsLoading(true);
     setError(null);
     try {
-      const data = await adoptionService.getMyRequests(user.id);
-      setRequests(data);
+      const result = await adoptionService.getMyRequests(
+        applicantId,
+        page,
+        limit,
+      );
+      setRequests(result.data);
+      setTotalPages(result.totalPages);
+      setTotal(result.total);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al cargar solicitudes");
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [applicantId, page, limit]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  return { requests, isLoading, error, refetch: load };
+  return {
+    requests,
+    isLoading,
+    error,
+    refetch: load,
+    page,
+    setPage,
+    totalPages,
+    total,
+  };
 }
 
 // ─── Detalle de una solicitud ─────────────────────────────────────────────────
 
 export function useRequestDetail(id: string) {
-  const user = useAuthStore((s) => s.user);
-
+  const applicantId = useAuthStore((s) =>
+    s.user?.role === "applicant"
+      ? (s.user as Adoptante).applicantId
+      : undefined,
+  );
   const [request, setRequest] = useState<AdoptionRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,9 +97,12 @@ export function useRequestDetail(id: string) {
     if (!request) return;
     setCancelling(true);
     setError(null);
+    if (!applicantId) {
+      return;
+    }
     try {
       // D2 — pasar adoptanteId requerido para validar ownership
-      const updated = await adoptionService.cancel(request.id);
+      const updated = await adoptionService.cancel(request.id, applicantId);
       setRequest(updated);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al cancelar");

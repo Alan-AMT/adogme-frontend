@@ -6,6 +6,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link  from 'next/link'
 import { Badge, requestStatusBadgeVariant } from '../../shared/components/ui/Badge'
+import { Pagination } from '../../shared/components/ui/Pagination'
 import { Spinner } from '../../shared/components/ui/Spinner'
 import { useMyRequests } from '../application/hooks/useMyRequests'
 import type { RequestStatus } from '../../shared/domain/AdoptionRequest'
@@ -47,7 +48,7 @@ function formatDate(iso: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AdoptionStatusView() {
-  const { requests, isLoading, error, refetch } = useMyRequests()
+  const { requests, isLoading, error, refetch, page, setPage, totalPages, total } = useMyRequests()
   const [activeTab, setActiveTab] = useState('all')
 
   // ── Loading ────────────────────────────────────────────────────────────────
@@ -105,8 +106,8 @@ export default function AdoptionStatusView() {
       <div className="as-page-header">
         <h1 className="as-page-header__title">Mis solicitudes</h1>
         <p className="as-page-header__sub">
-          {requests.length
-            ? `Tienes ${requests.length} solicitud${requests.length !== 1 ? 'es' : ''} de adopción`
+          {total
+            ? `Tienes ${total} solicitud${total !== 1 ? 'es' : ''} de adopción`
             : 'Aún no has enviado ninguna solicitud'}
         </p>
       </div>
@@ -122,7 +123,7 @@ export default function AdoptionStatusView() {
                 key={tab.key}
                 type="button"
                 className={`as-tab${activeTab === tab.key ? ' as-tab--active' : ''}`}
-                onClick={() => setActiveTab(tab.key)}
+                onClick={() => { setActiveTab(tab.key); setPage(1) }}
               >
                 {tab.label}
                 <span className="as-tab__count">{count}</span>
@@ -228,6 +229,13 @@ export default function AdoptionStatusView() {
           ))}
         </div>
       )}
+
+      {/* ── Pagination ── */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   )
 }

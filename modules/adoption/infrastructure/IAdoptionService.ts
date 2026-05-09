@@ -5,6 +5,7 @@ import type {
   AdoptionRequest,
   AdoptionRequestListItem,
   AdoptionFormData,
+  PaginatedResult,
   RequestStatus,
 } from "../../shared/domain/AdoptionRequest";
 
@@ -39,7 +40,11 @@ export interface IAdoptionService {
    * Lista todas las solicitudes del adoptante autenticado.
    * Filtradas por userId del authStore.
    */
-  getMyRequests(adoptanteId: string): Promise<AdoptionRequestListItem[]>;
+  getMyRequests(
+    adoptanteId: string,
+    page?: number,
+    limit?: number,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>>;
 
   /**
    * Detalle completo de una solicitud (con historial).
@@ -49,20 +54,9 @@ export interface IAdoptionService {
   getById(id: string): Promise<AdoptionRequest | null>;
 
   /**
-   * Cambia el estado de una solicitud.
-   * Valida que la transición sea permitida (ALLOWED_TRANSITIONS).
-   * Solo shelter/admin pueden llamar esto; el adoptante solo puede cancelar.
-   */
-  updateStatus(
-    id: string,
-    newStatus: RequestStatus,
-    comentario?: string,
-  ): Promise<AdoptionRequest>;
-
-  /**
    * Cancela una solicitud (acción del adoptante).
    * Alias de updateStatus(..., 'cancelled') con validación de rol.
    * D2 — adoptanteId es obligatorio para validar ownership.
    */
-  cancel(id: string): Promise<AdoptionRequest>;
+  cancel(id: string, applicantId: string): Promise<AdoptionRequest>;
 }

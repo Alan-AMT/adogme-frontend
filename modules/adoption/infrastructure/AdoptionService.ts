@@ -6,6 +6,7 @@ import axios from "axios";
 import type {
   AdoptionRequest,
   AdoptionRequestListItem,
+  PaginatedResult,
   RequestStatus,
   StatusChange,
 } from "../../shared/domain/AdoptionRequest";
@@ -20,16 +21,24 @@ import type {
 
 // ─── Backend response shapes ──────────────────────────────────────────────────
 
+interface PaginatedApiResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 interface ApplicationFindAllItem {
-  id:            string
-  dogName:       string
-  dogBreed:      string
-  dogImage:      string | null
-  shelterName:   string
-  shelterLogo:   string | null
-  applicantName: string
-  status:        RequestStatus
-  createdAt:     string
+  id: string;
+  dogName: string;
+  dogBreed: string;
+  dogImage: string | null;
+  shelterName: string;
+  shelterLogo: string | null;
+  applicantName: string;
+  status: RequestStatus;
+  createdAt: string;
 }
 
 interface ApplicationReviewApi {
@@ -135,30 +144,43 @@ export class AdoptionService implements IAdoptionService {
     }
   }
 
-  async getMyRequests(applicantId: string): Promise<AdoptionRequestListItem[]> {
+  async getMyRequests(
+    applicantId: string,
+    page = 1,
+    limit = 12,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>> {
     try {
-      const { data } = await apiClient.get<ApplicationFindAllItem[]>(
-        API_ENDPOINTS.ADOPTIONS.APPLICATIONS_BY_APPLICANT(applicantId),
-      )
-      return data.map((item) => ({
-        id:              item.id,
-        adoptanteId:     applicantId,
-        perroId:         '',
-        refugioId:       '',
-        fecha:           item.createdAt,
-        estado:          item.status,
-        perroNombre:     item.dogName,
-        perroFoto:       item.dogImage,
-        refugioNombre:   item.shelterName,
-        adoptanteNombre: item.applicantName,
-      }))
+      const { data: res } = await apiClient.get<
+        PaginatedApiResponse<ApplicationFindAllItem>
+      >(API_ENDPOINTS.ADOPTIONS.APPLICATIONS_BY_APPLICANT(applicantId), {
+        params: { page, limit },
+      });
+      return {
+        data: res.data.map((item) => ({
+          id: item.id,
+          adoptanteId: applicantId,
+          perroId: "",
+          refugioId: "",
+          fecha: item.createdAt,
+          estado: item.status,
+          perroNombre: item.dogName,
+          perroFoto: item.dogImage,
+          refugioNombre: item.shelterName,
+          adoptanteNombre: item.applicantName,
+        })),
+        total: res.total,
+        page: res.page,
+        totalPages: res.totalPages,
+        limit: res.limit,
+      };
     } catch (e) {
       if (axios.isAxiosError(e)) {
-        const msg = (e.response?.data as { message?: string } | undefined)?.message
-          ?? 'Error al obtener las solicitudes'
-        throw new Error(msg, { cause: e })
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al obtener las solicitudes";
+        throw new Error(msg, { cause: e });
       }
-      throw new Error('Error al obtener las solicitudes', { cause: e })
+      throw new Error("Error al obtener las solicitudes", { cause: e });
     }
   }
 
@@ -180,28 +202,25 @@ export class AdoptionService implements IAdoptionService {
     }
   }
 
-  async updateStatus(
-    _id: string,
-    _newStatus: RequestStatus,
-    _comentario?: string,
-  ): Promise<AdoptionRequest> {
-    throw new Error("Not implemented");
-  }
-
-  async cancel(id: string): Promise<AdoptionRequest> {
+  async cancel(id: string, applicantId: string): Promise<AdoptionRequest> {
     try {
-      await apiClient.delete(API_ENDPOINTS.ADOPTIONS.APPLICATION_BY_ID(id))
+      await apiClient.delete(API_ENDPOINTS.ADOPTIONS.APPLICATION_BY_ID(id), {
+        data: {
+          applicantId,
+        },
+      });
     } catch (e) {
       if (axios.isAxiosError(e)) {
-        const msg = (e.response?.data as { message?: string } | undefined)?.message
-          ?? 'Error al cancelar la solicitud'
-        throw new Error(msg, { cause: e })
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al cancelar la solicitud";
+        throw new Error(msg, { cause: e });
       }
-      throw new Error('Error al cancelar la solicitud', { cause: e })
+      throw new Error("Error al cancelar la solicitud", { cause: e });
     }
 
-    const updated = await this.getById(id)
-    if (!updated) throw new Error('No se pudo obtener la solicitud cancelada')
-    return updated
+    const updated = await this.getById(id);
+    if (!updated) throw new Error("No se pudo obtener la solicitud cancelada");
+    return updated;
   }
 }
