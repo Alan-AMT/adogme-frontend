@@ -6,10 +6,12 @@ import type { ReactNode } from 'react'
 
 export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="flex flex-col h-dvh overflow-hidden">
       <Navbar />
-      <main>{children}</main>
-      <Footer />
-    </>
+      <div id="app-scroll-container" className="flex-1 overflow-y-auto">
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </div>
   )
 }

@@ -32,21 +32,22 @@ export default function ApplicantLayout({ children }: { children: ReactNode }) {
 
   if (!ready || !user || user.role !== 'applicant') {
     return (
-      <>
+      <div className="flex flex-col h-dvh overflow-hidden">
         <Navbar />
-        <main className="flex items-center justify-center min-h-[60vh]">
+        <div id="app-scroll-container" className="flex-1 overflow-y-auto flex items-center justify-center">
           <Spinner size="lg" />
-        </main>
-        <Footer />
-      </>
+        </div>
+      </div>
     )
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+    <div className="flex flex-col h-dvh overflow-hidden">
       <Navbar />
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>{children}</main>
-      <Footer />
+      <div id="app-scroll-container" className="flex-1 overflow-y-auto flex flex-col">
+        <main className="flex-1 flex flex-col">{children}</main>
+        <Footer />
+      </div>
     </div>
   )
 }

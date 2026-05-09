@@ -721,9 +721,11 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
+    const el = document.getElementById("app-scroll-container");
+    const handler = () => setScrolled((el ? el.scrollTop : window.scrollY) > 8);
+    const target: Element | Window = el ?? window;
+    target.addEventListener("scroll", handler, { passive: true });
+    return () => target.removeEventListener("scroll", handler);
   }, []);
 
   useEffect(() => {
