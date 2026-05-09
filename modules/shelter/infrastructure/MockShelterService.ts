@@ -77,7 +77,7 @@ let _shelters: Shelter[] = MOCK_SHELTERS.map((s) => ({ ...s }));
 let _dogs: Dog[] = MOCK_DOGS.map((d) => ({ ...d }));
 let _requests: AdoptionRequest[] = MOCK_ADOPTION_REQUESTS.map((r) => ({
   ...r,
-  historial: [...r.historial],
+  revisiones: [...r.revisiones],
 }));
 
 // Contador para IDs autoincrement de perros nuevos
@@ -379,7 +379,7 @@ export class MockShelterService implements IShelterService {
   async getRequestById(id: string): Promise<AdoptionRequest | null> {
     await delay(200);
     const req = _requests.find((r) => r.id === id);
-    return req ? { ...req, historial: [...req.historial] } : null;
+    return req ? { ...req, revisiones: [...req.revisiones] } : null;
   }
 
   async updateRequestStatus(
@@ -393,20 +393,18 @@ export class MockShelterService implements IShelterService {
 
     const prev = _requests[idx];
     const change: StatusChange = {
-      id: Date.now(),
-      solicitudId: requestId,
-      estadoAnterior: prev.estado,
-      estadoNuevo: newStatus,
-      cambiadoPor: "201", // mock shelter user
-      rol: "shelter",
-      comentario,
-      fecha: new Date().toISOString(),
+      id: String(Date.now()),
+      applicationId: requestId,
+      fromStatus: prev.estado,
+      toStatus: newStatus,
+      note: comentario ?? null,
+      createdAt: new Date().toISOString(),
     };
 
     const updated: AdoptionRequest = {
       ...prev,
       estado: newStatus,
-      historial: [...prev.historial, change],
+      revisiones: [...prev.revisiones, change],
     };
 
     _requests = [
@@ -414,6 +412,6 @@ export class MockShelterService implements IShelterService {
       updated,
       ..._requests.slice(idx + 1),
     ];
-    return { ...updated, historial: [...updated.historial] };
+    return { ...updated, revisiones: [...updated.revisiones] };
   }
 }

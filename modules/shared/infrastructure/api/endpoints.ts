@@ -87,6 +87,9 @@ export const API_ENDPOINTS = {
     BY_SHELTER: (id: number) => `${BASE}/api/adoptions/shelter/${id}`,
     DETAIL: (id: number) => `${BASE}/api/adoptions/${id}`,
     CREATE: `${BASE}/api/adoptions`,
+    APPLICATIONS_CREATE: `${BASE}/applications-ms`,
+    APPLICATION_BY_ID: (id: string) => `${BASE}/applications-ms/${id}`,
+    APPLICATIONS_BY_APPLICANT: (applicantId: string) => `${BASE}/applicants-ms/applicant/${applicantId}`,
     UPDATE_STATUS: (id: number) => `${BASE}/api/adoptions/${id}/status`,
     CANCEL: (id: number) => `${BASE}/api/adoptions/${id}/cancel`,
     // TODO: endpoint del MS de solicitudes — aún no está listo en backend.

@@ -21,7 +21,8 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioId: SHELTER_IDS.HUELLITAS,
     fecha: '2025-01-20',
     estado: 'pending',
-    comentarios: 'Me enamoré de Max desde que lo vi. Tengo jardín y mucho tiempo libre.',
+    formVersion: 1,
+    compatibilityScore: null,
     formulario: {
       nombreCompleto: 'Ana García',
       edad: 29,
@@ -77,23 +78,20 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
       aceptaSeguimiento: true,
       aceptaInfoVeridica: true,
     },
-    historial: [
+    revisiones: [
       {
-        id: 1,
-        solicitudId: '1001',
-        estadoAnterior: 'pending',
-        estadoNuevo: 'pending',
-        cambiadoPor: ADOPTANTE_ID,
-        rol: 'shelter',
-        comentario: 'Solicitud enviada por la adoptante.',
-        fecha: '2025-01-20T10:00:00Z',
+        id: '1',
+        applicationId: '1001',
+        fromStatus: 'pending',
+        toStatus: 'pending',
+        note: 'Solicitud enviada por la adoptante.',
+        createdAt: '2025-01-20T10:00:00Z',
       },
     ],
     perroNombre: 'Max',
     perroFoto: '/assets/dogs/dog1.jpg',
     refugioNombre: 'Huellitas MX',
     adoptanteNombre: 'Ana García',
-    adoptanteCorreo: 'ana@test.com',
   },
 
   // ── 2. Aprobada — depto rentado, con mascota actual y experiencia ───────
@@ -104,7 +102,8 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioId: SHELTER_IDS.PATITAS,
     fecha: '2024-12-05',
     estado: 'approved',
-    comentarios: 'Churro es exactamente lo que buscaba.',
+    formVersion: 1,
+    compatibilityScore: null,
     formulario: {
       nombreCompleto: 'Ana García',
       edad: 29,
@@ -163,32 +162,28 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
       aceptaSeguimiento: true,
       aceptaInfoVeridica: true,
     },
-    historial: [
+    revisiones: [
       {
-        id: 3,
-        solicitudId: '1003',
-        estadoAnterior: 'pending',
-        estadoNuevo: 'in_review',
-        cambiadoPor: '201',
-        rol: 'shelter',
-        fecha: '2024-12-07T10:00:00Z',
+        id: '3',
+        applicationId: '1003',
+        fromStatus: 'pending',
+        toStatus: 'in_review',
+        note: null,
+        createdAt: '2024-12-07T10:00:00Z',
       },
       {
-        id: 4,
-        solicitudId: '1003',
-        estadoAnterior: 'in_review',
-        estadoNuevo: 'approved',
-        cambiadoPor: '201',
-        rol: 'shelter',
-        comentario: '¡Excelente perfil! Aprobada.',
-        fecha: '2024-12-10T14:00:00Z',
+        id: '4',
+        applicationId: '1003',
+        fromStatus: 'in_review',
+        toStatus: 'approved',
+        note: '¡Excelente perfil! Aprobada.',
+        createdAt: '2024-12-10T14:00:00Z',
       },
     ],
     perroNombre: 'Churro',
     perroFoto: '/assets/dogs/dog7.jpg',
     refugioNombre: 'Patitas Libres',
     adoptanteNombre: 'Ana García',
-    adoptanteCorreo: 'ana@test.com',
   },
 
   // ── 3. Rechazada — depto pequeño, perfil no compatible ──────────────────
@@ -199,7 +194,8 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     refugioId: SHELTER_IDS.HUELLITAS,
     fecha: '2024-11-20',
     estado: 'rejected',
-    comentarios: 'Thor me llamó la atención por sus ojos azules.',
+    formVersion: 1,
+    compatibilityScore: null,
     formulario: {
       nombreCompleto: 'Ana García',
       edad: 29,
@@ -251,24 +247,21 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
       aceptaSeguimiento: true,
       aceptaInfoVeridica: true,
     },
-    historial: [
+    revisiones: [
       {
-        id: 5,
-        solicitudId: '1004',
-        estadoAnterior: 'pending',
-        estadoNuevo: 'rejected',
-        cambiadoPor: '201',
-        rol: 'shelter',
-        comentario:
+        id: '5',
+        applicationId: '1004',
+        fromStatus: 'pending',
+        toStatus: 'rejected',
+        note:
           'Thor necesita dueño con experiencia en la raza y espacio para ejercicio intenso. El perfil actual no es compatible.',
-        fecha: '2024-11-22T11:00:00Z',
+        createdAt: '2024-11-22T11:00:00Z',
       },
     ],
     perroNombre: 'Thor',
     perroFoto: '/assets/dogs/dog3.jpg',
     refugioNombre: 'Huellitas MX',
     adoptanteNombre: 'Ana García',
-    adoptanteCorreo: 'ana@test.com',
   },
 ]
 

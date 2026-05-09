@@ -24,6 +24,26 @@ export function calcularEdadCategoria(edadMeses: number): AgeCategory {
   return "senior";
 }
 
+// ─── Compatibilidad: distancia euclidiana userVector vs dogVector ────────────
+// Asume vectores 4-dim con cada componente en [0, 1]. Devuelve un score 0-100
+// (100 = match perfecto). Si falta cualquiera de los dos vectores, devuelve null.
+
+export function calculateCompatibilityScore(
+  userVector: [number, number, number, number] | null | undefined,
+  dogVector: [number, number, number, number] | null | undefined,
+): number | null {
+  if (!userVector || !dogVector) return null;
+  let sumSq = 0;
+  for (let i = 0; i < 4; i++) {
+    const d = userVector[i] - dogVector[i];
+    sumSq += d * d;
+  }
+  const distance = Math.sqrt(sumSq);
+  // maxDistance para vector 4-dim acotado en [0,1] es √4 = 2
+  const score = 100 * Math.max(0, 1 - distance / 2);
+  return Math.round(Math.min(100, Math.max(0, score)));
+}
+
 // ─── Sub-entidades ────────────────────────────────────────────────────────────
 
 export interface Vaccination {
@@ -95,6 +115,7 @@ export interface Dog {
   // Campos calculados / solo frontend
   edadCategoria: AgeCategory;
   compatibilidad?: number;
+  dogVector?: [number, number, number, number] | null;
 
   // Datos del refugio (join)
   refugioNombre?: string;

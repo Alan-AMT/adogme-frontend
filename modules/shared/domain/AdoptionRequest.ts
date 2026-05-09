@@ -123,17 +123,15 @@ export const ADOPTION_STEPS = [
 
 export type AdoptionStepId = (typeof ADOPTION_STEPS)[number]["id"];
 
-// ─── Historial de cambios de estado ──────────────────────────────────────────
+// ─── Historial de cambios de estado (FE counterpart de ApplicationReview) ────
 
 export interface StatusChange {
-  id: number;
-  solicitudId: string;
-  estadoAnterior: RequestStatus;
-  estadoNuevo: RequestStatus;
-  cambiadoPor: string; // userId (admin o shelter)
-  rol: "shelter" | "admin";
-  comentario?: string;
-  fecha: string; // ISO datetime
+  id: string;
+  applicationId: string;
+  fromStatus: RequestStatus;
+  toStatus: RequestStatus;
+  note: string | null;
+  createdAt: string; // ISO datetime
 }
 
 // ─── Entidad completa ─────────────────────────────────────────────────────────
@@ -145,19 +143,19 @@ export interface AdoptionRequest {
   refugioId: string; // FK → Refugio
   fecha: string; // ISO date — del diagrama
   estado: RequestStatus; // del diagrama
-  comentarios: string; // del diagrama (texto libre del adoptante)
 
   // Campos enriquecidos
   formulario: AdoptionFormData;
-  historial: StatusChange[];
+  formVersion: number;
+  compatibilityScore: number | null;
+  revisiones: StatusChange[];
 
   // Datos relacionados (joins — para mostrar en UI)
   perroNombre?: string;
-  perroFoto?: string;
+  perroFoto?: string | null;
   refugioNombre?: string;
+  refugioLogo?: string | null;
   adoptanteNombre?: string;
-  adoptanteCorreo?: string;
-  adoptanteTelefono?: string;
 }
 
 // ─── Versión reducida para listas ────────────────────────────────────────────

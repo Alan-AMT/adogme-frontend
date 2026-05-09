@@ -20,6 +20,7 @@ import type {
   AdoptionRequest,
 } from "../../../shared/domain/AdoptionRequest";
 import { ADOPTION_STEPS } from "../../../shared/domain/AdoptionRequest";
+import type { Adoptante } from "../../../shared/domain/User";
 import { STEP_SCHEMAS, adoptionFormSchema } from "../../domain/schemas";
 import { adoptionService } from "../../infrastructure/AdoptionServiceFactory";
 import { useAuthStore } from "../../../shared/infrastructure/store/authStore";
@@ -29,7 +30,12 @@ import { useAuthStore } from "../../../shared/infrastructure/store/authStore";
 export interface UseAdoptionFormOptions {
   perroId: string;
   refugioId: string;
-  perroNombre?: string;
+  perroNombre: string;
+  perroRaza: string;
+  perroFoto: string | null;
+  refugioNombre: string;
+  refugioLogo: string | null;
+  dogVector: [number, number, number, number] | null;
 }
 
 export interface UseAdoptionFormReturn {
@@ -139,7 +145,16 @@ function buildDefaults(draft: DraftPayload | null): Partial<AdoptionFormData> {
 export function useAdoptionForm(
   options: UseAdoptionFormOptions,
 ): UseAdoptionFormReturn {
-  const { perroId, refugioId } = options;
+  const {
+    perroId,
+    refugioId,
+    perroNombre,
+    perroRaza,
+    perroFoto,
+    refugioNombre,
+    refugioLogo,
+    dogVector,
+  } = options;
 
   const user = useAuthStore((s) => s.user);
 
@@ -313,29 +328,30 @@ export function useAdoptionForm(
       return;
     }
 
+    const adoptante = user as Adoptante;
+    const applicantId = adoptante.applicantId;
+    if (!applicantId) {
+      setFormError("Tu cuenta de adoptante no tiene applicantId disponible");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // const request = await adoptionService.submit(
-      //   {
-      //     perroId,
-      //     refugioId,
-      //     comentarios: '',
-      //     formulario:  parsed.data as AdoptionFormData,
-      //   },
-      //   user.id,
-      // )
-
-      const j = {
-        data: {
+      const request = await adoptionService.submit(
+        {
           perroId,
           refugioId,
-          comentarios: "",
+          perroNombre,
+          perroRaza,
+          perroFoto,
+          refugioNombre,
+          refugioLogo,
+          dogVector,
+          userVector: adoptante.userVector ?? null,
           formulario: parsed.data as AdoptionFormData,
         },
-        user: user.id,
-      };
-
-      console.log(JSON.stringify(j, null, 2));
+        applicantId,
+      );
 
       // Éxito — purgar draft y exponer la solicitud creada.
       if (typeof window !== "undefined") {
@@ -346,8 +362,7 @@ export function useAdoptionForm(
         }
       }
       setSavedAt(null);
-      setSubmittedRequest(null);
-      // setSubmittedRequest(request);
+      setSubmittedRequest(request);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Error al enviar la solicitud";
@@ -360,6 +375,12 @@ export function useAdoptionForm(
     user,
     perroId,
     refugioId,
+    perroNombre,
+    perroRaza,
+    perroFoto,
+    refugioNombre,
+    refugioLogo,
+    dogVector,
     draftKey,
     clearStepErrors,
     applyZodIssues,

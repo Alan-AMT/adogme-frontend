@@ -58,25 +58,25 @@ function StatusBadge({ estado }: { estado: string }) {
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 
-function Timeline({ historial }: { historial: StatusChange[] }) {
-  if (historial.length === 0) return null
+function Timeline({ revisiones }: { revisiones: StatusChange[] }) {
+  if (revisiones.length === 0) return null
 
   return (
     <div className="sv-timeline">
-      {[...historial].reverse().map(item => (
+      {[...revisiones].reverse().map(item => (
         <div key={item.id} className="sv-timeline-item">
-          <div className={`sv-timeline-dot sv-timeline-dot--${item.estadoNuevo}`}>
+          <div className={`sv-timeline-dot sv-timeline-dot--${item.toStatus}`}>
             <span className="material-symbols-outlined">
-              {STATUS_ICONS[item.estadoNuevo] ?? 'circle'}
+              {STATUS_ICONS[item.toStatus] ?? 'circle'}
             </span>
           </div>
           <div className="sv-timeline-content">
             <p className="sv-timeline-label">
-              {STATUS_LABELS[item.estadoNuevo] ?? item.estadoNuevo}
+              {STATUS_LABELS[item.toStatus] ?? item.toStatus}
             </p>
-            <p className="sv-timeline-date">{formatDateTime(item.fecha)}</p>
-            {item.comentario && (
-              <p className="sv-timeline-comment">"{item.comentario}"</p>
+            <p className="sv-timeline-date">{formatDateTime(item.createdAt)}</p>
+            {item.note && (
+              <p className="sv-timeline-comment">"{item.note}"</p>
             )}
           </div>
         </div>
@@ -271,24 +271,16 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
                 <span className="sv-info-row__label">Adoptante</span>
                 <span className="sv-info-row__value">{request.adoptanteNombre ?? '—'}</span>
               </div>
-              {request.adoptanteCorreo && (
+              {request.formulario.correo && (
                 <div className="sv-info-row">
                   <span className="sv-info-row__label">Correo</span>
                   <a
-                    href={`mailto:${request.adoptanteCorreo}`}
+                    href={`mailto:${request.formulario.correo}`}
                     className="sv-info-row__value"
                     style={{ color: '#ff6b6b', textDecoration: 'none' }}
                   >
-                    {request.adoptanteCorreo}
+                    {request.formulario.correo}
                   </a>
-                </div>
-              )}
-              {request.comentarios && (
-                <div className="sv-info-row">
-                  <span className="sv-info-row__label">Comentarios</span>
-                  <span className="sv-info-row__value" style={{ fontStyle: 'italic', color: '#52525b' }}>
-                    "{request.comentarios}"
-                  </span>
                 </div>
               )}
             </div>
@@ -303,7 +295,7 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
           {/* Card — Contacto WhatsApp */}
-          {request.adoptanteTelefono && (
+          {request.formulario.telefono && (
             <div className="sv-detail-card">
               <div className="sv-detail-card__header">
                 <span className="material-symbols-outlined">phone</span>
@@ -314,7 +306,7 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
                   Contactar a {request.adoptanteNombre} por WhatsApp.
                 </p>
                 <a
-                  href={`https://wa.me/52${request.adoptanteTelefono.replace(/\D/g, '')}`}
+                  href={`https://wa.me/52${request.formulario.telefono.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -355,7 +347,7 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
               Historial de cambios
             </div>
             <div className="sv-detail-card__body">
-              <Timeline historial={request.historial} />
+              <Timeline revisiones={request.revisiones} />
             </div>
           </div>
 

@@ -49,19 +49,25 @@ function getRelativeTime(date: Date): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface Props {
-  perroId:        string
-  refugioId:      string
-  perroNombre?:   string
-  perroFoto?:     string
-  refugioNombre?: string
+  perroId:       string
+  refugioId:     string
+  perroNombre:   string
+  perroRaza:     string
+  perroFoto:     string | null
+  refugioNombre: string
+  refugioLogo:   string | null
+  dogVector:     [number, number, number, number] | null
 }
 
 export default function AdoptionFormView({
   perroId,
   refugioId,
   perroNombre,
+  perroRaza,
   perroFoto,
   refugioNombre,
+  refugioLogo,
+  dogVector,
 }: Props) {
   const user = useAuthStore(s => s.user)
 
@@ -76,7 +82,16 @@ export default function AdoptionFormView({
     submittedRequest,
     savedAt,
     formError,
-  } = useAdoptionForm({ perroId, refugioId, perroNombre })
+  } = useAdoptionForm({
+    perroId,
+    refugioId,
+    perroNombre,
+    perroRaza,
+    perroFoto,
+    refugioNombre,
+    refugioLogo,
+    dogVector,
+  })
 
   // Re-render cada 30s para mantener fresco el indicador "guardado hace X".
   const [, setTick] = useState(0)

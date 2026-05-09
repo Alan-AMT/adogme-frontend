@@ -38,8 +38,11 @@ export default async function AdoptarPage({ params }: Props) {
       perroId={dog.id}
       refugioId={dog.refugioId}
       perroNombre={dog.nombre}
-      perroFoto={dog.foto}
-      refugioNombre={dog.refugioNombre}
+      perroRaza={dog.raza}
+      perroFoto={dog.foto ?? null}
+      refugioNombre={dog.refugioNombre ?? ''}
+      refugioLogo={dog.refugioLogo ?? null}
+      dogVector={dog.dogVector ?? null}
     />
   )
 }

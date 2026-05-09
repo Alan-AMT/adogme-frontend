@@ -1,79 +1,95 @@
 // modules/adoption/components/AdoptionDetailView.tsx
 // Detalle de una solicitud con timeline de estado y datos del formulario
-'use client'
+"use client";
 
-import Image  from 'next/image'
-import Link   from 'next/link'
-import { useState } from 'react'
-import { Badge, requestStatusBadgeVariant } from '../../shared/components/ui/Badge'
-import { Spinner } from '../../shared/components/ui/Spinner'
-import { useRequestDetail } from '../application/hooks/useMyRequests'
-import { getShelterById } from '@/modules/shared/mockData/shelters.mock'
-import type { RequestStatus } from '../../shared/domain/AdoptionRequest'
-import FormSummarySections from './FormSummarySections'
-import '../styles/adoptionForm.css'
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import {
+  Badge,
+  requestStatusBadgeVariant,
+} from "../../shared/components/ui/Badge";
+import { Spinner } from "../../shared/components/ui/Spinner";
+import { useRequestDetail } from "../application/hooks/useMyRequests";
+import { getShelterById } from "@/modules/shared/mockData/shelters.mock";
+import type { RequestStatus } from "../../shared/domain/AdoptionRequest";
+import FormSummarySections from "./FormSummarySections";
+import "../styles/adoptionForm.css";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_LABEL: Record<RequestStatus, string> = {
-  pending:   'Solicitud enviada',
-  in_review: 'En revisión',
-  approved:  'Aprobada',
-  rejected:  'Rechazada',
-  cancelled: 'Cancelada',
-}
+  pending: "Solicitud enviada",
+  in_review: "En revisión",
+  approved: "Aprobada",
+  rejected: "Rechazada",
+  cancelled: "Cancelada",
+};
 
 const STATUS_DESC: Record<RequestStatus, string> = {
-  pending:   'El refugio ha recibido tu solicitud y la revisará pronto.',
-  in_review: 'El refugio está evaluando tu perfil y formulario.',
-  approved:  '¡Enhorabuena! El refugio aprobó tu solicitud. Te contactarán para coordinar la entrega.',
-  rejected:  'El refugio no pudo aprobar esta solicitud en este momento.',
-  cancelled: 'Esta solicitud fue cancelada.',
-}
+  pending: "El refugio ha recibido tu solicitud y la revisará pronto.",
+  in_review: "El refugio está evaluando tu perfil y formulario.",
+  approved:
+    "¡Enhorabuena! El refugio aprobó tu solicitud. Te contactarán para coordinar la entrega.",
+  rejected: "El refugio no pudo aprobar esta solicitud en este momento.",
+  cancelled: "Esta solicitud fue cancelada.",
+};
 
 function formatDate(iso: string, withTime = false): string {
-  return new Date(iso).toLocaleDateString('es-MX', {
-    year:  'numeric',
-    month: 'long',
-    day:   'numeric',
-    ...(withTime ? { hour: '2-digit', minute: '2-digit' } : {}),
-  })
+  return new Date(iso).toLocaleDateString("es-MX", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
+  });
 }
 
-const ACTIVE_STATES: RequestStatus[] = ['pending', 'in_review']
+const ACTIVE_STATES: RequestStatus[] = ["pending", "in_review"];
 
-function whatsappUrl(phone: string, shelterName: string, dogName: string): string {
-  const digits = phone.replace(/\D/g, '')
-  const full = digits.length === 10 ? `52${digits}` : digits
-  const text = encodeURIComponent(`Hola, soy adoptante de aDOGme. Envié una solicitud para adoptar a ${dogName} del refugio ${shelterName}.`)
-  return `https://wa.me/${full}?text=${text}`
+function whatsappUrl(
+  phone: string,
+  shelterName: string,
+  dogName: string,
+): string {
+  const digits = phone.replace(/\D/g, "");
+  const full = digits.length === 10 ? `52${digits}` : digits;
+  const text = encodeURIComponent(
+    `Hola, soy adoptante de aDOGme. Envié una solicitud para adoptar a ${dogName} del refugio ${shelterName}.`,
+  );
+  return `https://wa.me/${full}?text=${text}`;
 }
 
 function dotClass(status: RequestStatus, isCurrent = false): string {
-  const base = 'ad-timeline-item__dot'
-  if (isCurrent && ACTIVE_STATES.includes(status)) return `${base} ${base}--current`
-  if (status === 'approved') return `${base} ${base}--approved`
-  if (status === 'rejected') return `${base} ${base}--rejected`
-  return `${base} ${base}--active`
+  const base = "ad-timeline-item__dot";
+  if (isCurrent && ACTIVE_STATES.includes(status))
+    return `${base} ${base}--current`;
+  if (status === "approved") return `${base} ${base}--approved`;
+  if (status === "rejected") return `${base} ${base}--rejected`;
+  return `${base} ${base}--active`;
 }
 
 // ─── Data row ─────────────────────────────────────────────────────────────────
 
 function DataRow({ label, value }: { label: string; value: string }) {
-  if (!value || value === '—') return null
+  if (!value || value === "—") return null;
   return (
     <div className="ad-data-row">
       <span className="ad-data-row__key">{label}</span>
       <span className="ad-data-row__val">{value}</span>
     </div>
-  )
+  );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function AdoptionDetailView({ requestId }: { requestId: string }) {
-  const { request, isLoading, error, cancelling, cancel } = useRequestDetail(requestId)
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+export default function AdoptionDetailView({
+  requestId,
+}: {
+  requestId: string;
+}) {
+  const { request, isLoading, error, cancelling, cancel } =
+    useRequestDetail(requestId);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -81,7 +97,7 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
       <div className="ad-page flex justify-center py-20">
         <Spinner size="lg" />
       </div>
-    )
+    );
   }
 
   // ── Error / Not found ──────────────────────────────────────────────────────
@@ -91,58 +107,72 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
         <nav className="ad-breadcrumb">
           <Link href="/mis-solicitudes">Mis solicitudes</Link>
           <span className="ad-breadcrumb__sep">›</span>
-          <span className="ad-breadcrumb__current">Solicitud no encontrada</span>
+          <span className="ad-breadcrumb__current">
+            Solicitud no encontrada
+          </span>
         </nav>
         <div className="flex flex-col items-center gap-3 py-16 text-center">
           <span
             className="material-symbols-outlined text-[#fca5a5]"
-            style={{ fontSize: 40, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 40" }}
+            style={{
+              fontSize: 40,
+              fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 40",
+            }}
           >
             error_circle
           </span>
-          <p className="text-[#b91c1c] font-[700]">{error ?? 'Solicitud no encontrada'}</p>
-          <Link href="/mis-solicitudes" className="text-sm font-[700] text-[#ff6b6b] underline">
+          <p className="text-[#b91c1c] font-[700]">
+            {error ?? "Solicitud no encontrada"}
+          </p>
+          <Link
+            href="/mis-solicitudes"
+            className="text-sm font-[700] text-[#ff6b6b] underline"
+          >
             Volver a mis solicitudes
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
-  const { formulario: f, historial } = request
-  const canCancel  = ACTIVE_STATES.includes(request.estado)
-  const shelter    = getShelterById(request.refugioId)
-  const waUrl      = shelter?.telefono
-    ? whatsappUrl(shelter.telefono, request.refugioNombre ?? shelter.nombre, request.perroNombre ?? 'el perro')
-    : null
-  const rejectionComment = request.estado === 'rejected'
-    ? [...historial].reverse().find(h => h.estadoNuevo === 'rejected' && h.comentario)?.comentario
-    : undefined
+  const { formulario: f, revisiones } = request;
+  const canCancel = ACTIVE_STATES.includes(request.estado);
+  const shelter = getShelterById(request.refugioId);
+  const waUrl = shelter?.telefono
+    ? whatsappUrl(
+        shelter.telefono,
+        request.refugioNombre ?? shelter.nombre,
+        request.perroNombre ?? "el perro",
+      )
+    : null;
+  const rejectionComment =
+    request.estado === "rejected"
+      ? ([...revisiones]
+          .reverse()
+          .find((h) => h.toStatus === "rejected" && h.note)?.note ?? undefined)
+      : undefined;
 
   return (
     <div className="ad-page">
-
       {/* ── Breadcrumb ── */}
       <nav className="ad-breadcrumb">
         <Link href="/mis-solicitudes">Mis solicitudes</Link>
         <span className="ad-breadcrumb__sep">›</span>
         <span className="ad-breadcrumb__current">
-          {request.perroNombre ?? 'Solicitud'}
+          {request.perroNombre ?? "Solicitud"}
         </span>
       </nav>
 
       <div className="ad-layout">
-
         {/* ── Sidebar ── */}
         <aside className="ad-sidebar">
-
           {/* Dog card */}
           <div className="ad-dog-card">
             <div className="ad-dog-card__photo">
               {request.perroFoto ? (
                 <Image
                   src={request.perroFoto}
-                  alt={request.perroNombre ?? 'Perro'}
+                  alt={request.perroNombre ?? "Perro"}
                   fill
                   className="object-cover"
                   sizes="260px"
@@ -151,7 +181,11 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
                 <div className="flex items-center justify-center h-full bg-[#f4f4f5]">
                   <span
                     className="material-symbols-outlined text-[#d4d4d8]"
-                    style={{ fontSize: 36, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 36" }}
+                    style={{
+                      fontSize: 36,
+                      fontVariationSettings:
+                        "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 36",
+                    }}
                   >
                     pets
                   </span>
@@ -159,14 +193,23 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
               )}
             </div>
             <div className="ad-dog-card__body">
-              <p className="ad-dog-card__name">{request.perroNombre ?? 'Perro'}</p>
-              <p className="ad-dog-card__shelter">{request.refugioNombre ?? 'Refugio'}</p>
+              <p className="ad-dog-card__name">
+                {request.perroNombre ?? "Perro"}
+              </p>
+              <p className="ad-dog-card__shelter">
+                {request.refugioNombre ?? "Refugio"}
+              </p>
               {request.perroId && (
                 <Link
                   href={`/perros/${request.perroId}`}
                   className="ad-dog-card__link"
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 15 }}>open_in_new</span>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 15 }}
+                  >
+                    open_in_new
+                  </span>
                   Ver perfil del perro
                 </Link>
               )}
@@ -176,7 +219,11 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
           {/* Status card */}
           <div className="ad-status-card">
             <p className="ad-status-card__label">Estado actual</p>
-            <Badge variant={requestStatusBadgeVariant(request.estado)} size="md" dot>
+            <Badge
+              variant={requestStatusBadgeVariant(request.estado)}
+              size="md"
+              dot
+            >
               {STATUS_LABEL[request.estado]}
             </Badge>
             <p className="ad-status-card__date">
@@ -194,9 +241,14 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
               target="_blank"
               rel="noopener noreferrer"
               className="ad-chat-btn"
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: "none" }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>phone_in_talk</span>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 18 }}
+              >
+                phone_in_talk
+              </span>
               Contactar por WhatsApp
             </a>
           )}
@@ -208,7 +260,12 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
               onClick={() => setShowCancelConfirm(true)}
               disabled={cancelling}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 17 }}>cancel</span>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 17 }}
+              >
+                cancel
+              </span>
               Cancelar solicitud
             </button>
           )}
@@ -230,10 +287,12 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
                 </button>
                 <button
                   className="flex-1 py-2 rounded-xl bg-[#ef4444] text-white text-[13px] font-[800] transition hover:bg-[#dc2626] disabled:opacity-50"
-                  onClick={() => cancel('Cancelada por el adoptante').then(() => setShowCancelConfirm(false))}
+                  onClick={() =>
+                    cancel().then(() => setShowCancelConfirm(false))
+                  }
                   disabled={cancelling}
                 >
-                  {cancelling ? 'Cancelando...' : 'Sí, cancelar'}
+                  {cancelling ? "Cancelando..." : "Sí, cancelar"}
                 </button>
               </div>
             </div>
@@ -242,7 +301,6 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
 
         {/* ── Main ── */}
         <main className="ad-main">
-
           {/* Rejection banner */}
           {rejectionComment && (
             <div className="ad-rejection-banner">
@@ -251,7 +309,9 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
               </span>
               <div>
                 <p className="ad-rejection-banner__title">Motivo del rechazo</p>
-                <p className="ad-rejection-banner__reason">{rejectionComment}</p>
+                <p className="ad-rejection-banner__reason">
+                  {rejectionComment}
+                </p>
               </div>
             </div>
           )}
@@ -263,52 +323,42 @@ export default function AdoptionDetailView({ requestId }: { requestId: string })
               Historial de la solicitud
             </h2>
             <div className="ad-timeline">
-              {historial.map((item, i) => {
-                const isCurrent = i === historial.length - 1
+              {revisiones.map((item, i) => {
+                const isCurrent = i === revisiones.length - 1;
                 return (
                   <div key={item.id} className="ad-timeline-item">
                     <div className="ad-timeline-item__left">
-                      <div className={dotClass(item.estadoNuevo, isCurrent)} />
+                      <div className={dotClass(item.toStatus, isCurrent)} />
                       {!isCurrent && <div className="ad-timeline-item__line" />}
                     </div>
                     <div className="ad-timeline-item__content">
                       <div className="ad-timeline-item__status-row">
                         <p className="ad-timeline-item__status">
-                          {STATUS_LABEL[item.estadoNuevo]}
+                          {STATUS_LABEL[item.toStatus]}
                         </p>
                         {isCurrent && (
-                          <span className="ad-timeline-item__current-badge">Actual</span>
+                          <span className="ad-timeline-item__current-badge">
+                            Actual
+                          </span>
                         )}
                       </div>
-                      {item.comentario && (
-                        <p className="ad-timeline-item__comment">{item.comentario}</p>
+                      {item.note && (
+                        <p className="ad-timeline-item__comment">{item.note}</p>
                       )}
                       <p className="ad-timeline-item__date">
-                        {formatDate(item.fecha, true)}
+                        {formatDate(item.createdAt, true)}
                       </p>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           </div>
 
           {/* Formulario — todas las secciones */}
           <FormSummarySections formulario={f} />
-
-          {/* Comentarios — solo si hay contenido */}
-          {request.comentarios && (
-            <div className="ad-card">
-              <h2 className="ad-card__title">
-                <span className="material-symbols-outlined">chat_bubble</span>
-                Comentarios adicionales
-              </h2>
-              <DataRow label="Comentarios adicionales" value={request.comentarios} />
-            </div>
-          )}
-
         </main>
       </div>
     </div>
-  )
+  );
 }
