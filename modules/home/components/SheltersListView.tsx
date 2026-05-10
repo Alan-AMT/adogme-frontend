@@ -14,7 +14,7 @@ function Card({ s }: { s: ShelterCard }) {
     <Link href={`/refugios/${s.id}`} className="sl-card">
       <div className="sl-card__media">
         <Image
-          src={s.imagenPortada}
+          src={s.imagenPortada || '/assets/shelters/shelter1-cover.jpg'}
           alt={`Imagen de ${s.nombre}`}
           fill
           className="sl-card__img"

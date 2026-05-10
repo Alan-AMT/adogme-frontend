@@ -4,14 +4,11 @@
 // — Persiste preferencias ML en localStorage (clave: lifestyle-{userId})
 // — Devuelve el usuario actualizado con los nuevos datos
 
-import type { LifestyleQuizAnswers } from '@/modules/shared/domain/LifestyleProfile'
 import { MOCK_CREDENTIALS } from '@/modules/shared/mockData/users.mock'
 import type { IProfileService, ProfileUser } from './IProfileService'
 import type { ProfileUpdateData } from '../domain/ProfileTypes'
 
 const delay = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
-
-const LIFESTYLE_KEY = (userId: string) => `lifestyle-profile-${userId}`
 
 export class MockProfileService implements IProfileService {
 
@@ -58,30 +55,6 @@ export class MockProfileService implements IProfileService {
       throw new Error('La contraseña actual es incorrecta.')
     }
     // Mock: contraseña nueva aceptada (no persiste — reinicio limpia el estado)
-  }
-
-  // ── getLifestylePreferences ───────────────────────────────────────────────────
-  async getLifestylePreferences(userId: string): Promise<LifestyleQuizAnswers | null> {
-    await delay(200)
-
-    if (typeof window === 'undefined') return null
-    try {
-      const raw = localStorage.getItem(LIFESTYLE_KEY(userId))
-      return raw ? (JSON.parse(raw) as LifestyleQuizAnswers) : null
-    } catch {
-      return null
-    }
-  }
-
-  // ── saveLifestylePreferences ──────────────────────────────────────────────────
-  async saveLifestylePreferences(
-    userId: string,
-    answers: LifestyleQuizAnswers,
-  ): Promise<void> {
-    await delay(500)
-
-    if (typeof window === 'undefined') return
-    localStorage.setItem(LIFESTYLE_KEY(userId), JSON.stringify(answers))
   }
 
   // ── updateUserVector ──────────────────────────────────────────────────────────

@@ -25,25 +25,92 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-// ─── Request interceptor — attach token ──────────────────────────────────────
+// ─── Request interceptor — proactive token refresh ───────────────────────────
 
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== "undefined") {
-      const token = window.__authToken;
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+  async (config: InternalAxiosRequestConfig) => {
+    if (typeof window === "undefined") return config;
+
+    const token = window.__authToken;
+    const exp = window.__authTokenExp;
+
+    if (token && exp && Math.floor(Date.now() / 1000) >= exp) {
+      try {
+        const newToken = await performTokenRefresh();
+        config.headers.Authorization = `Bearer ${newToken}`;
+      } catch {
+        // performTokenRefresh already handled logout + redirect
       }
+    } else if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// ─── Response interceptor — handle 401 refresh ──────────────────────────────
+// ─── Shared token refresh ────────────────────────────────────────────────────
 
 let isRefreshing = false;
-let refreshQueue: Array<(token: string) => void> = [];
+let refreshQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (err: unknown) => void;
+}> = [];
+
+async function performTokenRefresh(): Promise<string> {
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      refreshQueue.push({ resolve, reject });
+    });
+  }
+
+  isRefreshing = true;
+  try {
+    const accessToken =
+      typeof window !== "undefined" ? window.__authToken : undefined;
+    const refreshToken =
+      typeof window !== "undefined" ? window.__refreshToken : undefined;
+
+    const res = await axios.post(
+      API_ENDPOINTS.AUTH.REFRESH,
+      { accessToken, refreshToken },
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
+        },
+      },
+    );
+
+    const newToken: string = res.data.accessToken;
+    const newRefresh: string = res.data.refreshToken;
+
+    const { useAuthStore } = await import("../store/authStore");
+    useAuthStore.getState().setTokens(newToken, newRefresh);
+
+    refreshQueue.forEach(({ resolve }) => resolve(newToken));
+    refreshQueue = [];
+
+    return newToken;
+  } catch (err) {
+    refreshQueue.forEach(({ reject }) => reject(err));
+    refreshQueue = [];
+
+    const { useAuthStore } = await import("../store/authStore");
+    useAuthStore.getState().logout();
+    if (typeof window !== "undefined") {
+      window.location.href = "/login?session=expired";
+    }
+
+    throw err;
+  } finally {
+    isRefreshing = false;
+  }
+}
+
+// ─── Response interceptor — 401 fallback refresh ─────────────────────────────
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
@@ -53,65 +120,21 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // 401 — Token expired: attempt refresh once
-    // Skip for login endpoint (invalid credentials → just reject)
-    // const isLoginRequest = original.url?.includes(API_ENDPOINTS.AUTH.LOGIN);
-    const requestUrl: string = original.url ? original.url : "";
-    const urlRequireToken = [
-      String(API_ENDPOINTS.SHELTERS.UPDATE),
-      // String(API_ENDPOINTS.DOGS.CREATE),
-      // String(API_ENDPOINTS.DOGS.DELETE),
-      // String(API_ENDPOINTS.DOGS.UPDATE),
-    ].includes(requestUrl);
-    if (error.response?.status === 401 && !original._retry && urlRequireToken) {
-      if (isRefreshing) {
-        return new Promise((resolve) => {
-          refreshQueue.push((newToken) => {
-            original.headers.Authorization = `Bearer ${newToken}`;
-            resolve(apiClient(original));
-          });
-        });
-      }
+    // 401 — safety-net refresh (clock drift, server-side revocation)
+    // Skip refresh for auth endpoints (login, register) — a 401 there is a real credential error
+    const isAuthEndpoint =
+      original.url?.includes("/auth-ms/user/login") ||
+      original.url?.includes("/auth-ms/adopter") ||
+      original.url?.includes("/auth-ms/shelter");
 
+    if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true;
-      isRefreshing = true;
-
       try {
-        const storedRefresh =
-          typeof window !== "undefined" ? window.__refreshToken : undefined;
-        const res = await axios.post(
-          API_ENDPOINTS.AUTH.REFRESH,
-          {},
-          {
-            withCredentials: true,
-            headers: storedRefresh
-              ? { Authorization: `Bearer ${storedRefresh}` }
-              : {},
-          },
-        );
-        const newToken: string = res.data.accessToken ?? res.data.token;
-        const newRefresh: string | undefined = res.data.refreshToken;
-
-        // Sync Zustand store (dynamic import to avoid circular deps)
-        const { useAuthStore } = await import("../store/authStore");
-        const store = useAuthStore.getState();
-        store.setTokens(newToken, newRefresh ?? store.refreshToken ?? "");
-
-        refreshQueue.forEach((cb) => cb(newToken));
-        refreshQueue = [];
-
+        const newToken = await performTokenRefresh();
         original.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(original);
       } catch {
-        // Refresh failed → clear session and redirect to login
-        const { useAuthStore } = await import("../store/authStore");
-        useAuthStore.getState().logout();
-        if (typeof window !== "undefined") {
-          window.location.href = "/login?session=expired";
-        }
         return Promise.reject(error);
-      } finally {
-        isRefreshing = false;
       }
     }
 
@@ -145,5 +168,6 @@ declare global {
   interface Window {
     __authToken?: string;
     __refreshToken?: string;
+    __authTokenExp?: number;
   }
 }

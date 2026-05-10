@@ -4,11 +4,14 @@
 "use client";
 
 import { useState } from "react";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import type { DogFormData } from "../../application/hooks/useDogForm";
 import type { Vaccination } from "@/modules/shared/domain/Dog";
 import "../../styles/shelterViews.css";
+
+registerLocale("es", es);
 
 type UpdateFn = <K extends keyof DogFormData>(
   field: K,
@@ -35,9 +38,26 @@ function emptyVac(): Vaccination {
 
 export function MedicalStep({ formData, errors, update }: Props) {
   const [newVac, setNewVac] = useState<Vaccination>(emptyVac);
+  const [vacErrors, setVacErrors] = useState<{ fecha?: string; proximaDosis?: string }>({});
+
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
 
   function addVaccine() {
     if (!newVac.nombre.trim() || !newVac.fecha) return;
+    const errs: typeof vacErrors = {};
+    const fechaDate = new Date(newVac.fecha);
+    if (fechaDate > today) {
+      errs.fecha = "La fecha de aplicación no puede ser futura.";
+    }
+    if (newVac.proximaDosis) {
+      const proxDate = new Date(newVac.proximaDosis);
+      if (proxDate <= fechaDate) {
+        errs.proximaDosis = "La próxima dosis debe ser posterior a la fecha de aplicación.";
+      }
+    }
+    if (Object.keys(errs).length > 0) { setVacErrors(errs); return; }
+    setVacErrors({});
     update("vacunas", [...formData.vacunas, { ...newVac }]);
     setNewVac(emptyVac());
   }
@@ -348,14 +368,22 @@ export function MedicalStep({ formData, errors, update }: Props) {
                 <label className="sv-field__label">Fecha de aplicación</label>
                 <DatePicker
                   selected={newVac.fecha ? new Date(newVac.fecha) : null}
-                  onChange={(date: Date | null) =>
-                    updateNewVac("fecha", date ? date.toISOString().split("T")[0] : "")
-                  }
+                  onChange={(date: Date | null) => {
+                    updateNewVac("fecha", date ? date.toISOString().split("T")[0] : "");
+                    setVacErrors((prev) => ({ ...prev, fecha: undefined }));
+                  }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="sv-field__input"
+                  className={`sv-field__input${vacErrors.fecha ? " sv-field__input--error" : ""}`}
                   wrapperClassName="sv-datepicker-wrapper"
+                  maxDate={today}
+                  locale="es"
                 />
+                {vacErrors.fecha && (
+                  <span style={{ fontSize: "0.72rem", color: "#dc2626", marginTop: "0.25rem", display: "block" }}>
+                    {vacErrors.fecha}
+                  </span>
+                )}
               </div>
               <div className="sv-field">
                 <label className="sv-field__label">
@@ -363,14 +391,22 @@ export function MedicalStep({ formData, errors, update }: Props) {
                 </label>
                 <DatePicker
                   selected={newVac.proximaDosis ? new Date(newVac.proximaDosis) : null}
-                  onChange={(date: Date | null) =>
-                    updateNewVac("proximaDosis", date ? date.toISOString().split("T")[0] : undefined)
-                  }
+                  onChange={(date: Date | null) => {
+                    updateNewVac("proximaDosis", date ? date.toISOString().split("T")[0] : undefined);
+                    setVacErrors((prev) => ({ ...prev, proximaDosis: undefined }));
+                  }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY (opcional)"
-                  className="sv-field__input"
+                  className={`sv-field__input${vacErrors.proximaDosis ? " sv-field__input--error" : ""}`}
                   wrapperClassName="sv-datepicker-wrapper"
+                  minDate={newVac.fecha ? new Date(new Date(newVac.fecha).getTime() + 86400000) : undefined}
+                  locale="es"
                 />
+                {vacErrors.proximaDosis && (
+                  <span style={{ fontSize: "0.72rem", color: "#dc2626", marginTop: "0.25rem", display: "block" }}>
+                    {vacErrors.proximaDosis}
+                  </span>
+                )}
               </div>
               <div className="sv-field" style={{ justifyContent: "flex-end" }}>
                 <label

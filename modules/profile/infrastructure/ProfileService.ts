@@ -1,8 +1,8 @@
 // modules/profile/infrastructure/ProfileService.ts
+import axios from "axios";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
 import type { Adoptante } from "@/modules/shared/domain/User";
-import type { LifestyleQuizAnswers } from "@/modules/shared/domain/LifestyleProfile";
 import type { IProfileService, ProfileUser } from "./IProfileService";
 import type { ProfileUpdateData } from "../domain/ProfileTypes";
 
@@ -48,41 +48,29 @@ export class ProfileService implements IProfileService {
 
   async changePassword(
     _userId: string,
-    _currentPassword: string,
-    _newPassword: string,
+    currentPassword: string,
+    newPassword: string,
   ): Promise<void> {
-    throw new Error("Not implemented");
+    try {
+      await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+        currentPassword,
+        newPassword,
+      });
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 400) {
+        throw new Error("La contraseña actual no es válida.");
+      }
+      throw err;
+    }
   }
 
-  async getLifestylePreferences(
-    _userId: string,
-  ): Promise<LifestyleQuizAnswers | null> {
-    throw new Error("Not implemented");
-  }
-
-  async saveLifestylePreferences(
-    _userId: string,
-    _answers: LifestyleQuizAnswers,
-  ): Promise<void> {
-    throw new Error("Not implemented");
-  }
-
-  /**
-   * TODO(backend): cuando exista PATCH /applicants-ms/applicant/:id/user-vector,
-   * descomentar el bloque y borrar el throw.
-   *
-   *   await apiClient.patch(
-   *     API_ENDPOINTS.APPLICANTS.UPDATE_USER_VECTOR(applicantId),
-   *     { userVector },
-   *   )
-   *
-   * Por ahora el método queda declarado para que el flujo del quiz lo invoque
-   * y solo lance error que el caller maneja (no bloquea el render de matches).
-   */
   async updateUserVector(
-    _applicantId: string,
-    _userVector: [number, number, number, number],
+    applicantId: string,
+    userVector: [number, number, number, number],
   ): Promise<void> {
-    throw new Error("updateUserVector: endpoint pendiente en applicants-ms");
+    await apiClient.patch(
+      API_ENDPOINTS.APPLICANTS.UPDATE_USER_VECTOR(applicantId),
+      { vector: userVector },
+    );
   }
 }

@@ -50,7 +50,7 @@ function CardGrid({ shelter }: ShelterCardProps) {
       {/* ── Banner thumbnail ── */}
       <div style={{ position: 'relative', width: '100%', height: 110, overflow: 'hidden', background: '#f5f5f5' }}>
         <Image
-          src={shelter.imagenPortada}
+          src={shelter.imagenPortada || '/assets/shelters/shelter1-cover.jpg'}
           alt={`Portada de ${shelter.nombre}`}
           fill
           className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
@@ -90,7 +90,7 @@ function CardGrid({ shelter }: ShelterCardProps) {
             position: 'relative',
           }}>
             <Image
-              src={shelter.logo}
+              src={shelter.logo || '/assets/avatars/avatar-shelter.png'}
               alt={`Logo de ${shelter.nombre}`}
               fill
               className="object-cover object-center"
@@ -176,7 +176,7 @@ function CardCompact({ shelter }: ShelterCardProps) {
         flexShrink: 0, position: 'relative', background: '#f5f5f5',
       }}>
         <Image
-          src={shelter.logo}
+          src={shelter.logo || '/assets/avatars/avatar-shelter.png'}
           alt={`Logo de ${shelter.nombre}`}
           fill className="object-cover object-center" sizes="44px"
         />

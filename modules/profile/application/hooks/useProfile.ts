@@ -1,19 +1,17 @@
 // modules/profile/application/hooks/useProfile.ts
 // Carga datos del usuario actual desde authStore.
-// Expone acciones para actualizar perfil, cambiar contraseña y
-// guardar/leer preferencias ML (LifestyleQuizAnswers).
+// Expone acciones para actualizar perfil y cambiar contraseña.
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 import { profileService } from '../../infrastructure/ProfileServiceFactory'
 import type { ProfileUpdateData } from '../../domain/ProfileTypes'
-import type { LifestyleQuizAnswers } from '@/modules/shared/domain/LifestyleProfile'
 import type { Adoptante } from '@/modules/shared/domain/User'
 
 // ─── Tipos de retorno ─────────────────────────────────────────────────────────
 
-export type ProfileSection = 'data' | 'password' | 'preferences'
+export type ProfileSection = 'data' | 'password'
 
 export interface UseProfileReturn {
   // ── Datos del usuario (del store) ──────────────────────────────────────────
@@ -23,26 +21,18 @@ export interface UseProfileReturn {
   isAdmin:     boolean
 
   // ── Estado de carga/guardado ───────────────────────────────────────────────
-  saving:             boolean
-  changingPassword:   boolean
-  savingPreferences:  boolean
-  loadingPreferences: boolean
+  saving:           boolean
+  changingPassword: boolean
 
   // ── Feedback por sección ───────────────────────────────────────────────────
-  saveError:         string | null
-  saveOk:            boolean
-  passwordError:     string | null
-  passwordOk:        boolean
-  preferencesError:  string | null
-  preferencesOk:     boolean
-
-  // ── Preferencias ML ────────────────────────────────────────────────────────
-  lifestyle: LifestyleQuizAnswers | null
+  saveError:     string | null
+  saveOk:        boolean
+  passwordError: string | null
+  passwordOk:    boolean
 
   // ── Acciones ───────────────────────────────────────────────────────────────
   updateProfile(data: ProfileUpdateData): Promise<void>
   changePassword(currentPassword: string, newPassword: string): Promise<void>
-  updatePreferences(answers: LifestyleQuizAnswers): Promise<void>
 
   /** Limpia los mensajes de feedback de una sección */
   clearStatus(section: ProfileSection): void
@@ -54,32 +44,14 @@ export function useProfile(): UseProfileReturn {
   const { user, setUser } = useAuthStore()
 
   // ── Estado de guardado ─────────────────────────────────────────────────────
-  const [saving,            setSaving]            = useState(false)
-  const [changingPassword,  setChangingPassword]  = useState(false)
-  const [savingPreferences, setSavingPreferences] = useState(false)
-  const [loadingPreferences, setLoadingPreferences] = useState(false)
+  const [saving,           setSaving]           = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
 
   // ── Feedback ───────────────────────────────────────────────────────────────
-  const [saveError,        setSaveError]        = useState<string | null>(null)
-  const [saveOk,           setSaveOk]           = useState(false)
-  const [passwordError,    setPasswordError]    = useState<string | null>(null)
-  const [passwordOk,       setPasswordOk]       = useState(false)
-  const [preferencesError, setPreferencesError] = useState<string | null>(null)
-  const [preferencesOk,    setPreferencesOk]    = useState(false)
-
-  // ── Preferencias ML ────────────────────────────────────────────────────────
-  const [lifestyle, setLifestyle] = useState<LifestyleQuizAnswers | null>(null)
-
-  // Carga preferencias al montar (una sola vez)
-  useEffect(() => {
-    if (!user) return
-    setLoadingPreferences(true)
-    profileService
-      .getLifestylePreferences(user.id)
-      .then(data => setLifestyle(data))
-      .catch(() => setLifestyle(null))
-      .finally(() => setLoadingPreferences(false))
-  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  const [saveError,     setSaveError]     = useState<string | null>(null)
+  const [saveOk,        setSaveOk]        = useState(false)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [passwordOk,    setPasswordOk]    = useState(false)
 
   // ── updateProfile ──────────────────────────────────────────────────────────
   const updateProfile = useCallback(
@@ -129,31 +101,10 @@ export function useProfile(): UseProfileReturn {
     [user],
   )
 
-  // ── updatePreferences ──────────────────────────────────────────────────────
-  const updatePreferences = useCallback(
-    async (answers: LifestyleQuizAnswers) => {
-      if (!user) return
-      setSavingPreferences(true)
-      setPreferencesError(null)
-      setPreferencesOk(false)
-      try {
-        await profileService.saveLifestylePreferences(user.id, answers)
-        setLifestyle(answers)
-        setPreferencesOk(true)
-      } catch (err) {
-        setPreferencesError(err instanceof Error ? err.message : 'Error al guardar las preferencias.')
-      } finally {
-        setSavingPreferences(false)
-      }
-    },
-    [user],
-  )
-
   // ── clearStatus ────────────────────────────────────────────────────────────
   const clearStatus = useCallback((section: ProfileSection) => {
-    if (section === 'data')        { setSaveError(null);        setSaveOk(false)        }
-    if (section === 'password')    { setPasswordError(null);    setPasswordOk(false)    }
-    if (section === 'preferences') { setPreferencesError(null); setPreferencesOk(false) }
+    if (section === 'data')     { setSaveError(null);     setSaveOk(false)     }
+    if (section === 'password') { setPasswordError(null); setPasswordOk(false) }
   }, [])
 
   // ── Derivados de rol ───────────────────────────────────────────────────────
@@ -169,21 +120,14 @@ export function useProfile(): UseProfileReturn {
 
     saving,
     changingPassword,
-    savingPreferences,
-    loadingPreferences,
 
     saveError,
     saveOk,
     passwordError,
     passwordOk,
-    preferencesError,
-    preferencesOk,
-
-    lifestyle,
 
     updateProfile,
     changePassword,
-    updatePreferences,
     clearStatus,
   }
 }

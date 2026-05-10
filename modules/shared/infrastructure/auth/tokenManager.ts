@@ -44,6 +44,22 @@ export function clearTokenCookies(): void {
 
 // ─── Window global helpers ───────────────────────────────────────────────────
 
+export function decodeTokenExp(token: string): number | null {
+  try {
+    const segments = token.split(".");
+    if (segments.length !== 3) return null;
+    const base64 = segments[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "=",
+    );
+    const payload = JSON.parse(atob(padded));
+    return typeof payload.exp === "number" ? payload.exp : null;
+  } catch {
+    return null;
+  }
+}
+
 export function setWindowTokens(
   accessToken: string,
   refreshToken?: string,
@@ -51,12 +67,15 @@ export function setWindowTokens(
   if (typeof window === "undefined") return;
   window.__authToken = accessToken;
   if (refreshToken) window.__refreshToken = refreshToken;
+  const exp = decodeTokenExp(accessToken);
+  if (exp !== null) window.__authTokenExp = exp;
 }
 
 export function clearWindowTokens(): void {
   if (typeof window === "undefined") return;
   window.__authToken = undefined;
   window.__refreshToken = undefined;
+  window.__authTokenExp = undefined;
 }
 
 // ─── JWT / mock token decoding ───────────────────────────────────────────────

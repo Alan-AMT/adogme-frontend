@@ -26,13 +26,14 @@ export const API_ENDPOINTS = {
     // FORGOT: `http://localhost:3001/api/auth/forgot-password`,
     // RESET: `http://localhost:3001/api/auth/reset-password`,
     // ME: `http://localhost:3001/api/auth/me`,
-    // LOGIN: `${BASE}/auth-ms/user/login`,
-    // REGISTER: `${BASE}/auth-ms/adopter`,
-    // REGISTER_SHELTER: `${BASE}/auth-ms/shelter`,
-    // REFRESH: `${BASE}/auth-ms/user/update-tokens`,
-    // LOGOUT: `${BASE}/auth-ms/user/logout`,
-    // FORGOT: `${BASE}/auth-ms/user/forgot-password`,
-    // RESET: `${BASE}/auth-ms/user/reset-password`,
+    LOGIN: `${BASE}/auth-ms/user/login`,
+    REGISTER: `${BASE}/auth-ms/adopter`,
+    REGISTER_SHELTER: `${BASE}/auth-ms/shelter`,
+    REFRESH: `${BASE}/auth-ms/user/update-tokens`,
+    LOGOUT: `${BASE}/auth-ms/user/logout`,
+    FORGOT: `${BASE}/auth-ms/user/forgot-password`,
+    RESET: `${BASE}/auth-ms/user/reset-password`,
+    CHANGE_PASSWORD: `${BASE}/auth-ms/user/change-password`,
   },
 
   DOGS: {
@@ -109,6 +110,12 @@ export const API_ENDPOINTS = {
     // BY_OWNER: (userId: string) =>
     //   `http://localhost:3002/shelters-ms/shelter/user/${userId}`,
     // UPLOAD_COVER: `http://localhost:3002/api/media/shelter/cover`,
+  },
+
+  ML: {
+    PROCESS_QUESTIONNAIRE: `${BASE}/ml-ms/predict/process-questionnaire`,
+    COMPATIBLE_DOGS: `${BASE}/ml-ms/predict/compatible-dogs`,
+    GENERAL_RECOMMENDATIONS: `${BASE}/ml-ms/insights/general-recommendations`,
   },
 
   ADOPTIONS: {
