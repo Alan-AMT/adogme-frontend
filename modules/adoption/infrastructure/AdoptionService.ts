@@ -19,6 +19,7 @@ import type {
   ExistingApplicationCheck,
   IAdoptionService,
   SubmitAdoptionPayload,
+  SubmitAdoptionResult,
 } from "./IAdoptionService";
 
 // ─── Backend response shapes ──────────────────────────────────────────────────
@@ -70,8 +71,14 @@ export interface ApplicationApi {
   status: RequestStatus;
   compatibilityScore: number | null;
   reviews: ApplicationReviewApi[];
+  images?: string[] | null;
   createdAt: string;
   updatedAt: string;
+}
+
+interface CreateApplicationApiResponse {
+  application: ApplicationApi;
+  uploadLinks: string[];
 }
 
 // ─── Parser ───────────────────────────────────────────────────────────────────
@@ -99,6 +106,7 @@ export function parseApplication(raw: ApplicationApi): AdoptionRequest {
     formVersion: raw.formVersion,
     compatibilityScore: raw.compatibilityScore,
     revisiones: (raw.reviews ?? []).map(parseReview),
+    images: raw.images ?? [],
     perroNombre: raw.dogName,
     perroFoto: raw.dogImage,
     refugioNombre: raw.shelterName,
@@ -113,7 +121,7 @@ export class AdoptionService implements IAdoptionService {
   async submit(
     payload: SubmitAdoptionPayload,
     applicantId: string,
-  ): Promise<AdoptionRequest> {
+  ): Promise<SubmitAdoptionResult> {
     const body = {
       applicantId,
       dogId: payload.perroId,
@@ -128,15 +136,20 @@ export class AdoptionService implements IAdoptionService {
       compatibilityScore: calculateCompatibilityScore(
         payload.userVector,
         payload.dogVector,
+        payload.adoptionSpeed,
       ),
+      amountImages: payload.amountImages,
     };
 
     try {
-      const { data } = await apiClient.post<ApplicationApi>(
+      const { data } = await apiClient.post<CreateApplicationApiResponse>(
         API_ENDPOINTS.ADOPTIONS.APPLICATIONS_CREATE,
         body,
       );
-      return parseApplication(data);
+      return {
+        application: parseApplication(data.application),
+        uploadLinks: data.uploadLinks ?? [],
+      };
     } catch (e) {
       if (axios.isAxiosError(e)) {
         const msg =
@@ -146,6 +159,48 @@ export class AdoptionService implements IAdoptionService {
       }
       throw new Error("Error al enviar la solicitud", { cause: e });
     }
+  }
+
+  async uploadApplicationImages(
+    files: File[],
+    uploadLinks: string[],
+    onProgress?: (current: number, total: number) => void,
+  ): Promise<{ failedIndices: number[] }> {
+    const total = uploadLinks.length;
+    if (total === 0) return { failedIndices: [] };
+
+    async function putOnce(file: File, url: string): Promise<void> {
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/octet-stream" },
+        body: file,
+      });
+      if (!res.ok) {
+        throw new Error(`PUT ${url} → ${res.status}`);
+      }
+    }
+
+    let completed = 0;
+    const results = await Promise.allSettled(
+      uploadLinks.map(async (url, i) => {
+        const file = files[i];
+        try {
+          await putOnce(file, url);
+        } catch {
+          // Reintenta una vez antes de marcar como fallida.
+          await putOnce(file, url);
+        } finally {
+          completed += 1;
+          onProgress?.(completed, total);
+        }
+      }),
+    );
+
+    const failedIndices = results
+      .map((r, i) => (r.status === "rejected" ? i : -1))
+      .filter((i) => i !== -1);
+
+    return { failedIndices };
   }
 
   async getMyRequests(

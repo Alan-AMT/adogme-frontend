@@ -109,11 +109,13 @@ function ConfirmationRow({ label, value }: { label: string; value: boolean }) {
 interface Props {
   formulario: AdoptionFormData
   className?: string
+  /** Fotos de la vivienda. En el detalle, pasar `application.images`. */
+  housingPhotos?: string[]
 }
 
-export default function FormSummarySections({ formulario, className }: Props) {
+export default function FormSummarySections({ formulario, className, housingPhotos }: Props) {
   const f = formulario
-  const fotos = f.vivienda.fotosVivienda ?? []
+  const fotos = housingPhotos ?? []
 
   return (
     <div

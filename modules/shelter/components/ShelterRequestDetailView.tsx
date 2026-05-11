@@ -287,7 +287,7 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
           </div>
 
           {/* Formulario de adopción — secciones del nuevo schema */}
-          <FormSummarySections formulario={request.formulario} />
+          <FormSummarySections formulario={request.formulario} housingPhotos={request.images} />
 
         </div>
 

@@ -14,6 +14,7 @@ import { useAdoptionFormInit } from '../application/hooks/useAdoptionFormInit'
 import { ADOPTION_STEPS }     from '../../shared/domain/AdoptionRequest'
 import { Stepper }            from '../../shared/components/ui/Stepper'
 import { Spinner }            from '../../shared/components/ui/Spinner'
+import { ProgressBar }        from '../../shared/components/ui/ProgressBar'
 
 import PersonalDataStep    from './steps/PersonalDataStep'
 import HousingStep         from './steps/HousingStep'
@@ -59,6 +60,7 @@ interface Props {
   refugioNombre: string
   refugioLogo:   string | null
   dogVector:     [number, number, number, number] | null
+  adoptionSpeed: number | null
 }
 
 export default function AdoptionFormView({
@@ -70,6 +72,7 @@ export default function AdoptionFormView({
   refugioNombre,
   refugioLogo,
   dogVector,
+  adoptionSpeed,
 }: Props) {
   const user = useAuthStore(s => s.user)
 
@@ -86,6 +89,9 @@ export default function AdoptionFormView({
     formError,
     hadInitialDraft,
     applyPrefill,
+    housingPhotoFiles,
+    setHousingPhotoFiles,
+    uploadProgress,
   } = useAdoptionForm({
     perroId,
     refugioId,
@@ -95,6 +101,7 @@ export default function AdoptionFormView({
     refugioNombre,
     refugioLogo,
     dogVector,
+    adoptionSpeed,
   })
 
   // ── Inicialización: chequeo de solicitud existente + prefill ─────────────
@@ -151,7 +158,12 @@ export default function AdoptionFormView({
   function renderStep() {
     switch (currentStep) {
       case 0: return <PersonalDataStep />
-      case 1: return <HousingStep />
+      case 1: return (
+        <HousingStep
+          housingPhotoFiles={housingPhotoFiles}
+          onHousingPhotoFilesChange={setHousingPhotoFiles}
+        />
+      )
       case 2: return <RoutineStep />
       case 3: return <PetsExperienceStep />
       case 4: return <ResponsibilityStep />
@@ -241,6 +253,24 @@ export default function AdoptionFormView({
           {/* Step content */}
           {renderStep()}
 
+          {/* ── Upload progress (solo durante PUTs a las URLs firmadas) ── */}
+          {uploadProgress && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <ProgressBar
+                value={
+                  uploadProgress.total > 0
+                    ? Math.round(
+                        (uploadProgress.current / uploadProgress.total) * 100,
+                      )
+                    : 0
+                }
+                label={`Subiendo fotos (${uploadProgress.current}/${uploadProgress.total})`}
+                size="md"
+                animated
+              />
+            </div>
+          )}
+
           {/* ── Navigation ── */}
           <div className="af-nav" style={{ marginTop: '2rem' }}>
             {currentStep > 0 ? (
@@ -266,7 +296,9 @@ export default function AdoptionFormView({
               disabled={isSubmitting}
             >
               {isLastStep
-                ? (isSubmitting ? 'Enviando…' : 'Enviar solicitud')
+                ? (isSubmitting
+                    ? (uploadProgress ? 'Subiendo fotos…' : 'Enviando…')
+                    : 'Enviar solicitud')
                 : 'Continuar'}
               <span className="material-symbols-outlined" style={{ fontSize: 17 }}>
                 {isLastStep ? 'send' : 'arrow_forward'}

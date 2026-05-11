@@ -24,9 +24,6 @@ const housingInfoSchema = z.object({
     .positive('Debe ser mayor a 0')
     .optional(),
   tieneRejaOCerca: z.boolean().optional(),
-  fotosVivienda: z
-    .array(z.string())
-    .max(5, 'Máximo 5 fotos'),
 })
 
 const entornoSchema = z.object({

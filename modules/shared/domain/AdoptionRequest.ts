@@ -40,7 +40,6 @@ export interface HousingInfo {
   tieneJardin: boolean;
   tamanoJardinM2?: number; // requerido si tieneJardin === true
   tieneRejaOCerca?: boolean; // requerido si tieneJardin === true
-  fotosVivienda: string[]; // max 5, opcional (puede ser [])
 }
 
 export interface EntornoHogar {
@@ -149,6 +148,7 @@ export interface AdoptionRequest {
   formVersion: number;
   compatibilityScore: number | null;
   revisiones: StatusChange[];
+  images: string[]; // URLs públicas de las fotos de vivienda (subidas tras crear la solicitud)
 
   // Datos relacionados (joins — para mostrar en UI)
   perroNombre?: string;

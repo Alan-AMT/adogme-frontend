@@ -356,7 +356,7 @@ export default function AdoptionDetailView({
           </div>
 
           {/* Formulario — todas las secciones */}
-          <FormSummarySections formulario={f} />
+          <FormSummarySections formulario={f} housingPhotos={request.images} />
         </main>
       </div>
     </div>

@@ -13,6 +13,7 @@ import type {
   ExistingApplicationCheck,
   IAdoptionService,
   SubmitAdoptionPayload,
+  SubmitAdoptionResult,
 } from "./IAdoptionService";
 import { ALLOWED_TRANSITIONS } from "../domain/AdoptionRequest";
 import {
@@ -67,7 +68,7 @@ export class MockAdoptionService implements IAdoptionService {
   async submit(
     payload: SubmitAdoptionPayload,
     adoptanteId: string,
-  ): Promise<AdoptionRequest> {
+  ): Promise<SubmitAdoptionResult> {
     await delay(500, 800);
 
     const dog = getDogById(payload.perroId);
@@ -94,6 +95,7 @@ export class MockAdoptionService implements IAdoptionService {
       formulario: payload.formulario,
       formVersion: 1,
       compatibilityScore: null,
+      images: [],
       revisiones: [
         {
           id: String(_nextChangeId++),
@@ -116,7 +118,16 @@ export class MockAdoptionService implements IAdoptionService {
     // A1 — Actualizar estado del perro a "en_proceso" tras crear la solicitud
     _setDogStatusForMocks(payload.perroId, "en_proceso");
 
-    return newRequest;
+    // El mock no firma URLs; devolvemos lista vacía. El caller no intentará subir.
+    return { application: newRequest, uploadLinks: [] };
+  }
+
+  async uploadApplicationImages(
+    _files: File[],
+    _uploadLinks: string[],
+    _onProgress?: (current: number, total: number) => void,
+  ): Promise<{ failedIndices: number[] }> {
+    return { failedIndices: [] };
   }
 
   // ── getMyRequests ────────────────────────────────────────────────────────────

@@ -28,7 +28,19 @@ export interface SubmitAdoptionPayload {
   refugioLogo: string | null;
   dogVector: [number, number, number, number] | null;
   userVector: [number, number, number, number] | null;
+  /** Velocidad de adopción estimada del perro (señal del modelo ML).
+   *  Necesaria como tercer factor en `calculateCompatibilityScore`. */
+  adoptionSpeed: number | null;
   formulario: AdoptionFormData;
+  /** Cantidad de fotos de vivienda que el adoptante adjuntó.
+   *  El backend devuelve `uploadLinks.length === amountImages`. */
+  amountImages: number;
+}
+
+export interface SubmitAdoptionResult {
+  application: AdoptionRequest;
+  /** URLs firmadas para PUT, en el mismo orden que los archivos enviados. */
+  uploadLinks: string[];
 }
 
 // ─── Interfaz ─────────────────────────────────────────────────────────────────
@@ -41,7 +53,20 @@ export interface IAdoptionService {
   submit(
     payload: SubmitAdoptionPayload,
     adoptanteId: string,
-  ): Promise<AdoptionRequest>;
+  ): Promise<SubmitAdoptionResult>;
+
+  /**
+   * Sube los archivos de fotos a las URLs firmadas devueltas por `submit()`.
+   * Mantiene orden 1:1 entre `files` y `uploadLinks`. Reintenta 1 vez por
+   * archivo fallido. Devuelve los índices que fallaron (no lanza), para que
+   * el caller pueda mostrar la solicitud como creada y advertir sobre las
+   * fotos que no se subieron.
+   */
+  uploadApplicationImages(
+    files: File[],
+    uploadLinks: string[],
+    onProgress?: (current: number, total: number) => void,
+  ): Promise<{ failedIndices: number[] }>;
 
   /**
    * Lista todas las solicitudes del adoptante autenticado.

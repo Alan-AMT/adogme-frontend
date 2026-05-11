@@ -14,6 +14,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import type { UseFormReturn, FieldPath } from "react-hook-form";
+import { toast } from "sonner";
 
 import type {
   AdoptionFormData,
@@ -24,6 +25,11 @@ import type { Adoptante } from "../../../shared/domain/User";
 import { STEP_SCHEMAS, adoptionFormSchema } from "../../domain/schemas";
 import { adoptionService } from "../../infrastructure/AdoptionServiceFactory";
 import { useAuthStore } from "../../../shared/infrastructure/store/authStore";
+
+interface UploadProgress {
+  current: number;
+  total: number;
+}
 
 // ─── Tipos expuestos ──────────────────────────────────────────────────────────
 
@@ -36,6 +42,7 @@ export interface UseAdoptionFormOptions {
   refugioNombre: string;
   refugioLogo: string | null;
   dogVector: [number, number, number, number] | null;
+  adoptionSpeed: number | null;
 }
 
 export interface UseAdoptionFormReturn {
@@ -55,6 +62,11 @@ export interface UseAdoptionFormReturn {
   hadInitialDraft: boolean;
   /** Aplica un prefill al formulario (merge con INITIAL_VALUES). */
   applyPrefill: (data: Partial<AdoptionFormData>) => void;
+  /** Fotos de vivienda elegidas por el adoptante (no van al form state). */
+  housingPhotoFiles: File[];
+  setHousingPhotoFiles: (files: File[]) => void;
+  /** Progreso de subida de fotos a las URLs firmadas. null si no está en curso. */
+  uploadProgress: UploadProgress | null;
 }
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
@@ -108,9 +120,7 @@ interface DraftPayload {
 // con qué hacer .includes() desde el primer render. El resto puede quedar
 // undefined (RHF tolera Partial<>).
 const INITIAL_VALUES: Partial<AdoptionFormData> = {
-  vivienda: { fotosVivienda: [] } as Partial<
-    AdoptionFormData["vivienda"]
-  > as AdoptionFormData["vivienda"],
+  vivienda: {} as AdoptionFormData["vivienda"],
   rutina: { actividadesPlaneadas: [] } as Partial<
     AdoptionFormData["rutina"]
   > as AdoptionFormData["rutina"],
@@ -158,6 +168,7 @@ export function useAdoptionForm(
     refugioNombre,
     refugioLogo,
     dogVector,
+    adoptionSpeed,
   } = options;
 
   const user = useAuthStore((s) => s.user);
@@ -188,6 +199,9 @@ export function useAdoptionForm(
   const [submittedRequest, setSubmittedRequest] =
     useState<AdoptionRequest | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [housingPhotoFiles, setHousingPhotoFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] =
+    useState<UploadProgress | null>(null);
 
   // ── Persistencia del draft (debounced) ────────────────────────────────────
   // Mantenemos currentStep en una ref para no reinscribir la suscripción
@@ -341,7 +355,7 @@ export function useAdoptionForm(
 
     setIsSubmitting(true);
     try {
-      const request = await adoptionService.submit(
+      const { application, uploadLinks } = await adoptionService.submit(
         {
           perroId,
           refugioId,
@@ -352,12 +366,16 @@ export function useAdoptionForm(
           refugioLogo,
           dogVector,
           userVector: adoptante.userVector ?? null,
+          adoptionSpeed,
           formulario: parsed.data as AdoptionFormData,
+          amountImages: housingPhotoFiles.length,
         },
         applicantId,
       );
 
-      // Éxito — purgar draft y exponer la solicitud creada.
+      // Solicitud creada — desde acá tratamos cualquier fallo de subida como
+      // no bloqueante: la solicitud ya existe en el backend y reintentarla
+      // duplicaría datos.
       if (typeof window !== "undefined") {
         try {
           localStorage.removeItem(draftKey);
@@ -366,7 +384,37 @@ export function useAdoptionForm(
         }
       }
       setSavedAt(null);
-      setSubmittedRequest(request);
+
+      // Subir fotos a las URLs firmadas, en el mismo orden que las elegimos.
+      if (uploadLinks.length > 0 && housingPhotoFiles.length > 0) {
+        setUploadProgress({ current: 0, total: uploadLinks.length });
+        try {
+          const { failedIndices } =
+            await adoptionService.uploadApplicationImages(
+              housingPhotoFiles,
+              uploadLinks,
+              (current, total) => setUploadProgress({ current, total }),
+            );
+          if (failedIndices.length > 0) {
+            toast.warning(
+              `No se pudieron subir ${failedIndices.length} de ${uploadLinks.length} foto(s) (posiciones: ${failedIndices.map((i) => i + 1).join(", ")}). Tu solicitud ya fue creada.`,
+              { duration: 6000 },
+            );
+          }
+        } catch (uploadErr) {
+          // Failsafe: el helper no debería lanzar, pero por las dudas lo
+          // tratamos también como advertencia no bloqueante.
+          console.error("[useAdoptionForm] upload error", uploadErr);
+          toast.warning(
+            "Algunas fotos no se pudieron subir. Tu solicitud ya fue creada.",
+            { duration: 6000 },
+          );
+        } finally {
+          setUploadProgress(null);
+        }
+      }
+
+      setSubmittedRequest(application);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Error al enviar la solicitud";
@@ -385,9 +433,11 @@ export function useAdoptionForm(
     refugioNombre,
     refugioLogo,
     dogVector,
+    adoptionSpeed,
     draftKey,
     clearStepErrors,
     applyZodIssues,
+    housingPhotoFiles,
   ]);
 
   // ── Prefill ───────────────────────────────────────────────────────────────
@@ -415,6 +465,9 @@ export function useAdoptionForm(
       form.reset(merged);
       setSavedAt(null);
       setFormError(null);
+      // Las fotos previas no se prefilllean — son archivos locales que no
+      // persistimos en el draft ni vienen del backend.
+      setHousingPhotoFiles([]);
     },
     [form],
   );
@@ -434,6 +487,8 @@ export function useAdoptionForm(
     setSubmittedRequest(null);
     setFormError(null);
     setSavedAt(null);
+    setHousingPhotoFiles([]);
+    setUploadProgress(null);
   }, [form, draftKey]);
 
   return {
@@ -451,5 +506,8 @@ export function useAdoptionForm(
     resetForm,
     hadInitialDraft: initialDraftRef.current !== null,
     applyPrefill,
+    housingPhotoFiles,
+    setHousingPhotoFiles,
+    uploadProgress,
   };
 }

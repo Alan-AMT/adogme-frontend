@@ -2,7 +2,7 @@
 'use client'
 
 import Image from 'next/image';
-import { useCallback, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 
 interface ExistingFile { url: string; name: string }
 
@@ -11,6 +11,10 @@ interface FileUploadProps {
   maxFiles:        number
   maxSizeMB:       number
   onFilesChange:   (files: File[]) => void
+  /** Archivos ya elegidos previamente (en otro mount, por ejemplo). Se siembran
+   *  en el estado interno al montar para que el usuario no pierda su selección
+   *  al volver a un paso anterior. Solo se lee en el primer render. */
+  initialFiles?:   File[]
   existingFiles?:  ExistingFile[]
   disabled?:       boolean
   showPreview?:    boolean
@@ -27,14 +31,33 @@ interface FileEntry {
 
 export function FileUpload({
   accept, maxFiles, maxSizeMB, onFilesChange,
-  existingFiles = [], disabled, showPreview = true,
+  initialFiles, existingFiles = [], disabled, showPreview = true,
   variant = 'dropzone', label, helperText,
 }: FileUploadProps) {
-  const [entries,   setEntries]   = useState<FileEntry[]>([])
+  const isImage = (file: File) => file.type.startsWith('image/')
+
+  // Object URLs creados por este componente — los revocamos al desmontar para
+  // evitar el leak que aparece al re-montar el step (HousingStep) varias veces.
+  const createdUrlsRef = useRef<string[]>([])
+  const trackUrl = (url: string) => { createdUrlsRef.current.push(url) }
+
+  const [entries, setEntries] = useState<FileEntry[]>(() => {
+    if (!initialFiles?.length) return []
+    return initialFiles.map(file => {
+      const preview = isImage(file) ? URL.createObjectURL(file) : null
+      if (preview) trackUrl(preview)
+      return { file, preview }
+    })
+  })
   const [isDragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const isImage = (file: File) => file.type.startsWith('image/')
+  useEffect(() => {
+    return () => {
+      for (const url of createdUrlsRef.current) URL.revokeObjectURL(url)
+      createdUrlsRef.current = []
+    }
+  }, [])
 
   const validate = (file: File): string | null => {
     if (file.size > maxSizeMB * 1024 * 1024)
@@ -53,6 +76,7 @@ export function FileUpload({
     const toAdd: FileEntry[] = arr.slice(0, maxFiles - entries.length - existingFiles.length).map(file => {
       const error   = validate(file)
       const preview = !error && isImage(file) ? URL.createObjectURL(file) : null
+      if (preview) trackUrl(preview)
       return { file, preview, error: error ?? undefined }
     })
 

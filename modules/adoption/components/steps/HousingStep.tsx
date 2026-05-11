@@ -30,7 +30,17 @@ const TENENCIA_OPTIONS: RadioGroupOption<Tenencia>[] = [
   { value: "rentada", label: "Rentada" },
 ];
 
-export default function HousingStep() {
+interface HousingStepProps {
+  /** Las fotos de vivienda viven fuera del form: son archivos locales que se
+   *  suben tras crear la solicitud, no parte de los datos validados por zod. */
+  housingPhotoFiles: File[];
+  onHousingPhotoFilesChange: (files: File[]) => void;
+}
+
+export default function HousingStep({
+  housingPhotoFiles,
+  onHousingPhotoFilesChange,
+}: HousingStepProps) {
   const {
     register,
     control,
@@ -235,22 +245,14 @@ export default function HousingStep() {
           agilizar la revisión de tu solicitud.
         </p>
 
-        <Controller
-          control={control}
-          name="vivienda.fotosVivienda"
-          render={({ field }) => (
-            <FileUpload
-              label="Subir fotos (máx. 5 imágenes, 5 MB c/u)"
-              accept={["image/*"]}
-              maxFiles={5}
-              maxSizeMB={5}
-              showPreview
-              onFilesChange={(files) => {
-                const urls = files.map((f) => URL.createObjectURL(f));
-                field.onChange(urls);
-              }}
-            />
-          )}
+        <FileUpload
+          label="Subir fotos (máx. 5 imágenes, 5 MB c/u)"
+          accept={["image/*"]}
+          maxFiles={5}
+          maxSizeMB={5}
+          showPreview
+          initialFiles={housingPhotoFiles}
+          onFilesChange={onHousingPhotoFilesChange}
         />
       </div>
     </div>

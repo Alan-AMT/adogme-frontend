@@ -24,7 +24,6 @@ const ALLOWED: {
     "tieneJardin",
     "tamanoJardinM2",
     "tieneRejaOCerca",
-    "fotosVivienda",
   ],
   entorno: ["quienesViven", "todosDeAcuerdo", "hayNinos", "hayAlergicos"],
   rutina: [

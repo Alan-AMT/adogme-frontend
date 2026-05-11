@@ -23,6 +23,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     estado: 'pending',
     formVersion: 1,
     compatibilityScore: null,
+    images: [],
     formulario: {
       nombreCompleto: 'Ana García',
       edad: 29,
@@ -38,7 +39,6 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         tieneJardin: true,
         tamanoJardinM2: 40,
         tieneRejaOCerca: true,
-        fotosVivienda: [],
       },
       entorno: {
         quienesViven: 'Vivo sola con mi hermana mayor.',
@@ -104,6 +104,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     estado: 'approved',
     formVersion: 1,
     compatibilityScore: null,
+    images: [],
     formulario: {
       nombreCompleto: 'Ana García',
       edad: 29,
@@ -117,7 +118,6 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         tenencia: 'rentada',
         permiteAnimales: true,
         tieneJardin: false,
-        fotosVivienda: [],
       },
       entorno: {
         quienesViven: 'Vivo con mi pareja y un gato adulto.',
@@ -196,6 +196,7 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
     estado: 'rejected',
     formVersion: 1,
     compatibilityScore: null,
+    images: [],
     formulario: {
       nombreCompleto: 'Ana García',
       edad: 29,
@@ -209,7 +210,6 @@ export const MOCK_ADOPTION_REQUESTS: AdoptionRequest[] = [
         tenencia: 'rentada',
         permiteAnimales: true,
         tieneJardin: false,
-        fotosVivienda: [],
       },
       entorno: {
         quienesViven: 'Vivo sola.',
