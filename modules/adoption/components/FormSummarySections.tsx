@@ -4,6 +4,7 @@
 // ShelterRequestDetailView (shelter).
 'use client'
 
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import type { AdoptionFormData } from '../../shared/domain/AdoptionRequest'
 import {
@@ -77,6 +78,167 @@ function ActivityChip({ label }: { label: string }) {
     >
       {label}
     </span>
+  )
+}
+
+function HousingPhotos({ fotos }: { fotos: string[] }) {
+  const [active, setActive] = useState<number | null>(null)
+
+  const prev = () => setActive(i => (i !== null ? (i - 1 + fotos.length) % fotos.length : null))
+  const next = () => setActive(i => (i !== null ? (i + 1) % fotos.length : null))
+
+  return (
+    <>
+      <div style={{ marginTop: '1rem' }}>
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.07em',
+            color: '#a1a1aa',
+            marginBottom: '0.6rem',
+          }}
+        >
+          Fotos de vivienda
+        </p>
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.5rem',
+            overflowX: 'auto',
+            paddingBottom: '0.25rem',
+          }}
+        >
+          {fotos.map((url, i) => (
+            <img
+              key={i}
+              src={url}
+              alt={`Foto de vivienda ${i + 1}`}
+              onClick={() => setActive(i)}
+              style={{
+                flexShrink: 0,
+                width: 120,
+                height: 120,
+                objectFit: 'cover',
+                borderRadius: '0.75rem',
+                border: '1.5px solid #e4e4e7',
+                cursor: 'zoom-in',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {active !== null && (
+        <div
+          onClick={() => setActive(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {fotos.length > 1 && (
+            <button
+              onClick={e => { e.stopPropagation(); prev() }}
+              style={{
+                position: 'absolute',
+                left: 16,
+                background: 'rgba(255,255,255,0.15)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 44,
+                height: 44,
+                color: '#fff',
+                fontSize: 22,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+          )}
+
+          <img
+            src={fotos[active]}
+            alt={`Foto de vivienda ${active + 1}`}
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '85vh',
+              objectFit: 'contain',
+              borderRadius: '0.75rem',
+            }}
+          />
+
+          {fotos.length > 1 && (
+            <button
+              onClick={e => { e.stopPropagation(); next() }}
+              style={{
+                position: 'absolute',
+                right: 16,
+                background: 'rgba(255,255,255,0.15)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 44,
+                height: 44,
+                color: '#fff',
+                fontSize: 22,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => setActive(null)}
+            style={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              background: 'rgba(255,255,255,0.15)',
+              border: 'none',
+              borderRadius: '50%',
+              width: 44,
+              height: 44,
+              color: '#fff',
+              fontSize: 22,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+
+          {fotos.length > 1 && (
+            <p
+              style={{
+                position: 'absolute',
+                bottom: 20,
+                color: 'rgba(255,255,255,0.7)',
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              {active + 1} / {fotos.length}
+            </p>
+          )}
+        </div>
+      )}
+    </>
   )
 }
 
@@ -154,44 +316,7 @@ export default function FormSummarySections({ formulario, className, housingPhot
         <Field label="Hay niños" value={<YesNoBadge value={f.entorno.hayNinos} />} />
         <Field label="Hay alérgicos" value={<YesNoBadge value={f.entorno.hayAlergicos} />} />
 
-        {fotos.length > 0 && (
-          <div style={{ marginTop: '1rem' }}>
-            <p
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.07em',
-                color: '#a1a1aa',
-                marginBottom: '0.6rem',
-              }}
-            >
-              Fotos de vivienda
-            </p>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(96px, 1fr))',
-                gap: '0.5rem',
-              }}
-            >
-              {fotos.map((url, i) => (
-                <img
-                  key={i}
-                  src={url}
-                  alt={`Foto de vivienda ${i + 1}`}
-                  style={{
-                    width: '100%',
-                    aspectRatio: '1 / 1',
-                    objectFit: 'cover',
-                    borderRadius: '0.75rem',
-                    border: '1.5px solid #e4e4e7',
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        {fotos.length > 0 && <HousingPhotos fotos={fotos} />}
       </section>
 
       {/* ── 3. Rutina y estilo de vida ── */}
