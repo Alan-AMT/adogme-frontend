@@ -92,10 +92,11 @@ export function useShelterRequests(): UseShelterRequestsReturn {
     status:      RequestStatus,
     comentario?: string,
   ) => {
+    if (!shelterId) throw new Error('No hay refugio activo')
     setIsUpdating(true)
     setUpdateError(null)
     try {
-      await shelterService.updateRequestStatus(id, status, comentario)
+      await shelterService.updateRequestStatus(id, shelterId, status, comentario)
       await load(page, filter, searchRef.current)
     } catch (e: unknown) {
       setUpdateError((e as Error).message ?? 'Error al actualizar solicitud')
@@ -103,7 +104,7 @@ export function useShelterRequests(): UseShelterRequestsReturn {
     } finally {
       setIsUpdating(false)
     }
-  }, [load, page, filter])
+  }, [load, page, filter, shelterId])
 
   return {
     result, filtered, isLoading, error,

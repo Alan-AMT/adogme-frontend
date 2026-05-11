@@ -214,6 +214,8 @@ export class MockShelterService implements IShelterService {
       solicitudesPendientes: reqs.filter((r) => r.estado === "pending").length,
       solicitudesEnRevision: reqs.filter((r) => r.estado === "in_review").length,
       solicitudesCompletadas: reqs.filter((r) => r.estado === "approved").length,
+      solicitudesCanceladas: reqs.filter((r) => r.estado === "cancelled").length,
+      solicitudesRechazadas: reqs.filter((r) => r.estado === "rejected").length,
       recentRequests,
     };
   }
@@ -431,9 +433,10 @@ export class MockShelterService implements IShelterService {
 
   async updateRequestStatus(
     requestId: string,
+    _shelterId: string,
     newStatus: RequestStatus,
-    comentario?: string,
-  ): Promise<AdoptionRequest> {
+    note?: string,
+  ): Promise<void> {
     await delay(400);
     const idx = _requests.findIndex((r) => r.id === requestId);
     if (idx === -1) throw new Error(`Solicitud ${requestId} no encontrada`);
@@ -444,7 +447,7 @@ export class MockShelterService implements IShelterService {
       applicationId: requestId,
       fromStatus: prev.estado,
       toStatus: newStatus,
-      note: comentario ?? null,
+      note: note ?? null,
       createdAt: new Date().toISOString(),
     };
 
@@ -459,6 +462,5 @@ export class MockShelterService implements IShelterService {
       updated,
       ..._requests.slice(idx + 1),
     ];
-    return { ...updated, revisiones: [...updated.revisiones] };
   }
 }

@@ -137,7 +137,7 @@ export interface Dog {
   edadCategoria: AgeCategory;
   compatibilidad?: number;
   dogVector?: [number, number, number, number] | null;
-  adoptionSpeed: number | null;
+  adoptionSpeed?: number | null;
 
   // Datos del refugio (join)
   refugioNombre?: string;

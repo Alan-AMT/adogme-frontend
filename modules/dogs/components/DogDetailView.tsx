@@ -131,7 +131,7 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
                 <span className={`dp-badge ${badge.cls}`}>{badge.label}</span>
                 <CompatibilityChip
                   dogVector={dog.dogVector}
-                  adoptionSpeed={dog.adoptionSpeed}
+                  adoptionSpeed={dog.adoptionSpeed ?? null}
                 />
               </div>
               <h1 className="dp-name">{dog.nombre}</h1>
