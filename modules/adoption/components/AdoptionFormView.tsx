@@ -8,10 +8,12 @@ import Image from 'next/image'
 import Link  from 'next/link'
 import { FormProvider } from 'react-hook-form'
 
-import { useAuthStore }    from '../../shared/infrastructure/store/authStore'
-import { useAdoptionForm } from '../application/hooks/useAdoptionForm'
-import { ADOPTION_STEPS }  from '../../shared/domain/AdoptionRequest'
-import { Stepper }         from '../../shared/components/ui/Stepper'
+import { useAuthStore }       from '../../shared/infrastructure/store/authStore'
+import { useAdoptionForm }    from '../application/hooks/useAdoptionForm'
+import { useAdoptionFormInit } from '../application/hooks/useAdoptionFormInit'
+import { ADOPTION_STEPS }     from '../../shared/domain/AdoptionRequest'
+import { Stepper }            from '../../shared/components/ui/Stepper'
+import { Spinner }            from '../../shared/components/ui/Spinner'
 
 import PersonalDataStep    from './steps/PersonalDataStep'
 import HousingStep         from './steps/HousingStep'
@@ -82,6 +84,8 @@ export default function AdoptionFormView({
     submittedRequest,
     savedAt,
     formError,
+    hadInitialDraft,
+    applyPrefill,
   } = useAdoptionForm({
     perroId,
     refugioId,
@@ -91,6 +95,13 @@ export default function AdoptionFormView({
     refugioNombre,
     refugioLogo,
     dogVector,
+  })
+
+  // ── Inicialización: chequeo de solicitud existente + prefill ─────────────
+  const { isInitializing } = useAdoptionFormInit({
+    perroId,
+    hadInitialDraft,
+    onPrefill: applyPrefill,
   })
 
   // Re-render cada 30s para mantener fresco el indicador "guardado hace X".
@@ -104,6 +115,25 @@ export default function AdoptionFormView({
   // Guard — la ruta ya garantiza que el usuario sea applicant, pero protegemos
   // el render para evitar UIs en estado indefinido.
   if (!user) return null
+
+  // Mientras se verifica si ya existe solicitud + se prefilllea con la última
+  // solicitud, no renderizamos el form para evitar flicker (form.reset durante
+  // mount provoca un parpadeo visible).
+  if (isInitializing) {
+    return (
+      <div
+        className="af-page"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 320 }}
+      >
+        <div style={{ textAlign: 'center', color: '#6b7280' }}>
+          <Spinner size="lg" />
+          <p style={{ marginTop: '0.75rem', fontSize: '0.95rem' }}>
+            Preparando tu formulario…
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const isLastStep = currentStep === totalSteps - 1
   const stepDef    = ADOPTION_STEPS[currentStep]

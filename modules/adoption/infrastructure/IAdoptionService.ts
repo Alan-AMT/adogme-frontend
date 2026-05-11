@@ -9,6 +9,13 @@ import type {
   RequestStatus,
 } from "../../shared/domain/AdoptionRequest";
 
+// ─── Resultado del check de existencia de solicitud ───────────────────────────
+
+export interface ExistingApplicationCheck {
+  exists: boolean;
+  applicationId?: string;
+}
+
 // ─── Payload para crear una solicitud ─────────────────────────────────────────
 
 export interface SubmitAdoptionPayload {
@@ -59,4 +66,23 @@ export interface IAdoptionService {
    * D2 — adoptanteId es obligatorio para validar ownership.
    */
   cancel(id: string, applicantId: string): Promise<AdoptionRequest>;
+
+  /**
+   * Verifica si el applicant ya tiene una solicitud activa para este perro.
+   * Se usa al entrar al formulario para evitar duplicados.
+   */
+  checkNotExistingRequest(
+    dogId: string,
+    applicantId: string,
+  ): Promise<ExistingApplicationCheck>;
+
+  /**
+   * Devuelve el formData de la solicitud más reciente del applicant — para
+   * prefill al iniciar una nueva. El shape puede ser de una versión vieja del
+   * formulario; el caller debe sanitizar antes de aplicar al form.
+   * Devuelve null si no hay solicitud previa.
+   */
+  getRecentFormData(
+    applicantId: string,
+  ): Promise<Partial<AdoptionFormData> | null>;
 }

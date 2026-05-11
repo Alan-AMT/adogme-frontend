@@ -3,12 +3,14 @@
 // submit / getMyRequests / getById / updateStatus / cancel
 
 import type {
+  AdoptionFormData,
   AdoptionRequest,
   AdoptionRequestListItem,
   PaginatedResult,
   RequestStatus,
 } from "../../shared/domain/AdoptionRequest";
 import type {
+  ExistingApplicationCheck,
   IAdoptionService,
   SubmitAdoptionPayload,
 } from "./IAdoptionService";
@@ -216,5 +218,40 @@ export class MockAdoptionService implements IAdoptionService {
     if (!req) throw new Error(`Solicitud ${id} no encontrada`);
 
     return this.updateStatus(id, "cancelled");
+  }
+
+  // ── checkNotExistingRequest ──────────────────────────────────────────────────
+
+  async checkNotExistingRequest(
+    dogId: string,
+    applicantId: string,
+  ): Promise<ExistingApplicationCheck> {
+    await delay(150, 300);
+
+    const existing = _requests.find(
+      (r) =>
+        r.perroId === dogId &&
+        r.adoptanteId === applicantId &&
+        r.estado !== "cancelled" &&
+        r.estado !== "rejected",
+    );
+
+    return existing
+      ? { exists: true, applicationId: existing.id }
+      : { exists: false };
+  }
+
+  // ── getRecentFormData ────────────────────────────────────────────────────────
+
+  async getRecentFormData(
+    applicantId: string,
+  ): Promise<Partial<AdoptionFormData> | null> {
+    await delay(150, 300);
+
+    const own = _requests
+      .filter((r) => r.adoptanteId === applicantId)
+      .sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+    return own[0]?.formulario ?? null;
   }
 }

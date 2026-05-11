@@ -51,6 +51,10 @@ export interface UseAdoptionFormReturn {
   savedAt: Date | null;
   formError: string | null;
   resetForm: () => void;
+  /** True si al montar había un draft en localStorage para este perro. */
+  hadInitialDraft: boolean;
+  /** Aplica un prefill al formulario (merge con INITIAL_VALUES). */
+  applyPrefill: (data: Partial<AdoptionFormData>) => void;
 }
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
@@ -386,6 +390,35 @@ export function useAdoptionForm(
     applyZodIssues,
   ]);
 
+  // ── Prefill ───────────────────────────────────────────────────────────────
+  // Aplica un payload de datos (típicamente la solicitud previa del adoptante)
+  // sobre INITIAL_VALUES — preserva los arrays por defecto si el payload no
+  // los trae para que CheckboxGroup no rompa en el primer render.
+  const applyPrefill = useCallback(
+    (data: Partial<AdoptionFormData>) => {
+      const baseVivienda = INITIAL_VALUES.vivienda as AdoptionFormData["vivienda"];
+      const baseRutina = INITIAL_VALUES.rutina as AdoptionFormData["rutina"];
+
+      const merged = {
+        ...INITIAL_VALUES,
+        ...data,
+        vivienda: {
+          ...baseVivienda,
+          ...(data.vivienda ?? {}),
+        },
+        rutina: {
+          ...baseRutina,
+          ...(data.rutina ?? {}),
+        },
+      } as AdoptionFormData;
+
+      form.reset(merged);
+      setSavedAt(null);
+      setFormError(null);
+    },
+    [form],
+  );
+
   // ── Reset ─────────────────────────────────────────────────────────────────
 
   const resetForm = useCallback(() => {
@@ -416,5 +449,7 @@ export function useAdoptionForm(
     savedAt,
     formError,
     resetForm,
+    hadInitialDraft: initialDraftRef.current !== null,
+    applyPrefill,
   };
 }

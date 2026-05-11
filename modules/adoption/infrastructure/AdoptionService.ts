@@ -4,6 +4,7 @@
 import axios from "axios";
 
 import type {
+  AdoptionFormData,
   AdoptionRequest,
   AdoptionRequestListItem,
   PaginatedResult,
@@ -15,6 +16,7 @@ import { apiClient } from "../../shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "../../shared/infrastructure/api/endpoints";
 
 import type {
+  ExistingApplicationCheck,
   IAdoptionService,
   SubmitAdoptionPayload,
 } from "./IAdoptionService";
@@ -221,5 +223,64 @@ export class AdoptionService implements IAdoptionService {
     const updated = await this.getById(id);
     if (!updated) throw new Error("No se pudo obtener la solicitud cancelada");
     return updated;
+  }
+
+  async checkNotExistingRequest(
+    dogId: string,
+    applicantId: string,
+  ): Promise<ExistingApplicationCheck> {
+    try {
+      const { data } = await apiClient.get<ExistingApplicationCheck>(
+        API_ENDPOINTS.ADOPTIONS.APPLICATIONS_CHECK,
+        { params: { dogId, applicantId } },
+      );
+      return {
+        exists: Boolean(data?.exists),
+        applicationId: data?.applicationId,
+      };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.status === 404) {
+        return { exists: false };
+      }
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al verificar solicitudes existentes";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error("Error al verificar solicitudes existentes", {
+        cause: e,
+      });
+    }
+  }
+
+  async getRecentFormData(
+    applicantId: string,
+  ): Promise<Partial<AdoptionFormData> | null> {
+    try {
+      const { data } = await apiClient.get<
+        | Partial<AdoptionFormData>
+        | { formData?: Partial<AdoptionFormData> }
+        | null
+      >(API_ENDPOINTS.ADOPTIONS.APPLICATIONS_RECENT_FORM_DATA(applicantId));
+
+      if (!data) return null;
+      // El backend podría envolverlo en { formData } o devolverlo plano.
+      if (typeof data === "object" && "formData" in data && data.formData) {
+        return data.formData;
+      }
+      return data as Partial<AdoptionFormData>;
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.status === 404) return null;
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al obtener datos de la solicitud previa";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error("Error al obtener datos de la solicitud previa", {
+        cause: e,
+      });
+    }
   }
 }

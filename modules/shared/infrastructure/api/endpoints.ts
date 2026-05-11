@@ -88,6 +88,9 @@ export const API_ENDPOINTS = {
     DETAIL: (id: number) => `${BASE}/api/adoptions/${id}`,
     CREATE: `${BASE}/api/adoptions`,
     APPLICATIONS_CREATE: `${BASE}/applications-ms`,
+    APPLICATIONS_CHECK: `${BASE}/applications-ms/check`,
+    APPLICATIONS_RECENT_FORM_DATA: (applicantId: string) =>
+      `${BASE}/applications-ms/applicant/${applicantId}/recent`,
     APPLICATION_BY_ID: (id: string) => `${BASE}/applications-ms/${id}`,
     APPLICATIONS_BY_APPLICANT: (applicantId: string) =>
       `${BASE}/applications-ms/applicant/${applicantId}`,

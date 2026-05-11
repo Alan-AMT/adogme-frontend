@@ -16,7 +16,8 @@
       "Bash(mv /Users/alanmunoz/Developer/escuela/adogme-frontend/modules/shared/components/ui/RadioGroup.tsx /tmp/RadioGroup.tsx.bak)",
       "Bash(mv /Users/alanmunoz/Developer/escuela/adogme-frontend/modules/shared/components/ui/CheckboxGroup.tsx /tmp/CheckboxGroup.tsx.bak)",
       "Bash(tee /tmp/tsc-out.log)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "Bash(grep -E \"\\\\.tsx?$\")"
     ]
   }
 }
