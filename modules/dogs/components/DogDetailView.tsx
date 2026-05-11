@@ -5,6 +5,7 @@ import type { Dog } from "../../shared/domain/Dog";
 import DogShareReport from "./DogShareReport";
 import AdoptButton from "./AdoptButton";
 import FavoriteButton from "./FavoriteButton";
+import CompatibilityChip from "./CompatibilityChip";
 import "../styles/dogProfile.css";
 
 /* ── Helpers ── */
@@ -72,7 +73,7 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
             <div className="dp-photo-panel">
               <div className="dp-photo-inner">
                 <Image
-                  src={dog.foto || '/assets/dogs/dog1.jpg'}
+                  src={dog.foto || "/assets/dogs/dog1.jpg"}
                   alt={`Foto de ${dog.nombre}`}
                   fill
                   className="dp-photo-img"
@@ -127,7 +128,20 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
           {/* Header */}
           <div className="dp-content__header">
             <div>
-              <span className={`dp-badge ${badge.cls}`}>{badge.label}</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  flexWrap: "wrap",
+                }}
+              >
+                <span className={`dp-badge ${badge.cls}`}>{badge.label}</span>
+                <CompatibilityChip
+                  dogVector={dog.dogVector}
+                  adoptionSpeed={dog.adoptionSpeed}
+                />
+              </div>
               <h1 className="dp-name">{dog.nombre}</h1>
               <p className="dp-subtitle">
                 {dog.raza} ·{" "}
@@ -135,7 +149,14 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
                 {edadLabel(dog.edad)}
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.65rem",
+                flexShrink: 0,
+              }}
+            >
               <FavoriteButton dogId={dog.id} dogNombre={dog.nombre} />
               {dog.estado === "disponible" && (
                 <AdoptButton dogId={dog.id} dogNombre={dog.nombre} />
@@ -162,9 +183,7 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
               <InfoRow
                 icon="straighten"
                 label="Tamaño"
-                value={
-                  dog.tamano.charAt(0).toUpperCase() + dog.tamano.slice(1)
-                }
+                value={dog.tamano.charAt(0).toUpperCase() + dog.tamano.slice(1)}
               />
               <InfoRow
                 icon="bolt"

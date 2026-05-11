@@ -1,25 +1,25 @@
 // modules/recommendations/components/RecommendationsView.tsx
 // Vista de resultados del motor ML — grid de perros recomendados con
 // badge de compatibilidad, razones del match y estado vacío.
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
-import { mlService } from '../infrastructure/MLServiceFactory'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
+import { mlService } from "../infrastructure/MLServiceFactory";
 import type {
   MLRecommendationResponse,
   DogRecommendation,
-} from '@/modules/shared/domain/LifestyleProfile'
-import '../styles/recommendations.css'
+} from "@/modules/shared/domain/LifestyleProfile";
+import "../styles/recommendations.css";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function compatClass(score: number): string {
-  if (score >= 75) return 'rec-card__compat--high'
-  if (score >= 50) return 'rec-card__compat--mid'
-  return 'rec-card__compat--low'
+  if (score >= 75) return "rec-card__compat--high";
+  if (score >= 50) return "rec-card__compat--mid";
+  return "rec-card__compat--low";
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -31,35 +31,37 @@ function LoadingSkeleton() {
       <div
         style={{
           maxWidth: 900,
-          margin: '0 auto 1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          margin: "0 auto 1.5rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
+        >
           <div
             style={{
               width: 180,
-              height: '1.35rem',
-              borderRadius: '0.375rem',
-              background: '#e4e4e7',
-              animation: 'rec-shimmer 1.4s ease-in-out infinite',
-              backgroundSize: '200% 100%',
+              height: "1.35rem",
+              borderRadius: "0.375rem",
+              background: "#e4e4e7",
+              animation: "rec-shimmer 1.4s ease-in-out infinite",
+              backgroundSize: "200% 100%",
               backgroundImage:
-                'linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%)',
+                "linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%)",
             }}
           />
           <div
             style={{
               width: 100,
-              height: '0.8rem',
-              borderRadius: '0.25rem',
-              background: '#e4e4e7',
-              animation: 'rec-shimmer 1.4s ease-in-out infinite',
-              backgroundSize: '200% 100%',
+              height: "0.8rem",
+              borderRadius: "0.25rem",
+              background: "#e4e4e7",
+              animation: "rec-shimmer 1.4s ease-in-out infinite",
+              backgroundSize: "200% 100%",
               backgroundImage:
-                'linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%)',
+                "linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%)",
             }}
           />
         </div>
@@ -78,7 +80,7 @@ function LoadingSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Estado vacío ─────────────────────────────────────────────────────────────
@@ -88,14 +90,16 @@ function EmptyState() {
     <div className="rec-empty">
       <span
         className="material-symbols-outlined rec-empty__icon"
-        style={{ fontVariationSettings: "'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 48" }}
+        style={{
+          fontVariationSettings: "'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 48",
+        }}
       >
         search_check
       </span>
       <h2 className="rec-empty__title">Aún no tienes recomendaciones</h2>
       <p className="rec-empty__subtitle">
-        Completa el quiz de estilo de vida y nuestro sistema encontrará los perros más
-        compatibles contigo.
+        Completa el quiz de estilo de vida y nuestro sistema encontrará los
+        perros más compatibles contigo.
       </p>
       <Link href="/mi-match/quiz" className="rec-empty__btn">
         <span
@@ -110,43 +114,44 @@ function EmptyState() {
         Hacer el quiz ahora
       </Link>
     </div>
-  )
+  );
 }
 
 // ─── Tarjeta de recomendación ─────────────────────────────────────────────────
 
 interface RecommendationCardProps {
-  rec:   DogRecommendation
-  rank:  number
+  rec: DogRecommendation;
+  rank: number;
 }
 
 function RecommendationCard({ rec, rank }: RecommendationCardProps) {
-  const score          = Math.round(rec.compatibilidad)
-  const positiveReason = rec.razonesMatch.find(r => r.esPositivo)
-  const negativeReason = rec.razonesMatch.find(r => !r.esPositivo)
+  const score = Math.round(rec.compatibilidad);
+  const positiveReason = rec.razonesMatch.find((r) => r.esPositivo);
+  const negativeReason = rec.razonesMatch.find((r) => !r.esPositivo);
   // Mostrar máx 2 razones: 1 positiva prioritaria + 1 negativa si existe
   const shownReasons = [
     ...(positiveReason ? [positiveReason] : []),
     ...(negativeReason ? [negativeReason] : []),
-  ].slice(0, 2)
+  ].slice(0, 2);
 
-  const photoSrc = rec.perroFoto ?? '/assets/dogs/placeholder.jpg'
+  const photoSrc = rec.perroFoto ?? "/assets/dogs/placeholder.jpg";
 
   return (
     <Link href={`/perros/${rec.perroId}`} className="rec-card group">
-
       {/* Foto con badges */}
       <div className="rec-card__media">
         <Image
           src={photoSrc}
-          alt={rec.perroNombre ?? 'Perro recomendado'}
+          alt={rec.perroNombre ?? "Perro recomendado"}
           fill
           className="rec-card__img group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 540px) 50vw, (max-width: 900px) 33vw, 220px"
         />
 
         {/* Ranking — top N */}
-        <div className={`rec-card__rank${rank <= 3 ? ' rec-card__rank--top' : ''}`}>
+        <div
+          className={`rec-card__rank${rank <= 3 ? " rec-card__rank--top" : ""}`}
+        >
           #{rank}
         </div>
 
@@ -159,9 +164,11 @@ function RecommendationCard({ rec, rank }: RecommendationCardProps) {
 
       {/* Cuerpo */}
       <div className="rec-card__body">
-        <p className="rec-card__name">{rec.perroNombre ?? 'Sin nombre'}</p>
-        {rec.perroRaza    && <p className="rec-card__breed">{rec.perroRaza}</p>}
-        {rec.refugioNombre && <p className="rec-card__shelter">{rec.refugioNombre}</p>}
+        <p className="rec-card__name">{rec.perroNombre ?? "Sin nombre"}</p>
+        {rec.perroRaza && <p className="rec-card__breed">{rec.perroRaza}</p>}
+        {rec.refugioNombre && (
+          <p className="rec-card__shelter">{rec.refugioNombre}</p>
+        )}
 
         {/* Razones del match */}
         {shownReasons.length > 0 && (
@@ -170,11 +177,13 @@ function RecommendationCard({ rec, rank }: RecommendationCardProps) {
               <span
                 key={i}
                 className={`rec-card__reason ${
-                  r.esPositivo ? 'rec-card__reason--pos' : 'rec-card__reason--neg'
+                  r.esPositivo
+                    ? "rec-card__reason--pos"
+                    : "rec-card__reason--neg"
                 }`}
               >
                 <span className="material-symbols-outlined">
-                  {r.esPositivo ? 'check_circle' : 'cancel'}
+                  {r.esPositivo ? "check_circle" : "cancel"}
                 </span>
                 {r.texto}
               </span>
@@ -186,70 +195,80 @@ function RecommendationCard({ rec, rank }: RecommendationCardProps) {
           Ver perfil
           <span
             className="material-symbols-outlined"
-            style={{ fontSize: 14, fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 16" }}
+            style={{
+              fontSize: 14,
+              fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 16",
+            }}
           >
             arrow_forward
           </span>
         </span>
       </div>
     </Link>
-  )
+  );
 }
 
 // ─── Helpers de fecha ─────────────────────────────────────────────────────────
 
 function formatGenDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('es-MX', {
-    day: 'numeric', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
+  return new Date(iso).toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 // ─── Vista principal ──────────────────────────────────────────────────────────
 
 export function RecommendationsView() {
-  const { user } = useAuthStore() // se obtiene desde el authStore
-  const [result, setResult]   = useState<MLRecommendationResponse | null>(null)
-  const [loaded, setLoaded]   = useState(false)
-  const [error,  setError]    = useState<string | null>(null)
+  const { user } = useAuthStore(); // se obtiene desde el authStore
+  const [result, setResult] = useState<MLRecommendationResponse | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-//este useEffect es en caso de que el userVector ya este en la authStore
-// es decir viva en las cookies.
+  //este useEffect es en caso de que el userVector ya este en la authStore
+  // es decir viva en las cookies.
   useEffect(() => {
-    if (!user?.id) { setLoaded(true); return }
-
-    const userVector =
-      user.role === 'applicant' ? user.userVector ?? null : null
-
-    if (!userVector) {
-      setLoaded(true)
-      return
+    if (!user?.id) {
+      setLoaded(true);
+      return;
     }
 
-    setLoaded(false)
+    const userVector =
+      user.role === "applicant" ? (user.userVector ?? null) : null;
+
+    if (!userVector) {
+      setLoaded(true);
+      return;
+    }
+
+    setLoaded(false);
     mlService
       .getMatchesByUserVector(user.id, userVector)
       .then(setResult)
-      .catch(err => {
-        console.error('[mi-match] getMatchesByUserVector failed:', err)
-        setError(err instanceof Error ? err.message : 'Error al cargar matches')
+      .catch((err) => {
+        console.error("[mi-match] getMatchesByUserVector failed:", err);
+        setError(
+          err instanceof Error ? err.message : "Error al cargar matches",
+        );
       })
-      .finally(() => setLoaded(true))
-  }, [user?.id, user?.role === 'applicant' ? user.userVector : null])
+      .finally(() => setLoaded(true));
+  }, [user?.id, user?.role === "applicant" ? user.userVector : null]);
 
-  if (!loaded) return <LoadingSkeleton />
+  if (!loaded) return <LoadingSkeleton />;
 
-  const recomendaciones = result?.recomendaciones ?? []
-  const hasResults      = recomendaciones.length > 0
+  const recomendaciones = result?.recomendaciones ?? [];
+  const hasResults = recomendaciones.length > 0;
 
   return (
     <div className="rec-page">
-
       {/* Encabezado */}
       <header className="rec-header">
         <div>
           <h1 className="rec-header__title">
-            {hasResults ? 'Tus mejores matches' : 'Mis recomendaciones'}
+            {hasResults ? "Tus mejores matches" : "Mis recomendaciones"}
           </h1>
           {result && (
             <p className="rec-header__meta">
@@ -257,7 +276,14 @@ export function RecommendationsView() {
               {hasResults && ` · ${recomendaciones.length} resultados`}
               {/* C1 — Mostrar fecha de generación del análisis */}
               {result.fechaGeneracion && (
-                <span style={{ display: 'block', fontSize: '0.72rem', color: '#a1a1aa', marginTop: '0.15rem' }}>
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "0.72rem",
+                    color: "#a1a1aa",
+                    marginTop: "0.15rem",
+                  }}
+                >
                   Generado el {formatGenDate(result.fechaGeneracion)}
                 </span>
               )}
@@ -265,7 +291,6 @@ export function RecommendationsView() {
           )}
         </div>
 
-        
         <Link href="/mi-match/quiz" className="rec-header__update">
           <span
             className="material-symbols-outlined"
@@ -294,13 +319,13 @@ export function RecommendationsView() {
       {error && !hasResults && (
         <div
           style={{
-            padding: '1rem',
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '0.75rem',
-            color: '#b91c1c',
-            fontSize: '0.85rem',
-            margin: '0 auto 1rem',
+            padding: "1rem",
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            borderRadius: "0.75rem",
+            color: "#b91c1c",
+            fontSize: "0.85rem",
+            margin: "0 auto 1rem",
             maxWidth: 600,
           }}
         >
@@ -319,5 +344,5 @@ export function RecommendationsView() {
         <EmptyState />
       )}
     </div>
-  )
+  );
 }

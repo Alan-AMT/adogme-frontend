@@ -260,6 +260,39 @@
   color: #71717a;
 }
 
+/* ── Compatibility chip ── */
+.dp-compat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.5rem;
+}
+
+.dp-compat__icon {
+  font-size: 0.85rem;
+}
+
+.dp-compat--high {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.dp-compat--mid {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dp-compat--low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 /* ── Name & subtitle ── */
 .dp-name {
   font-size: 2.5rem;

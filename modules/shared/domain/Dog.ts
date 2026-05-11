@@ -24,24 +24,42 @@ export function calcularEdadCategoria(edadMeses: number): AgeCategory {
   return "senior";
 }
 
-// ─── Compatibilidad: distancia euclidiana userVector vs dogVector ────────────
-// Asume vectores 4-dim con cada componente en [0, 1]. Devuelve un score 0-100
-// (100 = match perfecto). Si falta cualquiera de los dos vectores, devuelve null.
+// ─── Compatibilidad: distancia euclidiana asimétrica userVector vs dogVector ──
+// Escala [1,5]. Solo penaliza cuando el perro requiere MÁS de lo que el usuario
+// ofrece. Devuelve score 0-100 (100 = match perfecto) o null si falta un vector.
 
 export function calculateCompatibilityScore(
   userVector: [number, number, number, number] | null | undefined,
   dogVector: [number, number, number, number] | null | undefined,
+  adoptionSpeed: number | null,
 ): number | null {
-  if (!userVector || !dogVector) return null;
+  if (!userVector || !dogVector || !adoptionSpeed) return null;
+
+  const ALPHA = 0.6;
+  const BETA = 0.4;
+
   let sumSq = 0;
+
   for (let i = 0; i < 4; i++) {
-    const d = userVector[i] - dogVector[i];
-    sumSq += d * d;
+    // Solo penaliza si el perro requiere MÁS
+    const deficit = Math.max(0, dogVector[i] - userVector[i]);
+    sumSq += deficit * deficit;
   }
+
+  // Similaridad vectorial
   const distance = Math.sqrt(sumSq);
-  // maxDistance para vector 4-dim acotado en [0,1] es √4 = 2
-  const score = 100 * Math.max(0, 1 - distance / 2);
-  return Math.round(Math.min(100, Math.max(0, score)));
+  const maxDistance = Math.sqrt(4 * (5 - 1) ** 2); // = 8
+
+  const similarity = Math.max(0, 1 - distance / maxDistance);
+
+  // Score ML
+  const mlScore = 1 - adoptionSpeed / 3.0;
+
+  // Compatibilidad final
+  const compatibilityScore = ALPHA * similarity + BETA * mlScore;
+
+  // Igual que backend: escala 0-1 con 4 decimales
+  return Number(Math.max(0, compatibilityScore).toFixed(4));
 }
 
 // ─── Sub-entidades ────────────────────────────────────────────────────────────
@@ -116,6 +134,7 @@ export interface Dog {
   edadCategoria: AgeCategory;
   compatibilidad?: number;
   dogVector?: [number, number, number, number] | null;
+  adoptionSpeed: number | null;
 
   // Datos del refugio (join)
   refugioNombre?: string;

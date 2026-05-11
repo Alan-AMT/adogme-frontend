@@ -50,6 +50,8 @@ export function parseDog(data: CreateDogApiResponse): Dog {
     foto: data.photo ?? undefined,
     refugioNombre: data.shelterName ?? undefined,
     refugioLogo: data.shelterLogo ?? undefined,
+    dogVector: data.vector,
+    adoptionSpeed: data.adoptionSpeed,
   };
 }
 
