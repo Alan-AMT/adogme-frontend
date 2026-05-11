@@ -6,6 +6,7 @@ import DogShareReport from "./DogShareReport";
 import AdoptButton from "./AdoptButton";
 import FavoriteButton from "./FavoriteButton";
 import CompatibilityChip from "./CompatibilityChip";
+import DogPhotoGallery from "./DogPhotoGallery";
 import "../styles/dogProfile.css";
 
 /* ── Helpers ── */
@@ -68,21 +69,12 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
       <div className="dp-layout">
         {/* ── Aside ── */}
         <aside className="dp-aside">
-          {/* Foto */}
-          <div className="dp-photo-frame">
-            <div className="dp-photo-panel">
-              <div className="dp-photo-inner">
-                <Image
-                  src={dog.foto || "/assets/dogs/dog1.jpg"}
-                  alt={`Foto de ${dog.nombre}`}
-                  fill
-                  className="dp-photo-img"
-                  sizes="340px"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
+          {/* Galería de fotos */}
+          <DogPhotoGallery
+            fotos={dog.fotos}
+            fallbackFoto={dog.foto}
+            nombre={dog.nombre}
+          />
 
           {/* Refugio */}
           {dog.refugioNombre && (

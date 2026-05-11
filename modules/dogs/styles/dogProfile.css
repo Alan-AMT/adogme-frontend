@@ -99,6 +99,54 @@
   object-position: center;
 }
 
+/* ── Thumbnails ── */
+.dp-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.dp-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.25rem 0.1rem;
+  scrollbar-width: thin;
+}
+
+.dp-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 2px solid #e4e4e7;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.dp-thumb:hover {
+  border-color: #a1a1aa;
+}
+
+.dp-thumb:focus-visible {
+  outline: none;
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.25);
+}
+
+.dp-thumb--active {
+  border-color: #ff6b6b;
+}
+
+.dp-thumb__img {
+  object-fit: cover;
+  object-position: center;
+}
+
 /* ── Shelter card ── */
 .dp-shelter-card {
   background: #fff;
