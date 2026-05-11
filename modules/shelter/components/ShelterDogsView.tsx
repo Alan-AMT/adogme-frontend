@@ -12,11 +12,8 @@ import { useShelterDogs }      from '../application/hooks/useShelterDogs'
 import { useToast }            from '@/modules/shared/application/hooks/useToast'
 import type { DogStatusFilter } from '../application/hooks/useShelterDogs'
 import type { DogListItem, DogStatus } from '@/modules/shared/domain/Dog'
-import { shelterService }      from '../infrastructure/ShelterServiceFactory'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
-
-const CURRENT_SHELTER_ID = "1"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -243,14 +240,12 @@ const STATUS_OPTIONS: DogStatus[] = ['disponible', 'en_proceso', 'adoptado', 'no
 
 function DogRow({
   dog,
-  solicitudesCount,
   onDelete,
   onStatusChange,
 }: {
-  dog:              DogListItem
-  solicitudesCount: number
-  onDelete:         (dog: DogListItem) => void
-  onStatusChange:   (dog: DogListItem, status: DogStatus) => void
+  dog:            DogListItem
+  onDelete:       (dog: DogListItem) => void
+  onStatusChange: (dog: DogListItem, status: DogStatus) => void
 }) {
   const statusStyle = DOG_STATUS_COLORS[dog.estado] ?? { bg: '#f4f4f5', color: '#71717a' }
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -316,21 +311,6 @@ function DogRow({
         </span>
       </td>
 
-      {/* Solicitudes recibidas */}
-      <td style={{ textAlign: 'center' }}>
-        {solicitudesCount > 0 ? (
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, borderRadius: '50%',
-            background: 'rgba(255,107,107,0.1)', color: '#ff6b6b',
-            fontSize: '0.78rem', fontWeight: 900,
-          }}>
-            {solicitudesCount}
-          </span>
-        ) : (
-          <span style={{ color: '#d4d4d8', fontSize: '0.8rem' }}>—</span>
-        )}
-      </td>
 
       {/* Acciones */}
       <td>
@@ -479,16 +459,6 @@ export default function ShelterDogsView() {
   } = useShelterDogs()
   const toast = useToast()
 
-  // Mapa perroId → cantidad de solicitudes
-  const [reqCountMap, setReqCountMap] = useState<Map<string, number>>(new Map())
-  useEffect(() => {
-    shelterService.getShelterRequests(CURRENT_SHELTER_ID).then(reqs => {
-      const map = new Map<string, number>()
-      reqs.forEach(r => map.set(r.perroId, (map.get(r.perroId) ?? 0) + 1))
-      setReqCountMap(map)
-    }).catch(() => { /* silencioso */ })
-  }, [])
-
   // Estado del ConfirmDialog (eliminar)
   const [confirmDog,  setConfirmDog]  = useState<DogListItem | null>(null)
   const [isDeleting,  setIsDeleting]  = useState(false)
@@ -607,7 +577,6 @@ export default function ShelterDogsView() {
                   <th>Nombre</th>
                   <th>Raza / Edad / Talla</th>
                   <th>Estado</th>
-                  <th style={{ textAlign: 'center' }}>Solicitudes</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -616,7 +585,6 @@ export default function ShelterDogsView() {
                   <DogRow
                     key={dog.id}
                     dog={dog}
-                    solicitudesCount={reqCountMap.get(dog.id) ?? 0}
                     onDelete={handleDeleteRequest}
                     onStatusChange={handleStatusSelect}
                   />

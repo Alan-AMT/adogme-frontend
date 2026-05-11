@@ -38,9 +38,6 @@ const delay = (min = 300, max = 600) =>
 function toListItem(r: AdoptionRequest): AdoptionRequestListItem {
   return {
     id: r.id,
-    adoptanteId: r.adoptanteId,
-    perroId: r.perroId,
-    refugioId: r.refugioId,
     fecha: r.fecha,
     estado: r.estado,
     perroNombre: r.perroNombre,

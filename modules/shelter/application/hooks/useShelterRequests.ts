@@ -1,71 +1,91 @@
 // modules/shelter/application/hooks/useShelterRequests.ts
-// Archivo 184 — hook para la lista completa de solicitudes del refugio.
-// Filtros: por estado, por perro (dogFilter), por búsqueda de texto.
-// Acción: updateRequestStatus(id, status, comentario?) — actualiza en el servicio y refresca.
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import type { AdoptionRequestListItem, RequestStatus } from '@/modules/shared/domain/AdoptionRequest'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import type {
+  AdoptionRequestListItem,
+  PaginatedResult,
+  RequestStatus,
+} from '@/modules/shared/domain/AdoptionRequest'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
+import { useAuth } from '../../../shared/application/hooks/useAuth'
 
-const CURRENT_SHELTER_ID = "1"
+const DEFAULT_LIMIT = 12
 
 export type RequestFilter = 'all' | RequestStatus
 
 export interface UseShelterRequestsReturn {
-  requests:    AdoptionRequestListItem[]
+  result:      PaginatedResult<AdoptionRequestListItem> | null
   filtered:    AdoptionRequestListItem[]
   isLoading:   boolean
   error:       string | null
   filter:      RequestFilter
-  dogFilter:   string | null
   search:      string
+  page:        number
   isUpdating:  boolean
   updateError: string | null
   setFilter:    (f: RequestFilter) => void
-  setDogFilter: (id: string | null) => void
   setSearch:    (s: string) => void
+  setPage:      (p: number) => void
   updateRequestStatus: (id: string, status: RequestStatus, comentario?: string) => Promise<void>
   refetch:     () => Promise<void>
 }
 
 export function useShelterRequests(): UseShelterRequestsReturn {
-  const [requests,    setRequests]    = useState<AdoptionRequestListItem[]>([])
+  const { shelterId } = useAuth()
+  const [result,      setResult]      = useState<PaginatedResult<AdoptionRequestListItem> | null>(null)
   const [isLoading,   setIsLoading]   = useState(true)
   const [error,       setError]       = useState<string | null>(null)
-  const [filter,      setFilter]      = useState<RequestFilter>('all')
-  const [dogFilter,   setDogFilter]   = useState<string | null>(null)
-  const [search,      setSearch]      = useState('')
+  const [filter,      setFilterState] = useState<RequestFilter>('all')
+  const [search,      setSearchState] = useState('')
+  const [page,        setPageState]   = useState(1)
   const [isUpdating,  setIsUpdating]  = useState(false)
   const [updateError, setUpdateError] = useState<string | null>(null)
 
-  const load = useCallback(async () => {
+  const searchRef = useRef(search)
+  searchRef.current = search
+
+  const load = useCallback(async (currentPage: number, currentFilter: RequestFilter, currentSearch: string) => {
+    if (!shelterId) return
     setIsLoading(true)
     setError(null)
     try {
-      const data = await shelterService.getShelterRequests(CURRENT_SHELTER_ID)
-      setRequests(data)
+      const status = currentFilter !== 'all' ? currentFilter as RequestStatus : undefined
+      const data = await shelterService.getShelterRequests(
+        shelterId,
+        currentPage,
+        DEFAULT_LIMIT,
+        status,
+        currentSearch || undefined,
+      )
+      setResult(data)
     } catch (e: unknown) {
       setError((e as Error).message ?? 'Error al cargar solicitudes')
     } finally {
       setIsLoading(false)
     }
+  }, [shelterId])
+
+  useEffect(() => {
+    const id = setTimeout(() => { load(page, filter, search) }, 350)
+    return () => clearTimeout(id)
+  }, [load, page, filter, search])
+
+  const setSearch = useCallback((s: string) => {
+    setSearchState(s)
+    setPageState(1)
   }, [])
 
-  useEffect(() => { load() }, [load])
+  const setFilter = useCallback((f: RequestFilter) => {
+    setFilterState(f)
+    setPageState(1)
+  }, [])
 
-  const filtered = requests.filter(r => {
-    if (filter !== 'all' && r.estado !== filter) return false
-    if (dogFilter !== null && r.perroId !== dogFilter) return false
-    if (search) {
-      const q = search.toLowerCase()
-      const matchesText =
-        (r.perroNombre     ?? '').toLowerCase().includes(q) ||
-        (r.adoptanteNombre ?? '').toLowerCase().includes(q)
-      if (!matchesText) return false
-    }
-    return true
-  })
+  const setPage = useCallback((p: number) => {
+    setPageState(p)
+  }, [])
+
+  const filtered = result?.data ?? []
 
   const updateRequestStatus = useCallback(async (
     id:          string,
@@ -76,23 +96,21 @@ export function useShelterRequests(): UseShelterRequestsReturn {
     setUpdateError(null)
     try {
       await shelterService.updateRequestStatus(id, status, comentario)
-      // Refresh list to reflect the new status
-      const data = await shelterService.getShelterRequests(CURRENT_SHELTER_ID)
-      setRequests(data)
+      await load(page, filter, searchRef.current)
     } catch (e: unknown) {
       setUpdateError((e as Error).message ?? 'Error al actualizar solicitud')
       throw e
     } finally {
       setIsUpdating(false)
     }
-  }, [])
+  }, [load, page, filter])
 
   return {
-    requests, filtered, isLoading, error,
-    filter, dogFilter, search,
+    result, filtered, isLoading, error,
+    filter, search, page,
     isUpdating, updateError,
-    setFilter, setDogFilter, setSearch,
+    setFilter, setSearch, setPage,
     updateRequestStatus,
-    refetch: load,
+    refetch: () => load(page, filter, searchRef.current),
   }
 }

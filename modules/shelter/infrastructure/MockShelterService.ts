@@ -25,6 +25,7 @@ import { calcularEdadCategoria } from "../../shared/domain/Dog";
 import type {
   AdoptionRequest,
   AdoptionRequestListItem,
+  PaginatedResult,
   RequestStatus,
   StatusChange,
 } from "../../shared/domain/AdoptionRequest";
@@ -159,9 +160,6 @@ export class MockShelterService implements IShelterService {
       .slice(0, 5)
       .map((r) => ({
         id: r.id,
-        adoptanteId: r.adoptanteId,
-        perroId: r.perroId,
-        refugioId: r.refugioId,
         fecha: r.fecha,
         estado: r.estado,
         perroNombre: r.perroNombre,
@@ -357,16 +355,19 @@ export class MockShelterService implements IShelterService {
 
   async getShelterRequests(
     refugioId: string,
-  ): Promise<AdoptionRequestListItem[]> {
+    page = 1,
+    limit = 12,
+    status?: RequestStatus,
+    search?: string,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>> {
     await delay(250);
-    return _requests
-      .filter((r) => r.refugioId === refugioId)
+    const q = search?.toLowerCase()
+    const all = _requests
+      .filter((r) => r.refugioId === refugioId && (!status || r.estado === status))
+      .filter((r) => !q || (r.perroNombre ?? '').toLowerCase().includes(q) || (r.adoptanteNombre ?? '').toLowerCase().includes(q))
       .sort((a, b) => b.fecha.localeCompare(a.fecha))
       .map((r) => ({
         id: r.id,
-        adoptanteId: r.adoptanteId,
-        perroId: r.perroId,
-        refugioId: r.refugioId,
         fecha: r.fecha,
         estado: r.estado,
         perroNombre: r.perroNombre,
@@ -374,6 +375,10 @@ export class MockShelterService implements IShelterService {
         refugioNombre: r.refugioNombre,
         adoptanteNombre: r.adoptanteNombre,
       }));
+    const total = all.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    return { data: all.slice(start, start + limit), total, page, totalPages, limit };
   }
 
   async getRequestById(id: string): Promise<AdoptionRequest | null> {

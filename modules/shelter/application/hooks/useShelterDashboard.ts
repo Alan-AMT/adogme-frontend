@@ -66,6 +66,8 @@ export function useShelterDashboard() {
   const [solicitudesPendientes, setSolicitudesPendientes] = useState(0)
   const [solicitudesEnRevision, setSolicitudesEnRevision] = useState(0)
   const [solicitudesCompletadas, setSolicitudesCompletadas] = useState(0)
+  const [solicitudesCanceladas, setSolicitudesCanceladas] = useState(0)
+  const [solicitudesRechazadas, setSolicitudesRechazadas] = useState(0)
   const [recentRequests, setRecentRequests] = useState<AdoptionRequestListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState<string | null>(null)
@@ -98,6 +100,8 @@ export function useShelterDashboard() {
         setSolicitudesPendientes(reqs.solicitudesPendientes)
         setSolicitudesEnRevision(reqs.solicitudesEnRevision)
         setSolicitudesCompletadas(reqs.solicitudesCompletadas)
+        setSolicitudesCanceladas(reqs.solicitudesCanceladas)
+        setSolicitudesRechazadas(reqs.solicitudesRechazadas)
         setRecentRequests(reqs.recentRequests)
       })
       .catch((e: Error) => setError(e.message))
@@ -110,6 +114,8 @@ export function useShelterDashboard() {
     solicitudesPendientes,
     solicitudesEnRevision,
     solicitudesCompletadas,
+    solicitudesCanceladas,
+    solicitudesRechazadas,
     recentRequests,
     loading,
     error,

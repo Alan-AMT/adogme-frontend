@@ -173,9 +173,6 @@ export interface PaginatedResult<T> {
 export type AdoptionRequestListItem = Pick<
   AdoptionRequest,
   | "id"
-  | "adoptanteId"
-  | "perroId"
-  | "refugioId"
   | "fecha"
   | "estado"
   | "perroNombre"

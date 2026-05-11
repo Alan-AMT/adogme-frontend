@@ -31,9 +31,11 @@ interface PaginatedApiResponse<T> {
 
 interface ApplicationFindAllItem {
   id: string;
+  dogId: string;
   dogName: string;
   dogBreed: string;
   dogImage: string | null;
+  shelterId: string;
   shelterName: string;
   shelterLogo: string | null;
   applicantName: string;
@@ -50,7 +52,7 @@ interface ApplicationReviewApi {
   createdAt: string;
 }
 
-interface ApplicationApi {
+export interface ApplicationApi {
   id: string;
   applicantId: string;
   dogId: string;
@@ -83,7 +85,7 @@ function parseReview(raw: ApplicationReviewApi): StatusChange {
   };
 }
 
-function parseApplication(raw: ApplicationApi): AdoptionRequest {
+export function parseApplication(raw: ApplicationApi): AdoptionRequest {
   return {
     id: raw.id,
     adoptanteId: raw.applicantId,
@@ -158,9 +160,6 @@ export class AdoptionService implements IAdoptionService {
       return {
         data: res.data.map((item) => ({
           id: item.id,
-          adoptanteId: applicantId,
-          perroId: "",
-          refugioId: "",
           fecha: item.createdAt,
           estado: item.status,
           perroNombre: item.dogName,
