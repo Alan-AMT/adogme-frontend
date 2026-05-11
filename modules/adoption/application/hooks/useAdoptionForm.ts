@@ -22,6 +22,7 @@ import type {
 } from "../../../shared/domain/AdoptionRequest";
 import { ADOPTION_STEPS } from "../../../shared/domain/AdoptionRequest";
 import type { Adoptante } from "../../../shared/domain/User";
+import type { UploadedFile } from "../../../shared/components/ui";
 import { STEP_SCHEMAS, adoptionFormSchema } from "../../domain/schemas";
 import { adoptionService } from "../../infrastructure/AdoptionServiceFactory";
 import { useAuthStore } from "../../../shared/infrastructure/store/authStore";
@@ -62,9 +63,11 @@ export interface UseAdoptionFormReturn {
   hadInitialDraft: boolean;
   /** Aplica un prefill al formulario (merge con INITIAL_VALUES). */
   applyPrefill: (data: Partial<AdoptionFormData>) => void;
-  /** Fotos de vivienda elegidas por el adoptante (no van al form state). */
-  housingPhotoFiles: File[];
-  setHousingPhotoFiles: (files: File[]) => void;
+  /** Fotos de vivienda elegidas por el adoptante (no van al form state).
+   *  Cada entrada lleva el File y su blob URL (creada al elegir el archivo)
+   *  para que el preview sobreviva remounts del step. */
+  housingPhotos: UploadedFile[];
+  setHousingPhotos: (files: UploadedFile[]) => void;
   /** Progreso de subida de fotos a las URLs firmadas. null si no está en curso. */
   uploadProgress: UploadProgress | null;
 }
@@ -199,7 +202,7 @@ export function useAdoptionForm(
   const [submittedRequest, setSubmittedRequest] =
     useState<AdoptionRequest | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
-  const [housingPhotoFiles, setHousingPhotoFiles] = useState<File[]>([]);
+  const [housingPhotos, setHousingPhotos] = useState<UploadedFile[]>([]);
   const [uploadProgress, setUploadProgress] =
     useState<UploadProgress | null>(null);
 
@@ -368,7 +371,7 @@ export function useAdoptionForm(
           userVector: adoptante.userVector ?? null,
           adoptionSpeed,
           formulario: parsed.data as AdoptionFormData,
-          amountImages: housingPhotoFiles.length,
+          amountImages: housingPhotos.length,
         },
         applicantId,
       );
@@ -386,12 +389,12 @@ export function useAdoptionForm(
       setSavedAt(null);
 
       // Subir fotos a las URLs firmadas, en el mismo orden que las elegimos.
-      if (uploadLinks.length > 0 && housingPhotoFiles.length > 0) {
+      if (uploadLinks.length > 0 && housingPhotos.length > 0) {
         setUploadProgress({ current: 0, total: uploadLinks.length });
         try {
           const { failedIndices } =
             await adoptionService.uploadApplicationImages(
-              housingPhotoFiles,
+              housingPhotos.map((p) => p.file),
               uploadLinks,
               (current, total) => setUploadProgress({ current, total }),
             );
@@ -437,7 +440,7 @@ export function useAdoptionForm(
     draftKey,
     clearStepErrors,
     applyZodIssues,
-    housingPhotoFiles,
+    housingPhotos,
   ]);
 
   // ── Prefill ───────────────────────────────────────────────────────────────
@@ -467,7 +470,7 @@ export function useAdoptionForm(
       setFormError(null);
       // Las fotos previas no se prefilllean — son archivos locales que no
       // persistimos en el draft ni vienen del backend.
-      setHousingPhotoFiles([]);
+      setHousingPhotos([]);
     },
     [form],
   );
@@ -487,7 +490,7 @@ export function useAdoptionForm(
     setSubmittedRequest(null);
     setFormError(null);
     setSavedAt(null);
-    setHousingPhotoFiles([]);
+    setHousingPhotos([]);
     setUploadProgress(null);
   }, [form, draftKey]);
 
@@ -506,8 +509,8 @@ export function useAdoptionForm(
     resetForm,
     hadInitialDraft: initialDraftRef.current !== null,
     applyPrefill,
-    housingPhotoFiles,
-    setHousingPhotoFiles,
+    housingPhotos,
+    setHousingPhotos,
     uploadProgress,
   };
 }

@@ -18,6 +18,7 @@ export { TagInput } from './TagInput'
 export { RangeSlider } from './RangeSlider'
 
 export { FileUpload } from './FileUpload'
+export type { UploadedFile } from './FileUpload'
 
 // ── Feedback / estado ────────────────────────────────────────────────────────
 export {

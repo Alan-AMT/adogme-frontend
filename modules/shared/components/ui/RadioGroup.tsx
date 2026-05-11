@@ -127,22 +127,35 @@ export function RadioGroup<T extends string | number | boolean>({
             <label
               key={`${stringValue}-${idx}`}
               htmlFor={inputId}
-              className={buildBtnClasses({
+              className={`relative ${buildBtnClasses({
                 selected,
                 layout,
                 variant,
                 isYes,
                 isNo,
-              })}
+              })}`}
             >
+              {/* Input anclado al label (position:relative del label es lo que
+                  evita que el browser scrollee <html> para enfocarlo). No usar
+                  `sr-only` porque define position:absolute con static-position
+                  fuera del viewport y dispara focus-auto-scroll del navegador. */}
               <input
                 id={inputId}
                 type="radio"
                 name={groupName}
-                className="sr-only"
                 checked={selected}
                 onChange={() => onChange(opt.value)}
                 value={stringValue}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: 1,
+                  height: 1,
+                  opacity: 0,
+                  pointerEvents: "none",
+                  margin: 0,
+                }}
               />
 
               {variant === "card" && opt.icon && (

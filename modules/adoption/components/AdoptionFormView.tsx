@@ -89,8 +89,8 @@ export default function AdoptionFormView({
     formError,
     hadInitialDraft,
     applyPrefill,
-    housingPhotoFiles,
-    setHousingPhotoFiles,
+    housingPhotos,
+    setHousingPhotos,
     uploadProgress,
   } = useAdoptionForm({
     perroId,
@@ -160,8 +160,8 @@ export default function AdoptionFormView({
       case 0: return <PersonalDataStep />
       case 1: return (
         <HousingStep
-          housingPhotoFiles={housingPhotoFiles}
-          onHousingPhotoFilesChange={setHousingPhotoFiles}
+          housingPhotos={housingPhotos}
+          onHousingPhotosChange={setHousingPhotos}
         />
       )
       case 2: return <RoutineStep />

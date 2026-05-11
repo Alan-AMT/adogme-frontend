@@ -16,7 +16,7 @@ import {
   Textarea,
   YesNoRadio,
 } from "@/modules/shared/components/ui";
-import type { RadioGroupOption } from "@/modules/shared/components/ui";
+import type { RadioGroupOption, UploadedFile } from "@/modules/shared/components/ui";
 
 const TIPO_OPTIONS: RadioGroupOption<HousingType>[] = [
   { value: "casa", label: "Casa", icon: "home" },
@@ -32,14 +32,17 @@ const TENENCIA_OPTIONS: RadioGroupOption<Tenencia>[] = [
 
 interface HousingStepProps {
   /** Las fotos de vivienda viven fuera del form: son archivos locales que se
-   *  suben tras crear la solicitud, no parte de los datos validados por zod. */
-  housingPhotoFiles: File[];
-  onHousingPhotoFilesChange: (files: File[]) => void;
+   *  suben tras crear la solicitud, no parte de los datos validados por zod.
+   *  Cada UploadedFile lleva el File y su blob URL — la URL se crea una sola
+   *  vez al elegir el archivo y vive en el state del padre, por lo que el
+   *  preview sobrevive a unmounts del step. */
+  housingPhotos: UploadedFile[];
+  onHousingPhotosChange: (files: UploadedFile[]) => void;
 }
 
 export default function HousingStep({
-  housingPhotoFiles,
-  onHousingPhotoFilesChange,
+  housingPhotos,
+  onHousingPhotosChange,
 }: HousingStepProps) {
   const {
     register,
@@ -251,8 +254,8 @@ export default function HousingStep({
           maxFiles={5}
           maxSizeMB={5}
           showPreview
-          initialFiles={housingPhotoFiles}
-          onFilesChange={onHousingPhotoFilesChange}
+          files={housingPhotos}
+          onFilesChange={onHousingPhotosChange}
         />
       </div>
     </div>
