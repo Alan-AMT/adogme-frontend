@@ -174,7 +174,8 @@ export interface IShelterService {
   getRequestById(id: string): Promise<AdoptionRequest | null>;
   updateRequestStatus(
     requestId: string,
+    shelterId: string,
     newStatus: RequestStatus,
-    comentario?: string,
-  ): Promise<AdoptionRequest>;
+    note?: string,
+  ): Promise<void>;
 }

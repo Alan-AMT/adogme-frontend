@@ -448,9 +448,25 @@ export class ShelterService implements IShelterService {
 
   async updateRequestStatus(
     id: string,
+    shelterId: string,
     status: RequestStatus,
-  ): Promise<AdoptionRequest> {
-    throw Error("Not implemented");
+    note?: string,
+  ): Promise<void> {
+    try {
+      await apiClient.patch(API_ENDPOINTS.ADOPTIONS.UPDATE_STATUS(id), {
+        shelterId,
+        status,
+        ...(note ? { note } : {}),
+      })
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          'Error al actualizar el estado'
+        throw new Error(msg, { cause: e })
+      }
+      throw new Error('Error al actualizar el estado', { cause: e })
+    }
   }
 
   async getRequestById(id: string): Promise<AdoptionRequest | null> {
