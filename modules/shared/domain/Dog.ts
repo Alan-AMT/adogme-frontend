@@ -59,7 +59,10 @@ export function calculateCompatibilityScore(
   const compatibilityScore = ALPHA * similarity + BETA * mlScore;
 
   // Igual que backend: escala 0-1 con 4 decimales
-  return Number(Math.max(0, compatibilityScore).toFixed(4));
+  const percentage = Math.round(
+    Number(Math.max(0, compatibilityScore).toFixed(4)) * 100,
+  );
+  return percentage;
 }
 
 // ─── Sub-entidades ────────────────────────────────────────────────────────────
