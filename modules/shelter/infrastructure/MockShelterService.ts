@@ -6,6 +6,8 @@
 // Los cambios son visibles durante la sesión; al recargar se pierde el estado.
 
 import type {
+  DashboardChartPeriod,
+  DashboardChartPoint,
   DashboardDogsStats,
   DashboardRequestsStats,
   DogCreateData,
@@ -147,6 +149,46 @@ export class MockShelterService implements IShelterService {
         no_disponible: dogs.filter((d) => d.estado === "no_disponible").length,
       },
     };
+  }
+
+  async getDashboardRequestsChartData(
+    _shelterId: string,
+    period: DashboardChartPeriod,
+  ): Promise<DashboardChartPoint[]> {
+    await delay(200);
+    if (period === "semana") {
+      return [
+        { label: "Lun", value: 2 },
+        { label: "Mar", value: 5 },
+        { label: "Mié", value: 3 },
+        { label: "Jue", value: 7 },
+        { label: "Vie", value: 4 },
+        { label: "Sáb", value: 8 },
+        { label: "Dom", value: 1 },
+      ];
+    }
+    if (period === "mes") {
+      return [
+        { label: "Sem 1", value: 12 },
+        { label: "Sem 2", value: 18 },
+        { label: "Sem 3", value: 9 },
+        { label: "Sem 4", value: 15 },
+      ];
+    }
+    return [
+      { label: "Ene", value: 8 },
+      { label: "Feb", value: 12 },
+      { label: "Mar", value: 15 },
+      { label: "Abr", value: 22 },
+      { label: "May", value: 18 },
+      { label: "Jun", value: 25 },
+      { label: "Jul", value: 30 },
+      { label: "Ago", value: 28 },
+      { label: "Sep", value: 20 },
+      { label: "Oct", value: 35 },
+      { label: "Nov", value: 42 },
+      { label: "Dic", value: 38 },
+    ];
   }
 
   async getDashboardRequestsStats(

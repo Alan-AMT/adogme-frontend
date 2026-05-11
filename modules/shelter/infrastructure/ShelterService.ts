@@ -11,6 +11,8 @@ import {
   Shelter,
 } from "@/modules/shared/domain";
 import {
+  DashboardChartPeriod,
+  DashboardChartPoint,
   DashboardDogsByStatus,
   DashboardDogsStats,
   DashboardRequestsStats,
@@ -457,15 +459,15 @@ export class ShelterService implements IShelterService {
         shelterId,
         status,
         ...(note ? { note } : {}),
-      })
+      });
     } catch (e) {
       if (axios.isAxiosError(e)) {
         const msg =
           (e.response?.data as { message?: string } | undefined)?.message ??
-          'Error al actualizar el estado'
-        throw new Error(msg, { cause: e })
+          "Error al actualizar el estado";
+        throw new Error(msg, { cause: e });
       }
-      throw new Error('Error al actualizar el estado', { cause: e })
+      throw new Error("Error al actualizar el estado", { cause: e });
     }
   }
 
@@ -500,6 +502,32 @@ export class ShelterService implements IShelterService {
     } catch (e) {
       throw Error(
         "No se pudieron obtener las estadísticas de perros del refugio.",
+      );
+    }
+  }
+
+  async getDashboardRequestsChartData(
+    shelterId: string,
+    period: DashboardChartPeriod,
+  ): Promise<DashboardChartPoint[]> {
+    try {
+      const { data } = await apiClient.get<DashboardChartPoint[]>(
+        API_ENDPOINTS.ADOPTIONS.GET_SHELTER_DASHBOARD_REQUESTS_BY_PERIOD(
+          shelterId,
+        ),
+        { params: { period } },
+      );
+      return data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "No se pudieron obtener los datos de la gráfica de solicitudes.";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error(
+        "No se pudieron obtener los datos de la gráfica de solicitudes.",
+        { cause: e },
       );
     }
   }

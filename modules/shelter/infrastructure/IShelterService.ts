@@ -45,6 +45,13 @@ export interface DashboardRequestsStats {
   recentRequests: AdoptionRequestListItem[];
 }
 
+export type DashboardChartPeriod = "semana" | "mes" | "año";
+
+export interface DashboardChartPoint {
+  label: string;
+  value: number;
+}
+
 // ─── Input types para perfil del refugio ────────────────────────────────────
 
 /**
@@ -118,6 +125,10 @@ export interface IShelterService {
   // ── Dashboard ──────────────────────────────────────────────────────────────
   getDashboardDogsStats(shelterId: string): Promise<DashboardDogsStats>;
   getDashboardRequestsStats(shelterId: string): Promise<DashboardRequestsStats>;
+  getDashboardRequestsChartData(
+    shelterId: string,
+    period: DashboardChartPeriod,
+  ): Promise<DashboardChartPoint[]>;
 
   // ── Perros — lectura ───────────────────────────────────────────────────────
   getShelterDogs(

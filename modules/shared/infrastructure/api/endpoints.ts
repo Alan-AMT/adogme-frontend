@@ -98,6 +98,8 @@ export const API_ENDPOINTS = {
       `${BASE}/applications-ms/shelter/${shelterId}`,
     GET_SHELTER_DASHBOARD_REQUESTS_STATS: (shelterId: string) =>
       `${BASE}/applications-ms/shelter/${shelterId}/stats`,
+    GET_SHELTER_DASHBOARD_REQUESTS_BY_PERIOD: (shelterId: string) =>
+      `${BASE}/applications-ms/shelter/${shelterId}/by-period`,
     UPDATE_STATUS: (id: string) => `${BASE}/applications-ms/${id}/status`,
     CANCEL: (id: number) => `${BASE}/applications-ms/${id}`,
     // TODO: endpoint del MS de solicitudes — aún no está listo en backend.
