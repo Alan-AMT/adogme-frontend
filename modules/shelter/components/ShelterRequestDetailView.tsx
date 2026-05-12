@@ -294,6 +294,64 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
         {/* ── Columna derecha ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
+          {/* Card — Puntuación de compatibilidad */}
+          {request.compatibilityScore !== null && (
+            <div className="sv-detail-card">
+              <div className="sv-detail-card__header">
+                <span className="material-symbols-outlined">psychology</span>
+                Compatibilidad ML
+              </div>
+              <div className="sv-detail-card__body" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                <div style={{
+                  flexShrink: 0,
+                  width: 72,
+                  height: 72,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: request.compatibilityScore >= 80
+                    ? 'rgba(22,163,74,0.1)'
+                    : request.compatibilityScore >= 60
+                      ? 'rgba(202,138,4,0.1)'
+                      : 'rgba(220,38,38,0.1)',
+                  border: `3px solid ${
+                    request.compatibilityScore >= 80
+                      ? '#16a34a'
+                      : request.compatibilityScore >= 60
+                        ? '#ca8a04'
+                        : '#dc2626'
+                  }`,
+                }}>
+                  <span style={{
+                    fontSize: '1.4rem',
+                    fontWeight: 900,
+                    color: request.compatibilityScore >= 80
+                      ? '#16a34a'
+                      : request.compatibilityScore >= 60
+                        ? '#ca8a04'
+                        : '#dc2626',
+                    lineHeight: 1,
+                  }}>
+                    {request.compatibilityScore}%
+                  </span>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.88rem', fontWeight: 800, color: '#18181b', marginBottom: '0.2rem' }}>
+                    {request.compatibilityScore >= 80
+                      ? 'Excelente compatibilidad'
+                      : request.compatibilityScore >= 60
+                        ? 'Buena compatibilidad'
+                        : 'Compatibilidad baja'}
+                  </p>
+                  <p style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500 }}>
+                    Puntuación calculada por el modelo de recomendación
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Card — Contacto WhatsApp */}
           {request.formulario.telefono && (
             <div className="sv-detail-card">
