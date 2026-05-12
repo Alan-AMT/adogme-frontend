@@ -213,6 +213,17 @@ export function BasicDataStep({ formData, errors, update }: Props) {
             <label className="sv-field__label">
               Tamaño <span className="sv-field__required">*</span>
             </label>
+            <img
+              src="/dog_sizes.png"
+              alt="Referencia de tamaños: Pequeño, Mediano, Grande, Gigante"
+              style={{
+                width: "100%",
+                maxWidth: 480,
+                display: "block",
+                margin: "0.5rem auto 0.75rem",
+                borderRadius: 10,
+              }}
+            />
             <div
               style={{
                 display: "flex",
