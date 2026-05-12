@@ -1,8 +1,8 @@
 import axios from "axios";
-import type { Dog, DogFilters, PaginatedDogs } from "@/modules/shared/domain";
+import type { Dog, DogFilters, DogListItem, PaginatedDogs } from "@/modules/shared/domain";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
-import type { CreateDogApiResponse, GetDogsApiResponse } from "./ApiResponses";
+import type { CreateDogApiResponse, DogListItemApiResponse, GetDogsApiResponse } from "./ApiResponses";
 import { parseDog, parseDogListItem } from "./parseDog";
 import { DogNotFoundError, type IDogService } from "./IDogService";
 
@@ -78,6 +78,19 @@ export class DogService implements IDogService {
         throw new DogNotFoundError(id, { cause: e });
       }
       throw new Error("Error al obtener el perro", { cause: e });
+    }
+  }
+
+  async getDogsByIds(ids: string[]): Promise<DogListItem[]> {
+    if (ids.length === 0) return [];
+    try {
+      const { data } = await apiClient.get<DogListItemApiResponse[]>(
+        API_ENDPOINTS.DOGS.BY_IDS,
+        { params: { dogIds: ids } },
+      );
+      return data.map(parseDogListItem);
+    } catch (e) {
+      throw new Error("Error al obtener perros por IDs", { cause: e });
     }
   }
 }

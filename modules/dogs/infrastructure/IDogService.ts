@@ -1,9 +1,10 @@
 // modules/dogs/infrastructure/IDogService.ts
-import type { Dog, DogFilters, PaginatedDogs } from "../domain/dog";
+import type { Dog, DogFilters, DogListItem, PaginatedDogs } from "../domain/dog";
 
 export interface IDogService {
   getDogs(filters?: DogFilters): Promise<PaginatedDogs>
   getDogById(id: string): Promise<Dog>
+  getDogsByIds(ids: string[]): Promise<DogListItem[]>
 }
 
 /** Thrown by `getDogById` when the dog id does not exist (HTTP 404 in the real

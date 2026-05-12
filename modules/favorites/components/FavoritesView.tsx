@@ -7,10 +7,12 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link  from 'next/link'
+import { useAuthStore }      from '../../shared/infrastructure/store/authStore'
 import { useFavoritesStore } from '../../shared/infrastructure/store/favoritesStore'
 import { dogService }        from '../../dogs/infrastructure/DogServiceFactory'
 import { Spinner }           from '../../shared/components/ui/Spinner'
-import type { Dog }          from '../../shared/domain/Dog'
+import type { DogListItem }  from '../../shared/domain/Dog'
+import type { Adoptante }    from '../../shared/domain/User'
 import '../styles/favorites.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -30,7 +32,7 @@ function edadLabel(meses: number): string {
 
 // ─── FavoriteCard ─────────────────────────────────────────────────────────────
 
-function FavoriteCard({ dog, onRemove }: { dog: Dog; onRemove: () => void }) {
+function FavoriteCard({ dog, onRemove }: { dog: DogListItem; onRemove: () => void }) {
   const badge = STATUS_BADGE[dog.estado] ?? STATUS_BADGE.no_disponible
 
   return (
@@ -115,25 +117,24 @@ function EmptyState() {
 // ─── FavoritesView ────────────────────────────────────────────────────────────
 
 export default function FavoritesView() {
-  const { favoriteIds, toggleFavorite, clearFavorites } = useFavoritesStore()
-  const [dogs,    setDogs]    = useState<Dog[]>([])
+  const user        = useAuthStore(s => s.user)
+  const favoriteDogs = (user as Adoptante | null)?.favoriteDogs ?? []
+  const { toggleFavorite, clearFavorites } = useFavoritesStore()
+  const [dogs,    setDogs]    = useState<DogListItem[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Carga los perros favoritos cada vez que cambia la lista de IDs
   useEffect(() => {
-    if (favoriteIds.length === 0) {
+    if (favoriteDogs.length === 0) {
       setDogs([])
       setLoading(false)
       return
     }
 
     setLoading(true)
-    Promise.allSettled(favoriteIds.map(id => dogService.getDogById(id)))
-      .then(results => setDogs(results
-        .filter((r): r is PromiseFulfilledResult<Dog> => r.status === 'fulfilled')
-        .map(r => r.value)))
+    dogService.getDogsByIds(favoriteDogs)
+      .then(setDogs)
       .finally(() => setLoading(false))
-  }, [favoriteIds])
+  }, [favoriteDogs.join(',')])
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) {

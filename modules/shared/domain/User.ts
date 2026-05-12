@@ -26,6 +26,7 @@ export interface Adoptante extends User {
   postalCode?: string;
   avatarUrl?: string;
   userVector?: [number, number, number, number] | null; // para recomendaciones ML
+  favoriteDogs?: string[];
 }
 
 // ─── Administrador ───────────────────────────────────────────────────────────
