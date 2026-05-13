@@ -3,6 +3,7 @@
 // y mapea la respuesta del backend al BotResponse que consume la UI.
 
 import axios from 'axios'
+import { apiClient } from '@/modules/shared/infrastructure/api/apiClient'
 import { API_ENDPOINTS } from '@/modules/shared/infrastructure/api/endpoints'
 import type { IChatbotService } from './IChatbotService'
 import { ChatbotRateLimitError } from './ChatbotErrors'
@@ -114,10 +115,10 @@ export class ChatbotService implements IChatbotService {
     }
 
     try {
-      const { data } = await axios.post<ChatResponse>(
+      const { data } = await apiClient.post<ChatResponse>(
         API_ENDPOINTS.CHATBOT.MESSAGE,
         payload,
-        { timeout: 15_000 },
+        { timeout: 30_000 },
       )
 
       return {
@@ -154,9 +155,9 @@ export class ChatbotService implements IChatbotService {
   }
 
   async healthCheck(): Promise<HealthResponse> {
-    const { data } = await axios.get<HealthResponse>(
+    const { data } = await apiClient.get<HealthResponse>(
       API_ENDPOINTS.CHATBOT.HEALTH,
-      { timeout: 5_000 },
+      { timeout: 30_000 },
     )
     return data
   }
