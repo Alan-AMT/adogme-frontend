@@ -132,6 +132,10 @@ export const API_ENDPOINTS = {
     UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
     UPDATE_USER_VECTOR: (userId: string) =>
       `${BASE}/applicants-ms/user/${userId}/vector`,
+    ADD_FAVORITE: (applicantId: string, dogId: string) =>
+      `${BASE}/applicants-ms/applicant/${applicantId}/favorite-dogs/${dogId}/add`,
+    REMOVE_FAVORITE: (applicantId: string, dogId: string) =>
+      `${BASE}/applicants-ms/applicant/${applicantId}/favorite-dogs/${dogId}/remove`,
   },
 
   ADMIN: {

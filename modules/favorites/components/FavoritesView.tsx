@@ -4,15 +4,16 @@
 // Roles: solo applicant llega aquí — el layout (applicant) redirige a los demás.
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link  from 'next/link'
-import { useAuthStore }      from '../../shared/infrastructure/store/authStore'
-import { useFavoritesStore } from '../../shared/infrastructure/store/favoritesStore'
-import { dogService }        from '../../dogs/infrastructure/DogServiceFactory'
-import { Spinner }           from '../../shared/components/ui/Spinner'
-import type { DogListItem }  from '../../shared/domain/Dog'
-import type { Adoptante }    from '../../shared/domain/User'
+import { useAuthStore }   from '../../shared/infrastructure/store/authStore'
+import { apiClient }      from '../../shared/infrastructure/api/apiClient'
+import { API_ENDPOINTS }  from '../../shared/infrastructure/api/endpoints'
+import { dogService }     from '../../dogs/infrastructure/DogServiceFactory'
+import { Spinner }        from '../../shared/components/ui/Spinner'
+import type { DogListItem } from '../../shared/domain/Dog'
+import type { Adoptante }   from '../../shared/domain/User'
 import '../styles/favorites.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -117,24 +118,51 @@ function EmptyState() {
 // ─── FavoritesView ────────────────────────────────────────────────────────────
 
 export default function FavoritesView() {
-  const user        = useAuthStore(s => s.user)
-  const favoriteDogs = (user as Adoptante | null)?.favoriteDogs ?? []
-  const { toggleFavorite, clearFavorites } = useFavoritesStore()
+  const user              = useAuthStore(s => s.user)
+  const patchFavoriteDogs = useAuthStore(s => s.patchFavoriteDogs)
+  const adoptante         = user?.role === 'applicant' ? (user as Adoptante) : null
+
   const [dogs,    setDogs]    = useState<DogListItem[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Load once on mount — changes are driven by local state from here on
   useEffect(() => {
-    if (favoriteDogs.length === 0) {
+    const ids = adoptante?.favoriteDogs ?? []
+    if (ids.length === 0) {
       setDogs([])
       setLoading(false)
       return
     }
-
     setLoading(true)
-    dogService.getDogsByIds(favoriteDogs)
+    dogService.getDogsByIds(ids)
       .then(setDogs)
       .finally(() => setLoading(false))
-  }, [favoriteDogs.join(',')])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleRemove = useCallback(async (dog: DogListItem) => {
+    const applicantId = adoptante?.applicantId
+    if (!applicantId) return
+
+    const prevFavorites = adoptante?.favoriteDogs ?? []
+
+    // Optimistic: remove card immediately
+    setDogs(prev => prev.filter(d => d.id !== dog.id))
+    patchFavoriteDogs(prevFavorites.filter(id => id !== dog.id))
+
+    try {
+      const { data } = await apiClient.patch<{ favoriteDogs?: string[] }>(
+        API_ENDPOINTS.APPLICANTS.REMOVE_FAVORITE(applicantId, dog.id)
+      )
+      if (Array.isArray(data.favoriteDogs)) {
+        patchFavoriteDogs(data.favoriteDogs)
+      }
+    } catch {
+      // Revert on error
+      setDogs(prev => [dog, ...prev])
+      patchFavoriteDogs(prevFavorites)
+    }
+  }, [adoptante, patchFavoriteDogs])
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) {
@@ -185,14 +213,6 @@ export default function FavoritesView() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="fv-clear-btn"
-          onClick={clearFavorites}
-        >
-          <span className="material-symbols-outlined">delete_sweep</span>
-          Limpiar todo
-        </button>
       </div>
 
       {/* ── Grid ── */}
@@ -201,7 +221,7 @@ export default function FavoritesView() {
           <FavoriteCard
             key={dog.id}
             dog={dog}
-            onRemove={() => toggleFavorite(dog.id)}
+            onRemove={() => handleRemove(dog)}
           />
         ))}
       </div>

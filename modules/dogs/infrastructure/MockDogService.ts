@@ -154,6 +154,12 @@ export class MockDogService implements IDogService {
     if (!dog) throw new DogNotFoundError(id);
     return dog;
   }
+
+  async getDogsByIds(ids: string[]): Promise<DogListItem[]> {
+    if (ids.length === 0) return [];
+    await delay(200, 400);
+    return _dogs.filter(d => ids.includes(d.id)).map(toListItem);
+  }
 }
 
 // Mock-only helper: lets sibling mock services (e.g. MockAdoptionService) mutate

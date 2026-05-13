@@ -5,8 +5,8 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useFavoritesStore } from '@/modules/shared/infrastructure/store/favoritesStore'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
+import { useFavoriteDog } from '../application/hooks/useFavoriteDog'
 
 interface Props {
   dogId:      string
@@ -133,29 +133,21 @@ function FavoriteLoginPrompt({ dogNombre, dogId, onClose }: { dogNombre: string;
 /* ── Botón principal ───────────────────────────────────── */
 export default function FavoriteButton({ dogId, dogNombre, className = '' }: Props) {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const { isFavorite: saved, toggle } = useFavoriteDog(dogId)
 
-  const hydrateFavs    = useFavoritesStore(s => s.hydrate)
-  const toggleFavorite = useFavoritesStore(s => s.toggleFavorite)
-  const isFavorite     = useFavoritesStore(s => s.isFavorite)
+  const [mounted, setMounted]     = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
-  const [mounted, setMounted]       = useState(false)
-  const [showModal, setShowModal]   = useState(false)
-
-  useEffect(() => {
-    hydrateFavs()
-    setMounted(true)
-  }, [hydrateFavs])
+  useEffect(() => { setMounted(true) }, [])
 
   if (!mounted) return null
-
-  const saved = isFavorite(dogId)
 
   function handleClick() {
     if (!isAuthenticated) {
       setShowModal(true)
       return
     }
-    toggleFavorite(dogId)
+    toggle()
   }
 
   return (
