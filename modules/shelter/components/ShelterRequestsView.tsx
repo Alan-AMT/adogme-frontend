@@ -198,13 +198,14 @@ function RequestsTable({ rows }: { rows: AdoptionRequestListItem[] }) {
 // ─── View ─────────────────────────────────────────────────────────────────────
 
 export default function ShelterRequestsView() {
-  const { requests, filtered, isLoading, error, filter, search, setFilter, setSearch } =
-    useShelterRequests()
+  const {
+    result, filtered, isLoading, error,
+    filter, search, page,
+    setFilter, setSearch, setPage,
+  } = useShelterRequests()
 
-  const countByStatus = (value: RequestFilter) =>
-    value === 'all'
-      ? requests.length
-      : requests.filter(r => r.estado === value).length
+  const totalPages = result?.totalPages ?? 1
+  const total      = result?.total ?? 0
 
   return (
     <>
@@ -213,7 +214,6 @@ export default function ShelterRequestsView() {
         <div className="sv-filters">
           {TABS.map(tab => {
             const isActive = filter === tab.value
-            const count    = countByStatus(tab.value)
             return (
               <button
                 key={tab.value}
@@ -222,14 +222,14 @@ export default function ShelterRequestsView() {
                 onClick={() => setFilter(tab.value)}
               >
                 {tab.label}
-                {count > 0 && (
+                {isActive && total > 0 && (
                   <span style={{
                     fontSize: '0.65rem', fontWeight: 900,
                     padding: '0.1rem 0.4rem', borderRadius: 999, marginLeft: '0.2rem',
-                    background: isActive ? 'rgba(255,107,107,0.15)' : '#e4e4e7',
-                    color:      isActive ? '#ff6b6b' : '#71717a',
+                    background: 'rgba(255,107,107,0.15)',
+                    color: '#ff6b6b',
                   }}>
-                    {count}
+                    {total}
                   </span>
                 )}
               </button>
@@ -257,7 +257,7 @@ export default function ShelterRequestsView() {
           )}
         </div>
         <p style={{ fontSize: '0.78rem', color: '#a1a1aa', fontWeight: 600, whiteSpace: 'nowrap' }}>
-          {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
+          {total} resultado{total !== 1 ? 's' : ''}
         </p>
       </div>
 
@@ -270,6 +270,61 @@ export default function ShelterRequestsView() {
         )}
         {isLoading ? <Skeleton /> : <RequestsTable rows={filtered} />}
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: '0.5rem', marginTop: '1rem',
+        }}>
+          <button
+            type="button"
+            onClick={() => setPage(page - 1)}
+            disabled={page <= 1}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, borderRadius: 8,
+              border: '1.5px solid #e4e4e7', background: '#fff',
+              cursor: page <= 1 ? 'not-allowed' : 'pointer',
+              opacity: page <= 1 ? 0.4 : 1,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>chevron_left</span>
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPage(p)}
+              style={{
+                width: 32, height: 32, borderRadius: 8,
+                border: p === page ? '1.5px solid #ff6b6b' : '1.5px solid #e4e4e7',
+                background: p === page ? '#ff6b6b' : '#fff',
+                color: p === page ? '#fff' : '#18181b',
+                fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
+              }}
+            >
+              {p}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => setPage(page + 1)}
+            disabled={page >= totalPages}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, borderRadius: 8,
+              border: '1.5px solid #e4e4e7', background: '#fff',
+              cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+              opacity: page >= totalPages ? 0.4 : 1,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>chevron_right</span>
+          </button>
+        </div>
+      )}
     </>
   )
 }

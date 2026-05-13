@@ -6,10 +6,13 @@ import {
   DogStatus,
   DonationConfig,
   PaginatedDogs,
+  PaginatedResult,
   RequestStatus,
   Shelter,
 } from "@/modules/shared/domain";
 import {
+  DashboardChartPeriod,
+  DashboardChartPoint,
   DashboardDogsByStatus,
   DashboardDogsStats,
   DashboardRequestsStats,
@@ -34,6 +37,11 @@ import {
   parseDog,
   parseDogListItem,
 } from "@/modules/dogs/infrastructure/parseDog";
+import axios from "axios";
+import {
+  ApplicationApi,
+  parseApplication,
+} from "@/modules/adoption/infrastructure/AdoptionService";
 
 export class ShelterService implements IShelterService {
   async getShelterProfile(refugioId: string): Promise<Shelter> {
@@ -383,28 +391,105 @@ export class ShelterService implements IShelterService {
     }
   }
 
-  getShelterRequests(refugioId: string): Promise<AdoptionRequestListItem[]> {
+  async getShelterRequests(
+    refugioId: string,
+    page = 1,
+    limit = 12,
+    status?: RequestStatus,
+    search?: string,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>> {
     try {
-      return Promise.resolve([]);
+      const params: Record<string, string | number> = { page, limit };
+      if (status) params.status = status;
+      if (search) params.search = search;
+      const { data: res } = await apiClient.get<{
+        data: {
+          id: string;
+          dogName: string;
+          dogBreed: string;
+          dogImage: string | null;
+          shelterName: string;
+          shelterLogo: string | null;
+          applicantName: string;
+          status: RequestStatus;
+          createdAt: string;
+        }[];
+        total: number;
+        page: number;
+        totalPages: number;
+        limit: number;
+      }>(API_ENDPOINTS.ADOPTIONS.APPLICATIONS_BY_SHELTER(refugioId), {
+        params,
+      });
+
+      return {
+        data: res.data.map((item) => ({
+          id: item.id,
+          fecha: item.createdAt,
+          estado: item.status,
+          perroNombre: item.dogName,
+          perroFoto: item.dogImage,
+          refugioNombre: item.shelterName,
+          adoptanteNombre: item.applicantName,
+        })),
+        total: res.total,
+        page: res.page,
+        totalPages: res.totalPages,
+        limit: res.limit,
+      };
     } catch (e) {
-      throw Error("Not implemented");
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al obtener las solicitudes";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error("Error al obtener las solicitudes", { cause: e });
     }
   }
 
-  updateRequestStatus(
+  async updateRequestStatus(
     id: string,
-    status: RequestStatus,
-  ): Promise<AdoptionRequest> {
-    throw Error("Not implemented");
-  }
-
-  getRequestById(id: string): Promise<AdoptionRequest | null> {
-    throw Error("Not implemented");
-  }
-
-  async getDashboardDogsStats(
     shelterId: string,
-  ): Promise<DashboardDogsStats> {
+    status: RequestStatus,
+    note?: string,
+  ): Promise<void> {
+    try {
+      await apiClient.patch(API_ENDPOINTS.ADOPTIONS.UPDATE_STATUS(id), {
+        shelterId,
+        status,
+        ...(note ? { note } : {}),
+      });
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al actualizar el estado";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error("Error al actualizar el estado", { cause: e });
+    }
+  }
+
+  async getRequestById(id: string): Promise<AdoptionRequest | null> {
+    try {
+      const { data } = await apiClient.get<ApplicationApi>(
+        API_ENDPOINTS.ADOPTIONS.APPLICATION_BY_ID(id),
+      );
+      return parseApplication(data);
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.status === 404) return null;
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "Error al obtener la solicitud";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error("Error al obtener la solicitud", { cause: e });
+    }
+  }
+
+  async getDashboardDogsStats(shelterId: string): Promise<DashboardDogsStats> {
     try {
       const { data } = await apiClient.get<{
         recentDogs: DogListItemApiResponse[];
@@ -415,21 +500,84 @@ export class ShelterService implements IShelterService {
         dogsByStatus: data.dogsByStatus,
       };
     } catch (e) {
-      throw Error("No se pudieron obtener las estadísticas de perros del refugio.");
+      throw Error(
+        "No se pudieron obtener las estadísticas de perros del refugio.",
+      );
+    }
+  }
+
+  async getDashboardRequestsChartData(
+    shelterId: string,
+    period: DashboardChartPeriod,
+  ): Promise<DashboardChartPoint[]> {
+    try {
+      const { data } = await apiClient.get<DashboardChartPoint[]>(
+        API_ENDPOINTS.ADOPTIONS.GET_SHELTER_DASHBOARD_REQUESTS_BY_PERIOD(
+          shelterId,
+        ),
+        { params: { period } },
+      );
+      return data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        const msg =
+          (e.response?.data as { message?: string } | undefined)?.message ??
+          "No se pudieron obtener los datos de la gráfica de solicitudes.";
+        throw new Error(msg, { cause: e });
+      }
+      throw new Error(
+        "No se pudieron obtener los datos de la gráfica de solicitudes.",
+        { cause: e },
+      );
     }
   }
 
   async getDashboardRequestsStats(
-    _shelterId: string,
+    shelterId: string,
   ): Promise<DashboardRequestsStats> {
-    // TODO: el endpoint del MS de solicitudes aún no está disponible.
-    // Cuando se implemente, llamar a
-    //   API_ENDPOINTS.ADOPTIONS.GET_SHELTER_DASHBOARD_REQUESTS_STATS(_shelterId)
-    return {
-      solicitudesPendientes: 0,
-      solicitudesEnRevision: 0,
-      solicitudesCompletadas: 0,
-      recentRequests: [],
-    };
+    try {
+      const { data } = await apiClient.get<{
+        recentApplications: {
+          id: string;
+          dogName: string;
+          dogBreed: string;
+          dogImage: string | null;
+          shelterName: string;
+          shelterLogo: string | null;
+          applicantName: string;
+          status: RequestStatus;
+          createdAt: string;
+        }[];
+        applicationsByStatus: {
+          pending: number;
+          in_review: number;
+          approved: number;
+          rejected: number;
+          cancelled: number;
+        };
+      }>(
+        API_ENDPOINTS.ADOPTIONS.GET_SHELTER_DASHBOARD_REQUESTS_STATS(shelterId),
+      );
+      return {
+        solicitudesPendientes: data.applicationsByStatus.pending,
+        solicitudesEnRevision: data.applicationsByStatus.in_review,
+        solicitudesCompletadas: data.applicationsByStatus.approved,
+        solicitudesCanceladas: data.applicationsByStatus.cancelled,
+        solicitudesRechazadas: data.applicationsByStatus.rejected,
+        recentRequests: data.recentApplications.map((item) => ({
+          id: item.id,
+          fecha: item.createdAt,
+          estado: item.status,
+          perroNombre: item.dogName,
+          perroFoto: item.dogImage,
+          refugioNombre: item.shelterName,
+          adoptanteNombre: item.applicantName,
+        })),
+      };
+    } catch (e) {
+      throw Error(
+        "No se pudieron obtener las estadísticas de solicitudes del refugio.",
+      );
+    }
   }
 }

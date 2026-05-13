@@ -36,6 +36,7 @@ const COLS: FooterCol[] = [
     title: "Ayuda",
     links: [
       { label: "Preguntas frecuentes", href: "/faq" },
+      { label: "Contacto", href: "/contacto" },
     ],
   },
 ];

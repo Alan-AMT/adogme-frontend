@@ -12,10 +12,14 @@ import {
 export type CreateDogApiResponse = {
   id: string;
   shelterId: string;
+  shelterName: string | null;
+  shelterLogo: string | null;
   status: DogStatus;
   name: string;
   breed: string;
+  breed2: string | null;
   age: number;
+  weightKg: number | null;
   sex: DogSex;
   size: DogSize;
   energyLevel: EnergyLevel;
@@ -47,19 +51,17 @@ export type CreateDogApiResponse = {
     nextDose: Date | null;
   }[];
   health: string;
-  updatedAt: Date;
-  createdAt: Date;
-  weightKg: number | null;
   photo: string | null;
+  vector: [number, number, number, number];
   images: {
     id: string;
     dogId: string;
     url: string;
     status: "pending" | "accepted" | "rejected";
   }[];
-  breed2: string | null;
-  shelterName: string | null;
-  shelterLogo: string | null;
+  adoptionSpeed: number | null;
+  updatedAt: Date;
+  createdAt: Date;
 };
 
 export type CreateDogWithUploadUrlsApiResponse = {

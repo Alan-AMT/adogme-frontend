@@ -1,199 +1,213 @@
 // modules/adoption/components/steps/RoutineStep.tsx
-// Paso 2 — Rutina diaria y estilo de vida
-'use client'
+// Paso 2 — Rutina y estilo de vida
+"use client";
 
-import type { AdoptionFormData } from '@/modules/shared/domain/AdoptionRequest'
-import { Textarea } from '@/modules/shared/components/ui/Textarea'
+import { Controller, useFormContext } from "react-hook-form";
 
-interface Props {
-  data:        Partial<AdoptionFormData>
-  errors:      Record<string, string>
-  updateField: <K extends keyof AdoptionFormData>(key: K, value: AdoptionFormData[K]) => void
-}
+import type {
+  ActividadConPerro,
+  ActividadFisica,
+  AdoptionFormData,
+  LugarDormir,
+} from "@/modules/shared/domain/AdoptionRequest";
+import {
+  CheckboxGroup,
+  RadioGroup,
+  RangeSlider,
+  Textarea,
+} from "@/modules/shared/components/ui";
+import type {
+  CheckboxGroupOption,
+  RadioGroupOption,
+} from "@/modules/shared/components/ui";
 
-const ACTIVITY_OPTIONS = [
-  { value: 'sedentario', label: 'Sedentario', icon: 'weekend',         desc: 'Prefiero el descanso, salidas cortas' },
-  { value: 'moderado',   label: 'Moderado',   icon: 'directions_walk', desc: 'Caminatas y actividad ocasional' },
-  { value: 'activo',     label: 'Activo',     icon: 'directions_run',  desc: 'Ejercito varias veces por semana' },
-  { value: 'muy_activo', label: 'Muy activo', icon: 'fitness_center',  desc: 'Deporte diario o actividad intensa' },
-] as const
+const DORMIR_OPTIONS: RadioGroupOption<LugarDormir>[] = [
+  { value: "dentro_casa", label: "Dentro de casa", icon: "home" },
+  { value: "patio_jardin", label: "Patio o jardín", icon: "yard" },
+  { value: "area_designada", label: "Área designada", icon: "bed" },
+  { value: "otro", label: "Otro", icon: "more_horiz" },
+];
 
-type ActivityValue = typeof ACTIVITY_OPTIONS[number]['value']
+const ACTIVITY_OPTIONS: RadioGroupOption<ActividadFisica>[] = [
+  {
+    value: "sedentario",
+    label: "Sedentario",
+    icon: "weekend",
+    description: "Prefiero el descanso, salidas cortas",
+  },
+  {
+    value: "moderado",
+    label: "Moderado",
+    icon: "directions_walk",
+    description: "Caminatas y actividad ocasional",
+  },
+  {
+    value: "activo",
+    label: "Activo",
+    icon: "directions_run",
+    description: "Ejercito varias veces por semana",
+  },
+  {
+    value: "muy_activo",
+    label: "Muy activo",
+    icon: "fitness_center",
+    description: "Deporte diario o actividad intensa",
+  },
+];
 
-function YesNo({
-  label,
-  required,
-  value,
-  onChange,
-  error,
-}: {
-  label:     string
-  required?: boolean
-  value:     boolean | undefined
-  onChange:  (v: boolean) => void
-  error?:    string
-}) {
-  return (
-    <div className="af-yn">
-      <span className="af-yn__label">
-        {label}
-        {required && <span> *</span>}
-      </span>
-      <div className="af-yn__buttons">
-        <button
-          type="button"
-          onClick={() => onChange(true)}
-          className={`af-yn__btn ${value === true ? 'af-yn__btn--active-yes' : ''}`}
-        >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 16, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}
-          >
-            check_circle
-          </span>
-          Sí
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange(false)}
-          className={`af-yn__btn ${value === false ? 'af-yn__btn--active-no' : ''}`}
-        >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 16, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 16" }}
-          >
-            cancel
-          </span>
-          No
-        </button>
-      </div>
-      {error && (
-        <p className="af-yn__error">
-          <span className="material-symbols-outlined" style={{ fontSize: 13 }}>error</span>
-          {error}
-        </p>
-      )}
-    </div>
-  )
-}
+const ACTIVIDADES_OPTIONS: CheckboxGroupOption<ActividadConPerro>[] = [
+  { value: "caminatas", label: "Caminatas", icon: "directions_walk" },
+  { value: "senderismo", label: "Senderismo", icon: "hiking" },
+  { value: "juegos", label: "Juegos", icon: "sports_baseball" },
+  { value: "correr", label: "Correr", icon: "directions_run" },
+  {
+    value: "compania_tranquila",
+    label: "Compañía tranquila",
+    icon: "self_improvement",
+  },
+  { value: "otro", label: "Otro", icon: "more_horiz" },
+];
 
-export default function RoutineStep({ data, errors, updateField }: Props) {
-  const horas = data.horasEnCasa ?? 8
+export default function RoutineStep() {
+  const {
+    register,
+    control,
+    clearErrors,
+    formState: { errors },
+  } = useFormContext<AdoptionFormData>();
 
   return (
     <div>
-      {/* Horas en casa */}
+      {/* Tiempo y compañía */}
       <div className="af-section">
         <p className="af-section-title">
           <span className="material-symbols-outlined">schedule</span>
-          Tiempo en casa
+          Tiempo y compañía
         </p>
 
-        <div className="af-hours-display">
-          <span className="af-hours-value">{horas}</span>
-          <div>
-            <p className="af-hours-label">
-              {horas === 1 ? 'hora' : 'horas'} al día en casa
-            </p>
-            <p className="text-[12px] text-[#9ca3af] font-[500]">
-              En promedio, incluyendo trabajo desde casa y fines de semana
-            </p>
-          </div>
-        </div>
-
-        <input
-          type="range"
-          className="af-range"
-          min={1}
-          max={24}
-          step={1}
-          value={horas}
-          onChange={e => updateField('horasEnCasa', Number(e.target.value))}
+        <Controller
+          control={control}
+          name="rutina.horasSolo"
+          render={({ field, fieldState }) => {
+            const horas = typeof field.value === "number" ? field.value : 0;
+            return (
+              <div className="flex flex-col gap-2">
+                <div className="af-hours-display">
+                  <span className="af-hours-value">{horas}</span>
+                  <div>
+                    <p className="af-hours-label">
+                      El perro permanecería solo {horas}{" "}
+                      {horas === 1 ? "hora" : "horas"} al día
+                    </p>
+                    <p className="text-[12px] text-[#9ca3af] font-[500]">
+                      0 = nunca queda solo
+                    </p>
+                  </div>
+                </div>
+                <RangeSlider
+                  min={0}
+                  max={24}
+                  step={1}
+                  value={horas}
+                  onChange={field.onChange}
+                  marks={[
+                    { value: 0, label: "0 h" },
+                    { value: 12, label: "12 h" },
+                    { value: 24, label: "24 h" },
+                  ]}
+                />
+                {fieldState.error?.message && (
+                  <p className="af-yn__error mt-1">
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ fontSize: 13 }}
+                    >
+                      error
+                    </span>
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </div>
+            );
+          }}
         />
-        <div className="flex justify-between text-[11px] text-[#a1a1aa] font-[600] mt-1">
-          <span>1 hora</span>
-          <span>12 horas</span>
-          <span>24 horas</span>
+
+        <div className="mt-4">
+          <Textarea
+            label="¿Dónde permanecería cuando no haya nadie en casa?"
+            required
+            rows={3}
+            placeholder="Ej. Dentro de casa con acceso al patio"
+            error={errors.rutina?.dondePermaneceSolo?.message}
+            {...register("rutina.dondePermaneceSolo")}
+          />
         </div>
 
-        {errors.horasEnCasa && (
-          <p className="af-yn__error mt-2">
-            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>error</span>
-            {errors.horasEnCasa}
-          </p>
-        )}
+        <div className="mt-4">
+          <Controller
+            control={control}
+            name="rutina.dondeDormiria"
+            render={({ field, fieldState }) => (
+              <RadioGroup
+                label="¿Dónde dormiría?"
+                required
+                value={field.value}
+                onChange={field.onChange}
+                options={DORMIR_OPTIONS}
+                error={fieldState.error?.message}
+                layout="grid"
+              />
+            )}
+          />
+        </div>
       </div>
 
-      {/* Actividad física */}
+      {/* Actividad */}
       <div className="af-section">
         <p className="af-section-title">
           <span className="material-symbols-outlined">directions_run</span>
-          Nivel de actividad física *
+          Actividad
         </p>
-        <div className="af-activity-grid">
-          {ACTIVITY_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => updateField('actividadFisica', opt.value as ActivityValue)}
-              className={`af-activity-btn ${data.actividadFisica === opt.value ? 'af-activity-btn--active' : ''}`}
-            >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24" }}
-              >
-                {opt.icon}
-              </span>
-              <span>{opt.label}</span>
-              <span className="text-[10px] font-[500] opacity-70">{opt.desc}</span>
-            </button>
-          ))}
-        </div>
-        {errors.actividadFisica && (
-          <p className="af-yn__error mt-2">
-            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>error</span>
-            {errors.actividadFisica}
-          </p>
-        )}
-      </div>
 
-      {/* Convivencia */}
-      <div className="af-section">
-        <p className="af-section-title">
-          <span className="material-symbols-outlined">groups</span>
-          Convivencia en el hogar
-        </p>
-        <div className="af-field-grid">
-          <YesNo
-            label="¿Hay niños en tu hogar?"
-            required
-            value={data.conviveConNinos}
-            onChange={v => updateField('conviveConNinos', v)}
-            error={errors.conviveConNinos}
-          />
-
-          <YesNo
-            label="¿Convives con otras mascotas?"
-            required
-            value={data.conviveConMascotas}
-            onChange={v => updateField('conviveConMascotas', v)}
-            error={errors.conviveConMascotas}
-          />
-        </div>
-
-        {data.conviveConMascotas && (
-          <div className="mt-4">
-            <Textarea
-              label="Describe las mascotas con las que convives"
-              placeholder="Ej. Tengo una gata de 3 años, muy tranquila y ya convive con perros..."
-              rows={3}
-              value={data.descripcionMascotas ?? ''}
-              onChange={e => updateField('descripcionMascotas', e.target.value)}
-              helperText="Indica especie, edad y carácter"
+        <Controller
+          control={control}
+          name="rutina.actividadFisica"
+          render={({ field, fieldState }) => (
+            <RadioGroup
+              label="Nivel de actividad física"
+              required
+              value={field.value}
+              onChange={field.onChange}
+              options={ACTIVITY_OPTIONS}
+              error={fieldState.error?.message}
+              layout="grid"
+              variant="card"
             />
-          </div>
-        )}
+          )}
+        />
+
+        <div className="mt-4">
+          <Controller
+            control={control}
+            name="rutina.actividadesPlaneadas"
+            render={({ field, fieldState }) => (
+              <CheckboxGroup
+                label="Actividades que planeas hacer con el perro"
+                required
+                min={1}
+                value={field.value}
+                onChange={(val) => {
+                  field.onChange(val);
+                  clearErrors("rutina.actividadesPlaneadas");
+                }}
+                options={ACTIVIDADES_OPTIONS}
+                error={fieldState.error?.message}
+                layout="grid"
+              />
+            )}
+          />
+        </div>
       </div>
     </div>
-  )
+  );
 }

@@ -499,6 +499,8 @@ export default function ShelterDashboardView() {
     solicitudesPendientes,
     solicitudesEnRevision,
     solicitudesCompletadas,
+    solicitudesCanceladas,
+    solicitudesRechazadas,
     recentRequests,
     loading,
     error,
@@ -533,6 +535,8 @@ export default function ShelterDashboardView() {
     { label: "Pendientes", value: solicitudesPendientes, color: "#f59e0b" },
     { label: "En revisión", value: solicitudesEnRevision, color: "#3b82f6" },
     { label: "Completadas", value: solicitudesCompletadas, color: "#10b981" },
+    { label: "Rechazadas", value: solicitudesRechazadas, color: "#ef4444" },
+    { label: "Canceladas", value: solicitudesCanceladas, color: "#a1a1aa" },
   ];
 
   return (

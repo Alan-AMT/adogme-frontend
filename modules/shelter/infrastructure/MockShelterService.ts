@@ -6,6 +6,8 @@
 // Los cambios son visibles durante la sesión; al recargar se pierde el estado.
 
 import type {
+  DashboardChartPeriod,
+  DashboardChartPoint,
   DashboardDogsStats,
   DashboardRequestsStats,
   DogCreateData,
@@ -25,6 +27,7 @@ import { calcularEdadCategoria } from "../../shared/domain/Dog";
 import type {
   AdoptionRequest,
   AdoptionRequestListItem,
+  PaginatedResult,
   RequestStatus,
   StatusChange,
 } from "../../shared/domain/AdoptionRequest";
@@ -77,7 +80,7 @@ let _shelters: Shelter[] = MOCK_SHELTERS.map((s) => ({ ...s }));
 let _dogs: Dog[] = MOCK_DOGS.map((d) => ({ ...d }));
 let _requests: AdoptionRequest[] = MOCK_ADOPTION_REQUESTS.map((r) => ({
   ...r,
-  historial: [...r.historial],
+  revisiones: [...r.revisiones],
 }));
 
 // Contador para IDs autoincrement de perros nuevos
@@ -148,6 +151,46 @@ export class MockShelterService implements IShelterService {
     };
   }
 
+  async getDashboardRequestsChartData(
+    _shelterId: string,
+    period: DashboardChartPeriod,
+  ): Promise<DashboardChartPoint[]> {
+    await delay(200);
+    if (period === "semana") {
+      return [
+        { label: "Lun", value: 2 },
+        { label: "Mar", value: 5 },
+        { label: "Mié", value: 3 },
+        { label: "Jue", value: 7 },
+        { label: "Vie", value: 4 },
+        { label: "Sáb", value: 8 },
+        { label: "Dom", value: 1 },
+      ];
+    }
+    if (period === "mes") {
+      return [
+        { label: "Sem 1", value: 12 },
+        { label: "Sem 2", value: 18 },
+        { label: "Sem 3", value: 9 },
+        { label: "Sem 4", value: 15 },
+      ];
+    }
+    return [
+      { label: "Ene", value: 8 },
+      { label: "Feb", value: 12 },
+      { label: "Mar", value: 15 },
+      { label: "Abr", value: 22 },
+      { label: "May", value: 18 },
+      { label: "Jun", value: 25 },
+      { label: "Jul", value: 30 },
+      { label: "Ago", value: 28 },
+      { label: "Sep", value: 20 },
+      { label: "Oct", value: 35 },
+      { label: "Nov", value: 42 },
+      { label: "Dic", value: 38 },
+    ];
+  }
+
   async getDashboardRequestsStats(
     shelterId: string,
   ): Promise<DashboardRequestsStats> {
@@ -159,9 +202,6 @@ export class MockShelterService implements IShelterService {
       .slice(0, 5)
       .map((r) => ({
         id: r.id,
-        adoptanteId: r.adoptanteId,
-        perroId: r.perroId,
-        refugioId: r.refugioId,
         fecha: r.fecha,
         estado: r.estado,
         perroNombre: r.perroNombre,
@@ -174,6 +214,8 @@ export class MockShelterService implements IShelterService {
       solicitudesPendientes: reqs.filter((r) => r.estado === "pending").length,
       solicitudesEnRevision: reqs.filter((r) => r.estado === "in_review").length,
       solicitudesCompletadas: reqs.filter((r) => r.estado === "approved").length,
+      solicitudesCanceladas: reqs.filter((r) => r.estado === "cancelled").length,
+      solicitudesRechazadas: reqs.filter((r) => r.estado === "rejected").length,
       recentRequests,
     };
   }
@@ -357,16 +399,19 @@ export class MockShelterService implements IShelterService {
 
   async getShelterRequests(
     refugioId: string,
-  ): Promise<AdoptionRequestListItem[]> {
+    page = 1,
+    limit = 12,
+    status?: RequestStatus,
+    search?: string,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>> {
     await delay(250);
-    return _requests
-      .filter((r) => r.refugioId === refugioId)
+    const q = search?.toLowerCase()
+    const all = _requests
+      .filter((r) => r.refugioId === refugioId && (!status || r.estado === status))
+      .filter((r) => !q || (r.perroNombre ?? '').toLowerCase().includes(q) || (r.adoptanteNombre ?? '').toLowerCase().includes(q))
       .sort((a, b) => b.fecha.localeCompare(a.fecha))
       .map((r) => ({
         id: r.id,
-        adoptanteId: r.adoptanteId,
-        perroId: r.perroId,
-        refugioId: r.refugioId,
         fecha: r.fecha,
         estado: r.estado,
         perroNombre: r.perroNombre,
@@ -374,39 +419,42 @@ export class MockShelterService implements IShelterService {
         refugioNombre: r.refugioNombre,
         adoptanteNombre: r.adoptanteNombre,
       }));
+    const total = all.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    return { data: all.slice(start, start + limit), total, page, totalPages, limit };
   }
 
   async getRequestById(id: string): Promise<AdoptionRequest | null> {
     await delay(200);
     const req = _requests.find((r) => r.id === id);
-    return req ? { ...req, historial: [...req.historial] } : null;
+    return req ? { ...req, revisiones: [...req.revisiones] } : null;
   }
 
   async updateRequestStatus(
     requestId: string,
+    _shelterId: string,
     newStatus: RequestStatus,
-    comentario?: string,
-  ): Promise<AdoptionRequest> {
+    note?: string,
+  ): Promise<void> {
     await delay(400);
     const idx = _requests.findIndex((r) => r.id === requestId);
     if (idx === -1) throw new Error(`Solicitud ${requestId} no encontrada`);
 
     const prev = _requests[idx];
     const change: StatusChange = {
-      id: Date.now(),
-      solicitudId: requestId,
-      estadoAnterior: prev.estado,
-      estadoNuevo: newStatus,
-      cambiadoPor: "201", // mock shelter user
-      rol: "shelter",
-      comentario,
-      fecha: new Date().toISOString(),
+      id: String(Date.now()),
+      applicationId: requestId,
+      fromStatus: prev.estado,
+      toStatus: newStatus,
+      note: note ?? null,
+      createdAt: new Date().toISOString(),
     };
 
     const updated: AdoptionRequest = {
       ...prev,
       estado: newStatus,
-      historial: [...prev.historial, change],
+      revisiones: [...prev.revisiones, change],
     };
 
     _requests = [
@@ -414,6 +462,5 @@ export class MockShelterService implements IShelterService {
       updated,
       ..._requests.slice(idx + 1),
     ];
-    return { ...updated, historial: [...updated.historial] };
   }
 }

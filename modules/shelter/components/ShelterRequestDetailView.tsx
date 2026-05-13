@@ -8,6 +8,7 @@ import Link  from 'next/link'
 import { useState } from 'react'
 import { useShelterRequestDetail } from '../application/hooks/useShelterRequestDetail'
 import type { RequestStatus, StatusChange, AdoptionRequest } from '@/modules/shared/domain/AdoptionRequest'
+import FormSummarySections from '@/modules/adoption/components/FormSummarySections'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
@@ -57,275 +58,30 @@ function StatusBadge({ estado }: { estado: string }) {
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 
-function Timeline({ historial }: { historial: StatusChange[] }) {
-  if (historial.length === 0) return null
+function Timeline({ revisiones }: { revisiones: StatusChange[] }) {
+  if (revisiones.length === 0) return null
 
   return (
     <div className="sv-timeline">
-      {[...historial].reverse().map(item => (
+      {[...revisiones].reverse().map(item => (
         <div key={item.id} className="sv-timeline-item">
-          <div className={`sv-timeline-dot sv-timeline-dot--${item.estadoNuevo}`}>
+          <div className={`sv-timeline-dot sv-timeline-dot--${item.toStatus}`}>
             <span className="material-symbols-outlined">
-              {STATUS_ICONS[item.estadoNuevo] ?? 'circle'}
+              {STATUS_ICONS[item.toStatus] ?? 'circle'}
             </span>
           </div>
           <div className="sv-timeline-content">
             <p className="sv-timeline-label">
-              {STATUS_LABELS[item.estadoNuevo] ?? item.estadoNuevo}
+              {STATUS_LABELS[item.toStatus] ?? item.toStatus}
             </p>
-            <p className="sv-timeline-date">{formatDateTime(item.fecha)}</p>
-            {item.comentario && (
-              <p className="sv-timeline-comment">"{item.comentario}"</p>
+            <p className="sv-timeline-date">{formatDateTime(item.createdAt)}</p>
+            {item.note && (
+              <p className="sv-timeline-comment">"{item.note}"</p>
             )}
           </div>
         </div>
       ))}
     </div>
-  )
-}
-
-// ─── Panel de info del formulario ─────────────────────────────────────────────
-
-function FormDataPanel({ r }: { r: AdoptionRequest }) {
-  const { formulario: f } = r
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-
-  const housingLabel: Record<string, string> = {
-    casa:         'Casa',
-    departamento: 'Departamento',
-    casa_campo:   'Casa de campo',
-    otro:         'Otro',
-  }
-
-  const actividadLabel: Record<string, string> = {
-    sedentario: 'Sedentario',
-    moderado:   'Moderado',
-    activo:     'Activo',
-    muy_activo: 'Muy activo',
-  }
-
-  const fotos: string[] = f.vivienda.fotosVivienda ?? []
-
-  return (
-    <>
-      {/* Motivación */}
-      <div className="sv-info-row">
-        <span className="sv-info-row__label">Motivación</span>
-        <span className="sv-info-row__value">{f.motivacion}</span>
-      </div>
-
-      {/* Experiencia */}
-      <div className="sv-info-row">
-        <span className="sv-info-row__label">Experiencia previa</span>
-        <span className="sv-info-row__value">
-          {f.experienciaPrevia ? 'Sí' : 'No'}
-          {f.descripcionExperiencia && ` — ${f.descripcionExperiencia}`}
-        </span>
-      </div>
-
-      {/* Vivienda */}
-      <div className="sv-info-row">
-        <span className="sv-info-row__label">Vivienda</span>
-        <span className="sv-info-row__value">
-          {housingLabel[f.vivienda.tipo] ?? f.vivienda.tipo}
-          {f.vivienda.tieneJardin && f.vivienda.tamanoJardinM2
-            ? ` · Jardín ${f.vivienda.tamanoJardinM2} m²`
-            : f.vivienda.tieneJardin ? ' · Con jardín' : ''}
-          {' · '}
-          {f.vivienda.tieneRejaOCerca ? 'Con reja/cerca' : 'Sin reja/cerca'}
-          {' · '}
-          {f.vivienda.esPropietario ? 'Propietario' : 'Arrendatario'}
-        </span>
-      </div>
-
-      {/* Fotos de vivienda */}
-      {fotos.length > 0 && (
-        <div className="sv-info-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
-          <span className="sv-info-row__label">Fotos de vivienda</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {fotos.map((src, idx) => (
-              <button
-                key={idx}
-                onClick={() => setLightboxIndex(idx)}
-                style={{
-                  position: 'relative',
-                  width: 80,
-                  height: 80,
-                  borderRadius: '0.5rem',
-                  overflow: 'hidden',
-                  border: '2px solid #e4e4e7',
-                  cursor: 'pointer',
-                  padding: 0,
-                  background: 'none',
-                  flexShrink: 0,
-                }}
-                aria-label={`Ver foto de vivienda ${idx + 1}`}
-              >
-                <Image
-                  src={src}
-                  alt={`Foto de vivienda ${idx + 1}`}
-                  fill
-                  sizes="80px"
-                  style={{ objectFit: 'cover' }}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Horas en casa / actividad */}
-      <div className="sv-info-row">
-        <span className="sv-info-row__label">Estilo de vida</span>
-        <span className="sv-info-row__value">
-          {f.horasEnCasa}h/día en casa · {actividadLabel[f.actividadFisica] ?? f.actividadFisica}
-        </span>
-      </div>
-
-      {/* Convivencia */}
-      <div className="sv-info-row">
-        <span className="sv-info-row__label">Convivencia</span>
-        <span className="sv-info-row__value">
-          {f.conviveConNinos
-            ? `Niños: sí${f.edadesNinos?.length ? ` (${f.edadesNinos.join(', ')} años)` : ''}`
-            : 'Sin niños'}
-          {' · '}
-          {f.conviveConMascotas
-            ? `Mascotas: sí${f.descripcionMascotas ? ` (${f.descripcionMascotas})` : ''}`
-            : 'Sin mascotas'}
-        </span>
-      </div>
-
-      {/* Visita + comentarios */}
-      <div className="sv-info-row">
-        <span className="sv-info-row__label">Visita previa</span>
-        <span className="sv-info-row__value">
-          {f.aceptaVisitaPrevia ? 'Acepta' : 'No acepta'}
-        </span>
-      </div>
-
-      {f.comentariosAdicionales && (
-        <div className="sv-info-row">
-          <span className="sv-info-row__label">Notas</span>
-          <span className="sv-info-row__value">{f.comentariosAdicionales}</span>
-        </div>
-      )}
-
-      {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(0,0,0,0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onClick={() => setLightboxIndex(null)}
-        >
-          {/* Close button */}
-          <button
-            onClick={(e) => { e.stopPropagation(); setLightboxIndex(null) }}
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              background: 'rgba(0,0,0,0.5)',
-              border: 'none',
-              borderRadius: '50%',
-              width: 40,
-              height: 40,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#fff',
-            }}
-            aria-label="Cerrar"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#fff' }}>close</span>
-          </button>
-
-          {/* Left arrow */}
-          {fotos.length > 1 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setLightboxIndex((lightboxIndex - 1 + fotos.length) % fotos.length)
-              }}
-              style={{
-                position: 'absolute',
-                left: '1rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'rgba(0,0,0,0.5)',
-                border: 'none',
-                borderRadius: '50%',
-                width: 44,
-                height: 44,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-              aria-label="Foto anterior"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>chevron_left</span>
-            </button>
-          )}
-
-          {/* Right arrow */}
-          {fotos.length > 1 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setLightboxIndex((lightboxIndex + 1) % fotos.length)
-              }}
-              style={{
-                position: 'absolute',
-                right: '1rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'rgba(0,0,0,0.5)',
-                border: 'none',
-                borderRadius: '50%',
-                width: 44,
-                height: 44,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-              aria-label="Foto siguiente"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>chevron_right</span>
-            </button>
-          )}
-
-          {/* Photo */}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              position: 'relative',
-              maxWidth: '90vw',
-              maxHeight: '90vh',
-              width: '90vw',
-              height: '90vh',
-            }}
-          >
-            <Image
-              src={fotos[lightboxIndex]}
-              alt={`Foto de vivienda ${lightboxIndex + 1}`}
-              fill
-              sizes="90vw"
-              style={{ objectFit: 'contain' }}
-            />
-          </div>
-        </div>
-      )}
-    </>
   )
 }
 
@@ -515,47 +271,89 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
                 <span className="sv-info-row__label">Adoptante</span>
                 <span className="sv-info-row__value">{request.adoptanteNombre ?? '—'}</span>
               </div>
-              {request.adoptanteCorreo && (
+              {request.formulario.correo && (
                 <div className="sv-info-row">
                   <span className="sv-info-row__label">Correo</span>
                   <a
-                    href={`mailto:${request.adoptanteCorreo}`}
+                    href={`mailto:${request.formulario.correo}`}
                     className="sv-info-row__value"
                     style={{ color: '#ff6b6b', textDecoration: 'none' }}
                   >
-                    {request.adoptanteCorreo}
+                    {request.formulario.correo}
                   </a>
-                </div>
-              )}
-              {request.comentarios && (
-                <div className="sv-info-row">
-                  <span className="sv-info-row__label">Comentarios</span>
-                  <span className="sv-info-row__value" style={{ fontStyle: 'italic', color: '#52525b' }}>
-                    "{request.comentarios}"
-                  </span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Card — Formulario de adopción */}
-          <div className="sv-detail-card">
-            <div className="sv-detail-card__header">
-              <span className="material-symbols-outlined">assignment_ind</span>
-              Formulario de adopción
-            </div>
-            <div className="sv-detail-card__body">
-              <FormDataPanel r={request} />
-            </div>
-          </div>
+          {/* Formulario de adopción — secciones del nuevo schema */}
+          <FormSummarySections formulario={request.formulario} housingPhotos={request.images} />
 
         </div>
 
         {/* ── Columna derecha ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
+          {/* Card — Puntuación de compatibilidad */}
+          {request.compatibilityScore !== null && (
+            <div className="sv-detail-card">
+              <div className="sv-detail-card__header">
+                <span className="material-symbols-outlined">psychology</span>
+                Compatibilidad ML
+              </div>
+              <div className="sv-detail-card__body" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                <div style={{
+                  flexShrink: 0,
+                  width: 72,
+                  height: 72,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: request.compatibilityScore >= 80
+                    ? 'rgba(22,163,74,0.1)'
+                    : request.compatibilityScore >= 60
+                      ? 'rgba(202,138,4,0.1)'
+                      : 'rgba(220,38,38,0.1)',
+                  border: `3px solid ${
+                    request.compatibilityScore >= 80
+                      ? '#16a34a'
+                      : request.compatibilityScore >= 60
+                        ? '#ca8a04'
+                        : '#dc2626'
+                  }`,
+                }}>
+                  <span style={{
+                    fontSize: '1.4rem',
+                    fontWeight: 900,
+                    color: request.compatibilityScore >= 80
+                      ? '#16a34a'
+                      : request.compatibilityScore >= 60
+                        ? '#ca8a04'
+                        : '#dc2626',
+                    lineHeight: 1,
+                  }}>
+                    {request.compatibilityScore}%
+                  </span>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.88rem', fontWeight: 800, color: '#18181b', marginBottom: '0.2rem' }}>
+                    {request.compatibilityScore >= 80
+                      ? 'Excelente compatibilidad'
+                      : request.compatibilityScore >= 60
+                        ? 'Buena compatibilidad'
+                        : 'Compatibilidad baja'}
+                  </p>
+                  <p style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500 }}>
+                    Puntuación calculada por el modelo de recomendación
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Card — Contacto WhatsApp */}
-          {request.adoptanteTelefono && (
+          {request.formulario.telefono && (
             <div className="sv-detail-card">
               <div className="sv-detail-card__header">
                 <span className="material-symbols-outlined">phone</span>
@@ -566,7 +364,7 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
                   Contactar a {request.adoptanteNombre} por WhatsApp.
                 </p>
                 <a
-                  href={`https://wa.me/52${request.adoptanteTelefono.replace(/\D/g, '')}`}
+                  href={`https://wa.me/52${request.formulario.telefono.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -607,7 +405,7 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
               Historial de cambios
             </div>
             <div className="sv-detail-card__body">
-              <Timeline historial={request.historial} />
+              <Timeline revisiones={request.revisiones} />
             </div>
           </div>
 

@@ -1,9 +1,16 @@
 // modules/shared/components/ui/RangeSlider.tsx
 'use client'
 
+import { forwardRef, type InputHTMLAttributes } from 'react'
+
 interface Mark { value: number; label: string }
 
-interface RangeSliderProps {
+type NativeRangeProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'min' | 'max' | 'step' | 'value' | 'onChange' | 'type' | 'defaultValue'
+>
+
+interface RangeSliderProps extends NativeRangeProps {
   min:         number
   max:         number
   step?:       number
@@ -14,9 +21,10 @@ interface RangeSliderProps {
   marks?:      Mark[]
 }
 
-export function RangeSlider({
-  min, max, step = 1, value, onChange, label, showValue, marks,
-}: RangeSliderProps) {
+export const RangeSlider = forwardRef<HTMLInputElement, RangeSliderProps>(function RangeSlider(
+  { min, max, step = 1, value, onChange, label, showValue, marks, className = '', ...rest },
+  ref,
+) {
   const pct = ((value - min) / (max - min)) * 100
 
   return (
@@ -43,11 +51,13 @@ export function RangeSlider({
 
         {/* Input nativo invisible — para interactividad */}
         <input
+          ref={ref}
           type="range"
           min={min} max={max} step={step}
           value={value}
           onChange={e => onChange(Number(e.target.value))}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          {...rest}
+          className={['absolute inset-0 w-full h-full opacity-0 cursor-pointer', className].filter(Boolean).join(' ')}
         />
 
         {/* Thumb visual */}
@@ -71,4 +81,5 @@ export function RangeSlider({
       )}
     </div>
   )
-}
+})
+RangeSlider.displayName = 'RangeSlider'

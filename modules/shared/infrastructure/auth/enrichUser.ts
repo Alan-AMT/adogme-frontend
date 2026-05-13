@@ -118,6 +118,9 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
   const userVector = isValidVector
     ? (userVectorRaw as [number, number, number, number])
     : null;
+  const favoriteDogs: string[] = Array.isArray(profile.favoriteDogs)
+    ? profile.favoriteDogs
+    : [];
 
   // Persist to Web Storage API for fast hydration on refresh
   setUserProfileCache(user.id, {
@@ -127,9 +130,10 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
     applicantId,
     postalCode,
     userVector,
+    favoriteDogs,
   });
 
-  return { ...user, phone, address, avatarUrl, applicantId, postalCode, userVector };
+  return { ...user, phone, address, avatarUrl, applicantId, postalCode, userVector, favoriteDogs };
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

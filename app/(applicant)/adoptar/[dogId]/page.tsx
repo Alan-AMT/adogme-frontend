@@ -33,5 +33,17 @@ export default async function AdoptarPage({ params }: Props) {
   // Solo perros disponibles pueden recibir solicitudes
   if (dog.estado !== 'disponible') notFound()
 
-  return <AdoptionFormView dog={dog} />
+  return (
+    <AdoptionFormView
+      perroId={dog.id}
+      refugioId={dog.refugioId}
+      perroNombre={dog.nombre}
+      perroRaza={dog.raza}
+      perroFoto={dog.foto ?? null}
+      refugioNombre={dog.refugioNombre ?? ''}
+      refugioLogo={dog.refugioLogo ?? null}
+      dogVector={dog.dogVector ?? null}
+      adoptionSpeed={dog.adoptionSpeed ?? null}
+    />
+  )
 }

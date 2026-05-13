@@ -1,75 +1,124 @@
 // modules/adoption/components/steps/PersonalDataStep.tsx
-// Paso 0 — Datos personales del solicitante (solo lectura del perfil)
+// Paso 0 — Datos personales del solicitante
 'use client'
 
+import { useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
+
+import type { AdoptionFormData } from '@/modules/shared/domain/AdoptionRequest'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
-import type { Adoptante } from '@/modules/shared/domain/User'
+import { Input, Textarea } from '@/modules/shared/components/ui'
 
-interface Props {
-  errors: Record<string, string>
-}
+export default function PersonalDataStep() {
+  const {
+    register,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useFormContext<AdoptionFormData>()
 
-function ReadonlyField({
-  label,
-  value,
-  icon,
-}: {
-  label: string
-  value: string
-  icon: string
-}) {
-  return (
-    <div className="af-readonly-field">
-      <span className="af-readonly-field__label">{label}</span>
-      <div className="af-readonly-field__value">
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: 17, fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 17" }}
-        >
-          {icon}
-        </span>
-        {value || <span className="text-[#a1a1aa]">Sin información</span>}
-      </div>
-    </div>
-  )
-}
+  const user = useAuthStore(s => s.user)
 
-export default function PersonalDataStep({ errors: _ }: Props) {
-  const user = useAuthStore(s => s.user) as Adoptante | null
+  // Prefill nombre/correo desde la sesión solo si los campos están vacíos.
+  useEffect(() => {
+    if (!user) return
+    if (!getValues('nombreCompleto') && user.name) {
+      setValue('nombreCompleto', user.name, { shouldDirty: false })
+    }
+    if (!getValues('correo') && user.email) {
+      setValue('correo', user.email, { shouldDirty: false })
+    }
+  }, [user, setValue, getValues])
 
   return (
     <div>
-      {/* Info banner */}
+      {/* Banner informativo */}
       <div className="af-info-banner">
         <span className="material-symbols-outlined af-info-banner__icon">info</span>
         <div>
-          <p className="af-info-banner__title">Datos de tu perfil</p>
+          <p className="af-info-banner__title">Cuéntanos quién eres</p>
           <p className="af-info-banner__text">
-            Estos datos se obtienen de tu cuenta registrada. Si necesitas
-            actualizarlos, ve a{' '}
-            <a href="/mi-perfil">Mi perfil</a>.
+            Estos datos son únicamente para que el refugio pueda contactarte
+            durante el proceso de adopción.
           </p>
         </div>
       </div>
 
-      {/* Datos */}
+      {/* Información personal */}
       <div className="af-section">
         <p className="af-section-title">
           <span className="material-symbols-outlined">person</span>
           Información personal
         </p>
-        <div className="af-field-grid af-field-grid--2">
-          <ReadonlyField label="Nombre completo" value={user?.name ?? ''} icon="badge" />
-          <ReadonlyField label="Correo electrónico" value={user?.email ?? ''} icon="mail" />
-        </div>
-      </div>
 
-      {/* Confirmación */}
-      <div className="af-verified">
-        <div className="af-verified__check">
-          <span className="material-symbols-outlined">check</span>
+        <div className="af-field-grid">
+          <Input
+            label="Nombre completo"
+            required
+            placeholder="Ej. Ana López Pérez"
+            error={errors.nombreCompleto?.message}
+            {...register('nombreCompleto')}
+          />
         </div>
-        <p className="af-verified__text">Datos verificados — puedes continuar al siguiente paso</p>
+
+        <div className="af-field-grid af-field-grid--2 mt-4">
+          <Input
+            label="Edad"
+            type="number"
+            min={18}
+            required
+            placeholder="Ej. 28"
+            error={errors.edad?.message}
+            {...register('edad', { valueAsNumber: true })}
+          />
+          <Input
+            label="Teléfono"
+            type="tel"
+            required
+            placeholder="Ej. 55 1234 5678"
+            error={errors.telefono?.message}
+            {...register('telefono')}
+          />
+        </div>
+
+        <div className="af-field-grid af-field-grid--2 mt-4">
+          <Input
+            label="Correo electrónico"
+            type="email"
+            required
+            placeholder="tu@correo.com"
+            error={errors.correo?.message}
+            {...register('correo')}
+          />
+          <Input
+            label="Ocupación"
+            required
+            placeholder="Ej. Diseñadora gráfica"
+            error={errors.ocupacion?.message}
+            {...register('ocupacion')}
+          />
+        </div>
+
+        <div className="af-field-grid mt-4">
+          <Textarea
+            label="Dirección"
+            required
+            rows={2}
+            placeholder="Calle, número, colonia, ciudad"
+            error={errors.direccion?.message}
+            {...register('direccion')}
+          />
+        </div>
+
+        <div className="af-field-grid mt-4">
+          <Input
+            label="Redes sociales (opcional)"
+            placeholder="@usuario o link de tu perfil"
+            error={errors.redesSociales?.message}
+            helperText="Si quieres compartir un perfil público, ayuda al refugio a conocerte"
+            {...register('redesSociales')}
+          />
+        </div>
       </div>
     </div>
   )

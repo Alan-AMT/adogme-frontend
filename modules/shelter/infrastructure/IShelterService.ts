@@ -18,6 +18,7 @@ import type {
 import type {
   AdoptionRequest,
   AdoptionRequestListItem,
+  PaginatedResult,
   RequestStatus,
 } from "../../shared/domain/AdoptionRequest";
 
@@ -39,7 +40,16 @@ export interface DashboardRequestsStats {
   solicitudesPendientes: number;
   solicitudesEnRevision: number;
   solicitudesCompletadas: number;
+  solicitudesCanceladas: number;
+  solicitudesRechazadas: number;
   recentRequests: AdoptionRequestListItem[];
+}
+
+export type DashboardChartPeriod = "semana" | "mes" | "año";
+
+export interface DashboardChartPoint {
+  label: string;
+  value: number;
 }
 
 // ─── Input types para perfil del refugio ────────────────────────────────────
@@ -114,9 +124,11 @@ export interface IShelterService {
 
   // ── Dashboard ──────────────────────────────────────────────────────────────
   getDashboardDogsStats(shelterId: string): Promise<DashboardDogsStats>;
-  getDashboardRequestsStats(
+  getDashboardRequestsStats(shelterId: string): Promise<DashboardRequestsStats>;
+  getDashboardRequestsChartData(
     shelterId: string,
-  ): Promise<DashboardRequestsStats>;
+    period: DashboardChartPeriod,
+  ): Promise<DashboardChartPoint[]>;
 
   // ── Perros — lectura ───────────────────────────────────────────────────────
   getShelterDogs(
@@ -132,7 +144,9 @@ export interface IShelterService {
    * extensión enviada en `fotosExtensiones`, en el mismo orden) para subir
    * las imágenes directamente a GCS con `uploadDogImages`.
    */
-  createDog(payload: DogCreateData): Promise<{ dog: Dog; uploadUrls: string[] }>;
+  createDog(
+    payload: DogCreateData,
+  ): Promise<{ dog: Dog; uploadUrls: string[] }>;
   /**
    * Sube cada archivo a su signed URL correspondiente (index-matched) con PUT
    * y Content-Type `application/octet-stream`. Reintenta cada PUT 1 vez ante
@@ -161,11 +175,18 @@ export interface IShelterService {
   updateDogStatus(dogId: string, status: DogStatus): Promise<void>;
 
   // ── Solicitudes ────────────────────────────────────────────────────────────
-  getShelterRequests(refugioId: string): Promise<AdoptionRequestListItem[]>;
+  getShelterRequests(
+    refugioId: string,
+    page?: number,
+    limit?: number,
+    status?: RequestStatus,
+    search?: string,
+  ): Promise<PaginatedResult<AdoptionRequestListItem>>;
   getRequestById(id: string): Promise<AdoptionRequest | null>;
   updateRequestStatus(
     requestId: string,
+    shelterId: string,
     newStatus: RequestStatus,
-    comentario?: string,
-  ): Promise<AdoptionRequest>;
+    note?: string,
+  ): Promise<void>;
 }

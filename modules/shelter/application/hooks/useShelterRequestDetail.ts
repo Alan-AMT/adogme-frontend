@@ -5,6 +5,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import type { AdoptionRequest, RequestStatus } from '@/modules/shared/domain/AdoptionRequest'
 import { shelterService } from '../../infrastructure/ShelterServiceFactory'
+import { useAuth } from '@/modules/shared/application/hooks/useAuth'
 
 export interface UseShelterRequestDetailReturn {
   request:      AdoptionRequest | null
@@ -15,6 +16,7 @@ export interface UseShelterRequestDetailReturn {
 }
 
 export function useShelterRequestDetail(id: string): UseShelterRequestDetailReturn {
+  const { shelterId } = useAuth()
   const [request,   setRequest]   = useState<AdoptionRequest | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving,  setIsSaving]  = useState(false)
@@ -30,18 +32,20 @@ export function useShelterRequestDetail(id: string): UseShelterRequestDetailRetu
   }, [id])
 
   const updateStatus = useCallback(async (status: RequestStatus, comentario?: string) => {
+    if (!shelterId) return
     setIsSaving(true)
     setError(null)
     try {
-      const updated = await shelterService.updateRequestStatus(id, status, comentario)
-      setRequest(updated)
+      await shelterService.updateRequestStatus(id, shelterId, status, comentario)
+      const refreshed = await shelterService.getRequestById(id)
+      setRequest(refreshed)
     } catch (e: unknown) {
       setError((e as Error).message ?? 'Error al actualizar estado')
       throw e
     } finally {
       setIsSaving(false)
     }
-  }, [id])
+  }, [id, shelterId])
 
   return { request, isLoading, isSaving, error, updateStatus }
 }

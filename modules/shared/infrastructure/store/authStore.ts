@@ -39,6 +39,7 @@ interface AuthState {
   // Actions
   setUser: (user: AuthUser) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
+  patchFavoriteDogs: (favoriteDogs: string[]) => void;
   logout: () => void;
   hydrate: () => Promise<void>;
 }
@@ -53,19 +54,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   setUser: (user) => {
     set({ user, isAuthenticated: true });
-    // Persistir el perfil enriquecido del adoptante en localStorage para que
-    // sobreviva al refresh sin depender de un fetch a /me que pueda fallar.
     if (user?.role === "applicant" && user.id) {
       const adoptante = user as Adoptante;
       setUserProfileCache(user.id, {
-        applicantId: adoptante.applicantId,
-        phone:       adoptante.phone,
-        address:     adoptante.address,
-        avatarUrl:   adoptante.avatarUrl,
-        postalCode:  adoptante.postalCode,
-        userVector:  adoptante.userVector ?? null,
+        applicantId:  adoptante.applicantId,
+        phone:        adoptante.phone,
+        address:      adoptante.address,
+        avatarUrl:    adoptante.avatarUrl,
+        postalCode:   adoptante.postalCode,
+        userVector:   adoptante.userVector ?? null,
+        favoriteDogs: adoptante.favoriteDogs,
       });
     }
+  },
+
+  patchFavoriteDogs: (favoriteDogs) => {
+    const { user } = get();
+    if (!user || user.role !== "applicant") return;
+    const updated = { ...user, favoriteDogs } as Adoptante;
+    set({ user: updated });
+    setUserProfileCache(user.id, {
+      applicantId:  (user as Adoptante).applicantId,
+      phone:        (user as Adoptante).phone,
+      address:      (user as Adoptante).address,
+      avatarUrl:    (user as Adoptante).avatarUrl,
+      postalCode:   (user as Adoptante).postalCode,
+      userVector:   (user as Adoptante).userVector ?? null,
+      favoriteDogs,
+    });
   },
 
   setTokens: (accessToken, refreshToken) => {

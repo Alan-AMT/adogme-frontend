@@ -1,234 +1,385 @@
 // modules/adoption/components/AdoptionFormView.tsx
-// Orquesta el formulario multi-paso de adopción
+// Orquesta el formulario multi-paso de adopción: conecta el hook RHF con
+// los 6 step components vía FormProvider y maneja la navegación.
 'use client'
 
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link  from 'next/link'
-import { useAuthStore }     from '../../shared/infrastructure/store/authStore'
-import { useAdoptionForm }  from '../application/hooks/useAdoptionForm'
-import { ADOPTION_STEPS }   from '../domain/AdoptionRequest'
-import { Stepper }          from '../../shared/components/ui/Stepper'
-import PersonalDataStep     from './steps/PersonalDataStep'
-import HousingStep          from './steps/HousingStep'
-import RoutineStep          from './steps/RoutineStep'
-import ExperienceStep       from './steps/ExperienceStep'
-import CommitmentsStep      from './steps/CommitmentsStep'
-import ReviewStep           from './steps/ReviewStep'
-import type { Dog }         from '../../shared/domain/Dog'
+import { FormProvider } from 'react-hook-form'
+
+import { useAuthStore }       from '../../shared/infrastructure/store/authStore'
+import { useAdoptionForm }    from '../application/hooks/useAdoptionForm'
+import { useAdoptionFormInit } from '../application/hooks/useAdoptionFormInit'
+import { ADOPTION_STEPS }     from '../../shared/domain/AdoptionRequest'
+import { Stepper }            from '../../shared/components/ui/Stepper'
+import { Spinner }            from '../../shared/components/ui/Spinner'
+import { ProgressBar }        from '../../shared/components/ui/ProgressBar'
+
+import PersonalDataStep    from './steps/PersonalDataStep'
+import HousingStep         from './steps/HousingStep'
+import RoutineStep         from './steps/RoutineStep'
+import PetsExperienceStep  from './steps/PetsExperienceStep'
+import ResponsibilityStep  from './steps/ResponsibilityStep'
+import ConfirmationsStep   from './steps/ConfirmationsStep'
+
 import '../styles/adoptionForm.css'
 
-interface Props {
-  dog: Dog
-}
+// ─── Metadatos UI del Stepper (reintroducidos en Fase 5) ──────────────────────
+// Se mantienen aquí (no en el dominio) porque son puramente presentacionales.
+// Mismo orden y longitud que ADOPTION_STEPS.
+const STEP_META: { icon: string; subtitle: string }[] = [
+  { icon: 'person',              subtitle: 'Tus datos para que el refugio te contacte' },
+  { icon: 'home',                subtitle: 'Cuéntanos sobre tu hogar y entorno' },
+  { icon: 'schedule',            subtitle: 'Tu rutina diaria con el perro' },
+  { icon: 'pets',                subtitle: 'Tu experiencia con mascotas' },
+  { icon: 'volunteer_activism',  subtitle: 'Tus compromisos y responsabilidades' },
+  { icon: 'check_circle',        subtitle: 'Confirma y envía tu solicitud' },
+]
 
-// ─── Tiempo relativo ──────────────────────────────────────────────────────────
+// ─── Tiempo relativo desde Date ───────────────────────────────────────────────
 
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diff / 60_000)
-  if (mins < 1) return 'hace un momento'
-  if (mins < 60) return `hace ${mins} min`
-  return `hace ${Math.floor(mins / 60)} h`
+function getRelativeTime(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+  if (seconds < 10) return 'ahora'
+  if (seconds < 60) return `hace ${seconds}s`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `hace ${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  return `hace ${hours} h`
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function AdoptionFormView({ dog }: Props) {
+interface Props {
+  perroId:       string
+  refugioId:     string
+  perroNombre:   string
+  perroRaza:     string
+  perroFoto:     string | null
+  refugioNombre: string
+  refugioLogo:   string | null
+  dogVector:     [number, number, number, number] | null
+  adoptionSpeed: number | null
+}
+
+export default function AdoptionFormView({
+  perroId,
+  refugioId,
+  perroNombre,
+  perroRaza,
+  perroFoto,
+  refugioNombre,
+  refugioLogo,
+  dogVector,
+  adoptionSpeed,
+}: Props) {
   const user = useAuthStore(s => s.user)
 
-  const form = useAdoptionForm({
-    perroId:     dog.id,
-    perroNombre: dog.nombre,
-    refugioId:   dog.refugioId,
+  const {
+    form,
+    currentStep,
+    totalSteps,
+    nextStep,
+    prevStep,
+    submitForm,
+    isSubmitting,
+    submittedRequest,
+    savedAt,
+    formError,
+    hadInitialDraft,
+    applyPrefill,
+    housingPhotos,
+    setHousingPhotos,
+    uploadProgress,
+  } = useAdoptionForm({
+    perroId,
+    refugioId,
+    perroNombre,
+    perroRaza,
+    perroFoto,
+    refugioNombre,
+    refugioLogo,
+    dogVector,
+    adoptionSpeed,
   })
 
-  const {
-    currentStep, formData, errors, isSubmitting, savedAt,
-    submittedRequest,
-    nextStep, prevStep, updateField, submitForm,
-  } = form
+  // ── Inicialización: chequeo de solicitud existente + prefill ─────────────
+  const { isInitializing } = useAdoptionFormInit({
+    perroId,
+    hadInitialDraft,
+    onPrefill: applyPrefill,
+  })
 
-  // Steps for Stepper component (id must be string)
-  const stepperSteps = ADOPTION_STEPS.map(s => ({ id: String(s.id), label: s.label }))
-  const completedSteps = ADOPTION_STEPS.slice(0, currentStep).map(s => s.id)
+  // Re-render cada 30s para mantener fresco el indicador "guardado hace X".
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    if (!savedAt) return
+    const id = setInterval(() => setTick(t => t + 1), 30_000)
+    return () => clearInterval(id)
+  }, [savedAt])
 
-  // ── Render current step ────────────────────────────────────────────────────
+  // Guard — la ruta ya garantiza que el usuario sea applicant, pero protegemos
+  // el render para evitar UIs en estado indefinido.
+  if (!user) return null
+
+  // Mientras se verifica si ya existe solicitud + se prefilllea con la última
+  // solicitud, no renderizamos el form para evitar flicker (form.reset durante
+  // mount provoca un parpadeo visible).
+  if (isInitializing) {
+    return (
+      <div
+        className="af-page"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 320 }}
+      >
+        <div style={{ textAlign: 'center', color: '#6b7280' }}>
+          <Spinner size="lg" />
+          <p style={{ marginTop: '0.75rem', fontSize: '0.95rem' }}>
+            Preparando tu formulario…
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const isLastStep = currentStep === totalSteps - 1
+  const stepDef    = ADOPTION_STEPS[currentStep]
+  const stepMeta   = STEP_META[currentStep]
+
+  // Stepper expects number ids and number[] for completed/error indices.
+  const stepperSteps   = ADOPTION_STEPS.map(s => ({ id: String(s.id), label: s.label }))
+  const completedSteps = Array.from({ length: currentStep }, (_, i) => i)
+
+  function handlePrimary() {
+    if (isLastStep) void submitForm()
+    else void nextStep()
+  }
 
   function renderStep() {
     switch (currentStep) {
-      case 0: return <PersonalDataStep errors={errors} />
-      case 1: return <HousingStep    data={formData} errors={errors} updateField={updateField} />
-      case 2: return <RoutineStep    data={formData} errors={errors} updateField={updateField} />
-      case 3: return <ExperienceStep data={formData} errors={errors} updateField={updateField} />
-      case 4: return <CommitmentsStep data={formData} errors={errors} updateField={updateField} />
-      case 5: return (
-        <ReviewStep
-          data={formData}
-          dog={dog}
-          isSubmitting={isSubmitting}
-          errors={errors}
-          onSubmit={submitForm}
+      case 0: return <PersonalDataStep />
+      case 1: return (
+        <HousingStep
+          housingPhotos={housingPhotos}
+          onHousingPhotosChange={setHousingPhotos}
         />
       )
+      case 2: return <RoutineStep />
+      case 3: return <PetsExperienceStep />
+      case 4: return <ResponsibilityStep />
+      case 5: return <ConfirmationsStep />
       default: return null
     }
   }
 
-  // ── Guard — shouldn't be visible if user isn't applicant ──────────────────
-  if (!user) return null
-
   return (
-    <div className="af-page">
+    <FormProvider {...form}>
+      <div className="af-page">
 
-      {/* ── Dog bar ── */}
-      <div className="af-dog-bar">
-        <div className="af-dog-bar__photo">
-          <Image
-            src={dog.foto ?? ''}
-            alt={dog.nombre}
-            fill
-            className="object-cover"
-            sizes="52px"
+        {/* ── Dog bar ── */}
+        <div className="af-dog-bar">
+          <div className="af-dog-bar__photo">
+            {perroFoto && (
+              <Image
+                src={perroFoto}
+                alt={perroNombre ?? 'Perro'}
+                fill
+                className="object-cover"
+                sizes="52px"
+              />
+            )}
+          </div>
+          <div className="af-dog-bar__info">
+            <p className="af-dog-bar__name">
+              Adoptando a {perroNombre ?? 'este perro'}
+            </p>
+            <p className="af-dog-bar__sub">
+              {refugioNombre ?? 'Refugio'}
+            </p>
+          </div>
+          <Link href={`/perros/${perroId}`} className="af-dog-bar__back">
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+              arrow_back
+            </span>
+            Volver al perfil
+          </Link>
+        </div>
+
+        {/* ── Stepper ── */}
+        <div className="af-stepper-wrap">
+          <Stepper
+            steps={stepperSteps}
+            currentStep={currentStep}
+            completedSteps={completedSteps}
           />
         </div>
-        <div className="af-dog-bar__info">
-          <p className="af-dog-bar__name">Adoptando a {dog.nombre}</p>
-          <p className="af-dog-bar__sub">
-            {dog.raza} · {dog.refugioNombre ?? 'Refugio'}
-          </p>
-        </div>
-        <Link
-          href={`/perros/${dog.id}`}
-          className="af-dog-bar__back"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
-          Volver al perfil
-        </Link>
-      </div>
 
-      {/* ── Stepper ── */}
-      <div className="af-stepper-wrap">
-        <Stepper
-          steps={stepperSteps}
-          currentStep={currentStep}
-          completedSteps={completedSteps}
-        />
-      </div>
+        {/* ── Step card ── */}
+        <div className="af-step-card">
 
-      {/* ── Step card ── */}
-      <div className="af-step-card">
-        {/* Step header */}
-        <div className="af-step-header">
-          <div className="af-step-header__icon">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}
-            >
-              {ADOPTION_STEPS[currentStep].icon}
-            </span>
+          {/* Step header */}
+          <div className="af-step-header">
+            <div className="af-step-header__icon">
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48" }}
+              >
+                {stepMeta.icon}
+              </span>
+            </div>
+            <p className="af-step-header__kicker">
+              Paso {currentStep + 1} de {totalSteps}
+            </p>
+            <h2 className="af-step-header__title">{stepDef.title}</h2>
+            <p className="af-step-header__sub">{stepMeta.subtitle}</p>
           </div>
-          <p className="af-step-header__kicker">Paso {currentStep + 1} de {ADOPTION_STEPS.length}</p>
-          <h2 className="af-step-header__title">{ADOPTION_STEPS[currentStep].title}</h2>
-          <p className="af-step-header__sub">{ADOPTION_STEPS[currentStep].subtitle}</p>
-        </div>
 
-        {/* Step content */}
-        {renderStep()}
+          {/* Error banner — sticky-feel, color rojo */}
+          {formError && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 mb-4 px-4 py-3 rounded-xl border-2 border-[#fecaca] bg-[#fef2f2] text-[#b91c1c]"
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 20, fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20" }}
+              >
+                error
+              </span>
+              <p className="text-sm font-bold leading-snug">{formError}</p>
+            </div>
+          )}
 
-        {/* ── Navigation (hidden on review step — ReviewStep has its own submit) ── */}
-        {currentStep < 5 && (
+          {/* Step content */}
+          {renderStep()}
+
+          {/* ── Upload progress (solo durante PUTs a las URLs firmadas) ── */}
+          {uploadProgress && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <ProgressBar
+                value={
+                  uploadProgress.total > 0
+                    ? Math.round(
+                        (uploadProgress.current / uploadProgress.total) * 100,
+                      )
+                    : 0
+                }
+                label={`Subiendo fotos (${uploadProgress.current}/${uploadProgress.total})`}
+                size="md"
+                animated
+              />
+            </div>
+          )}
+
+          {/* ── Navigation ── */}
           <div className="af-nav" style={{ marginTop: '2rem' }}>
             {currentStep > 0 ? (
-              <button type="button" className="af-nav__back" onClick={prevStep}>
-                <span className="material-symbols-outlined" style={{ fontSize: 17 }}>arrow_back</span>
+              <button
+                type="button"
+                className="af-nav__back"
+                onClick={prevStep}
+                disabled={isSubmitting}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 17 }}>
+                  arrow_back
+                </span>
                 Atrás
               </button>
             ) : (
               <div />
             )}
 
-            <button type="button" className="af-nav__next" onClick={nextStep}>
-              {currentStep === 4 ? 'Revisar solicitud' : 'Continuar'}
-              <span className="material-symbols-outlined" style={{ fontSize: 17 }}>arrow_forward</span>
+            <button
+              type="button"
+              className={isLastStep ? 'af-nav__submit' : 'af-nav__next'}
+              onClick={handlePrimary}
+              disabled={isSubmitting}
+            >
+              {isLastStep
+                ? (isSubmitting
+                    ? (uploadProgress ? 'Subiendo fotos…' : 'Enviando…')
+                    : 'Enviar solicitud')
+                : 'Continuar'}
+              <span className="material-symbols-outlined" style={{ fontSize: 17 }}>
+                {isLastStep ? 'send' : 'arrow_forward'}
+              </span>
             </button>
           </div>
+        </div>
+
+        {/* ── Saved indicator ── */}
+        {savedAt && (
+          <p className="af-saved">
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: 15, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 15" }}
+            >
+              cloud_done
+            </span>
+            Borrador guardado {getRelativeTime(savedAt)}
+          </p>
         )}
 
-        {/* Back button on review step */}
-        {currentStep === 5 && (
-          <div className="af-nav" style={{ marginTop: '1.5rem' }}>
-            <button type="button" className="af-nav__back" onClick={prevStep}>
-              <span className="material-symbols-outlined" style={{ fontSize: 17 }}>arrow_back</span>
-              Editar respuestas
-            </button>
+        {/* ── Success modal ── */}
+        {/* No cerrable por click fuera: el draft ya se purgó y la única forma
+            de avanzar es navegar a una de las dos rutas ofrecidas. */}
+        {submittedRequest && (
+          <div className="af-modal-overlay">
+            <div className="af-modal">
+              <div
+                className="relative flex items-center justify-center"
+                style={{ width: 80, height: 80, margin: '0 auto 1.5rem' }}
+              >
+                <div
+                  className="w-20 h-20 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, #dcfce7 0%, #f0fdf4 70%)',
+                    border: '2px solid #bbf7d0',
+                  }}
+                />
+                <div
+                  className="absolute w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ background: '#16a34a' }}
+                >
+                  <span
+                    className="material-symbols-outlined text-white"
+                    style={{ fontSize: 26, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 26" }}
+                  >
+                    task_alt
+                  </span>
+                </div>
+              </div>
+
+              <h2 className="af-modal__title">¡Solicitud enviada!</h2>
+
+              <p className="af-modal__sub">
+                Tu solicitud para adoptar a{' '}
+                <strong>{perroNombre ?? 'este perro'}</strong> ha sido recibida
+                y está siendo revisada por el refugio.
+              </p>
+
+              <div className="af-modal__id">
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                  tag
+                </span>
+                Solicitud #{submittedRequest.id.slice(0, 8)}
+              </div>
+
+              <div className="af-modal__actions">
+                <Link href="/mis-solicitudes" className="af-modal__btn-primary">
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                    folder_open
+                  </span>
+                  Ver mis solicitudes
+                </Link>
+                <Link href={`/perros/${perroId}`} className="af-modal__btn-secondary">
+                  Volver al perfil del perro
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* ── Saved indicator ── */}
-      {savedAt && (
-        <p className="af-saved">
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 15, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 15" }}
-          >
-            cloud_done
-          </span>
-          Borrador guardado {relativeTime(savedAt)}
-        </p>
-      )}
-
-      {/* ── Success modal ── */}
-      {submittedRequest && (
-        <div className="af-modal-overlay">
-          <div className="af-modal">
-            <div className="relative flex items-center justify-center" style={{ width: 80, height: 80, margin: '0 auto 1.5rem' }}>
-              <div
-                className="w-20 h-20 rounded-full"
-                style={{ background: 'radial-gradient(circle, #dcfce7 0%, #f0fdf4 70%)', border: '2px solid #bbf7d0' }}
-              />
-              <div
-                className="absolute w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: '#16a34a' }}
-              >
-                <span
-                  className="material-symbols-outlined text-white"
-                  style={{ fontSize: 26, fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 26" }}
-                >
-                  task_alt
-                </span>
-              </div>
-            </div>
-
-            <h2 className="af-modal__title">¡Solicitud enviada!</h2>
-
-            <p className="af-modal__sub">
-              Tu solicitud para adoptar a{' '}
-              <strong>{dog.nombre}</strong> ha sido recibida y está siendo
-              revisada por el refugio.
-            </p>
-
-            <div className="af-modal__id">
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                tag
-              </span>
-              Solicitud #{submittedRequest.id}
-            </div>
-
-            <div className="af-modal__actions">
-              <Link href="/mis-solicitudes" className="af-modal__btn-primary">
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                  folder_open
-                </span>
-                Ver mis solicitudes
-              </Link>
-              <Link href="/perros" className="af-modal__btn-secondary">
-                Explorar más perros
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </FormProvider>
   )
 }

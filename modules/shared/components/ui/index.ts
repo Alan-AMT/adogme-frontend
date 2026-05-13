@@ -18,6 +18,7 @@ export { TagInput } from './TagInput'
 export { RangeSlider } from './RangeSlider'
 
 export { FileUpload } from './FileUpload'
+export type { UploadedFile } from './FileUpload'
 
 // ── Feedback / estado ────────────────────────────────────────────────────────
 export {
@@ -52,6 +53,12 @@ export type { AvatarShape, AvatarSize } from './Avatar'
 // (Checkbox y Toggle existen en tu carpeta local)
 export { Checkbox } from './Checkbox'
 export { Toggle } from './Toggle'
+
+export { RadioGroup, YesNoRadio } from './RadioGroup'
+export type { RadioGroupOption, RadioGroupProps } from './RadioGroup'
+
+export { CheckboxGroup } from './CheckboxGroup'
+export type { CheckboxGroupOption, CheckboxGroupProps } from './CheckboxGroup'
 
 // ── Navegación / estructura ──────────────────────────────────────────────────
 export { Tabs } from './Tabs'

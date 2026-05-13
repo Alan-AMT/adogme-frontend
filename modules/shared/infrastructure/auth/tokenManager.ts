@@ -184,6 +184,7 @@ export interface UserProfileCache {
   avatarUrl?: string;
   postalCode?: string;
   userVector?: [number, number, number, number] | null;
+  favoriteDogs?: string[];
 }
 
 export function setUserProfileCache(
