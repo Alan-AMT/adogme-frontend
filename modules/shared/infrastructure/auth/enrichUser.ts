@@ -104,11 +104,20 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
   const postalCode: string | undefined = profile.address;
   const avatarUrl: string | undefined = profile.avatarUrl ?? profile.avatar;
   // applicants-ms puede devolver el userVector en el campo `vector` o `userVector`.
+  // Lo tratamos como "no hizo el quiz" cuando:
+  //   - no es array de 4 números, o
+  //   - todos los valores son 0 (vector default del backend para usuarios nuevos),
+  //   - tiene NaN/Infinity.
+  // Solo un vector con valores reales y no-todos-cero significa "quiz hecho".
   const userVectorRaw = profile.vector ?? profile.userVector ?? null;
-  const userVector =
-    Array.isArray(userVectorRaw) && userVectorRaw.length === 4
-      ? (userVectorRaw as [number, number, number, number])
-      : null;
+  const isValidVector =
+    Array.isArray(userVectorRaw) &&
+    userVectorRaw.length === 4 &&
+    userVectorRaw.every(v => typeof v === "number" && Number.isFinite(v)) &&
+    !userVectorRaw.every(v => v === 0);
+  const userVector = isValidVector
+    ? (userVectorRaw as [number, number, number, number])
+    : null;
   const favoriteDogs: string[] = Array.isArray(profile.favoriteDogs)
     ? profile.favoriteDogs
     : [];

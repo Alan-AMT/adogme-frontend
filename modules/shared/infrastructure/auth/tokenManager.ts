@@ -207,11 +207,26 @@ export function getUserProfileCache(userId: string): UserProfileCache | null {
 }
 
 // ─── Clear all enrichment on logout ──────────────────────────────────────────
+// Limpia la caché del user actual Y cualquier residuo de otros usuarios que
+// haya quedado en localStorage (logouts incompletos, cambios de cuenta sin
+// pasar por logout, etc.). Esto evita que un user nuevo herede el userVector
+// de un usuario previo en el mismo browser.
 
 export function clearEnrichmentStorage(userId: string): void {
   if (typeof window === "undefined") return;
+
+  // Limpieza específica del user actual
   window.localStorage.removeItem(`shelter-profile-${userId}`);
   window.localStorage.removeItem(`user-profile-${userId}`);
+
+  // Limpieza defensiva: cualquier user-profile-* / shelter-profile-* huérfano
+  for (let i = window.localStorage.length - 1; i >= 0; i--) {
+    const key = window.localStorage.key(i);
+    if (!key) continue;
+    if (key.startsWith("user-profile-") || key.startsWith("shelter-profile-")) {
+      window.localStorage.removeItem(key);
+    }
+  }
 }
 
 // ─── Mock token builder (client-side, uses btoa) ─────────────────────────────

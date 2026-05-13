@@ -9,6 +9,15 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export const API_ENDPOINTS = {
   AUTH: {
+    // ── Puerto 3006 ──
+    LOGIN: `http://localhost:3006/auth-ms/user/login`,
+    REGISTER: `http://localhost:3006/auth-ms/adopter`,
+    REGISTER_SHELTER: `http://localhost:3006/auth-ms/shelter`,
+    REFRESH: `http://localhost:3006/auth-ms/user/update-tokens`,
+    LOGOUT: `http://localhost:3006/auth-ms/user/logout`,
+    FORGOT: `http://localhost:3006/auth-ms/user/forgot-password`,
+    RESET: `http://localhost:3006/auth-ms/user/reset-password`,
+    // ── Puerto 3001 ──
     // LOGIN: `http://localhost:3001/auth-ms/user/login`,
     // REGISTER: `http://localhost:3001/auth-ms/adopter`,
     // REGISTER_SHELTER: `http://localhost:3001/auth-ms/shelter`,
@@ -28,6 +37,21 @@ export const API_ENDPOINTS = {
   },
 
   DOGS: {
+    // ── Puerto 3002 ──
+    LIST: `http://localhost:3002/dogs-ms/dogs`,
+    PORTRAIT: `http://localhost:3002/dogs-ms/dogs/portrait`,
+    DETAIL: (id: number) => `http://localhost:3002/dogs-ms/dogs/${id}`,
+    BY_ID: (id: string) => `http://localhost:3002/dogs-ms/dog/${id}`,
+    BY_SHELTER: (id: string) =>
+      `http://localhost:3002/dogs-ms/dogs/shelter/${id}`,
+    GET_SHELTER_DASHBOARD_DOGS_STATS: (id: string) =>
+      `http://localhost:3002/dogs-ms/dogs/shelter/${id}/stats`,
+    CREATE: `http://localhost:3002/dogs-ms/dog`,
+    UPDATE: (id: string) => `http://localhost:3002/dogs-ms/dog/${id}`,
+    DELETE: (id: string) => `http://localhost:3002/dogs-ms/dog/${id}`,
+    STATUS: (id: string) => `http://localhost:3002/dogs-ms/dog/${id}/status`,
+    UPLOAD_MEDIA: `http://localhost:3002/api/media/upload`,
+    // ── Puerto 3001 ──
     // LIST: `http://localhost:3001/dogs-ms/dogs`,
     // DETAIL: (id: number) => `http://localhost:3001/dogs-ms/dogs/${id}`,
     // BY_ID: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
@@ -37,30 +61,42 @@ export const API_ENDPOINTS = {
     // UPDATE: (id: string) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // DELETE: (id: number) => `http://localhost:3001/dogs-ms/dog/${id}`,
     // UPLOAD_MEDIA: `http://localhost:3001/api/media/upload`,
-    LIST: `${BASE}/dogs-ms/dogs`,
-    BY_IDS: `${BASE}/dogs-ms/dogs/by-ids`,
-    PORTRAIT: `${BASE}/dogs-ms/dogs/portrait`,
-    DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
-    BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
-    GET_SHELTER_DASHBOARD_DOGS_STATS: (id: string) =>
-      `${BASE}/dogs-ms/dogs/shelter/${id}/stats`,
-    CREATE: `${BASE}/dogs-ms/dog`,
-    UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
-    STATUS: (id: string) => `${BASE}/dogs-ms/dog/${id}/status`,
-    UPLOAD_MEDIA: `${BASE}/api/media/upload`,
+    // LIST: `${BASE}/dogs-ms/dogs`,
+    // PORTRAIT: `${BASE}/dogs-ms/dogs/portrait`,
+    // DETAIL: (id: number) => `${BASE}/dogs-ms/dogs/${id}`,
+    // BY_ID: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    // BY_SHELTER: (id: string) => `${BASE}/dogs-ms/dogs/shelter/${id}`,
+    // GET_SHELTER_DASHBOARD_DOGS_STATS: (id: string) =>
+    //   `${BASE}/dogs-ms/dogs/shelter/${id}/stats`,
+    // CREATE: `${BASE}/dogs-ms/dog`,
+    // UPDATE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    // DELETE: (id: string) => `${BASE}/dogs-ms/dog/${id}`,
+    // STATUS: (id: string) => `${BASE}/dogs-ms/dog/${id}/status`,
+    // UPLOAD_MEDIA: `${BASE}/api/media/upload`,
   },
 
   SHELTERS: {
-    LIST: `${BASE}/shelters-ms/shelters`,
-    CREATE: `${BASE}/shelters-ms/shelter`,
-    DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    BY_ID: (id: string) => `${BASE}/shelters-ms/shelter/${id}`,
-    BY_OWNER: (userId: string) => `${BASE}/shelters-ms/shelter/user/${userId}`,
-    UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
-    UPLOAD_LOGO: `${BASE}/api/media/shelter/logo`,
-    UPLOAD_COVER: `${BASE}/api/media/shelter/cover`,
+    // ── Puerto 8080 ──
+    LIST: `http://localhost:8080/shelters-ms/shelters`,
+    CREATE: `http://localhost:8080/shelters-ms/shelter`,
+    DETAIL: (id: number | string) =>
+      `http://localhost:8080/shelters-ms/shelter/${id}`,
+    BY_ID: (id: string) => `http://localhost:8080/shelters-ms/shelter/${id}`,
+    BY_OWNER: (userId: string) =>
+      `http://localhost:8080/shelters-ms/shelter/user/${userId}`,
+    UPDATE: (id: number | string) =>
+      `http://localhost:8080/shelters-ms/shelter/${id}`,
+    UPLOAD_LOGO: `http://localhost:8080/api/media/shelter/logo`,
+    UPLOAD_COVER: `http://localhost:8080/api/media/shelter/cover`,
+    // LIST: `${BASE}/shelters-ms/shelters`,
+    // CREATE: `${BASE}/shelters-ms/shelter`,
+    // DETAIL: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    // BY_ID: (id: string) => `${BASE}/shelters-ms/shelter/${id}`,
+    // BY_OWNER: (userId: string) => `${BASE}/shelters-ms/shelter/user/${userId}`,
+    // UPDATE: (id: number | string) => `${BASE}/shelters-ms/shelter/${id}`,
+    // UPLOAD_LOGO: `${BASE}/api/media/shelter/logo`,
+    // UPLOAD_COVER: `${BASE}/api/media/shelter/cover`,
+    // ── Puerto 3002 ──
     // LIST: `http://localhost:3002/shelters-ms/shelters`,
     // CREATE: `http://localhost:3002/shelters-ms/shelter`,
     // DETAIL: (id: number | string) =>
@@ -88,36 +124,34 @@ export const API_ENDPOINTS = {
     BY_SHELTER: (id: number) => `${BASE}/api/adoptions/shelter/${id}`,
     DETAIL: (id: number) => `${BASE}/api/adoptions/${id}`,
     CREATE: `${BASE}/api/adoptions`,
-    APPLICATIONS_CREATE: `${BASE}/applications-ms`,
-    APPLICATIONS_CHECK: `${BASE}/applications-ms/check`,
-    APPLICATIONS_RECENT_FORM_DATA: (applicantId: string) =>
-      `${BASE}/applications-ms/applicant/${applicantId}/recent`,
-    APPLICATION_BY_ID: (id: string) => `${BASE}/applications-ms/${id}`,
-    APPLICATIONS_BY_APPLICANT: (applicantId: string) =>
-      `${BASE}/applications-ms/applicant/${applicantId}`,
-    APPLICATIONS_BY_SHELTER: (shelterId: string) =>
-      `${BASE}/applications-ms/shelter/${shelterId}`,
-    GET_SHELTER_DASHBOARD_REQUESTS_STATS: (shelterId: string) =>
-      `${BASE}/applications-ms/shelter/${shelterId}/stats`,
-    GET_SHELTER_DASHBOARD_REQUESTS_BY_PERIOD: (shelterId: string) =>
-      `${BASE}/applications-ms/shelter/${shelterId}/by-period`,
-    UPDATE_STATUS: (id: string) => `${BASE}/applications-ms/${id}/status`,
-    CANCEL: (id: number) => `${BASE}/applications-ms/${id}`,
+    UPDATE_STATUS: (id: number) => `${BASE}/api/adoptions/${id}/status`,
+    CANCEL: (id: number) => `${BASE}/api/adoptions/${id}/cancel`,
     // TODO: endpoint del MS de solicitudes — aún no está listo en backend.
     // GET_SHELTER_DASHBOARD_REQUESTS_STATS: (id: string) =>
     //   `${BASE}/applications-ms/applications/shelter/${id}/stats`,
   },
 
   RECOMMENDATIONS: {
-    GENERATE: `${BASE}/predict/compatible-dogs`,
-    BY_ADOPTANTE: `${BASE}/api/ml/recommendations/me`,
-    QUIZ: `${BASE}/api/quiz`,
-    QUIZ_DETAIL: (id: number) => `${BASE}/api/quiz/${id}`,
+    // ── Puerto 8000 ──
+    PROCESS_QUESTIONNAIRE: `http://localhost:8000/predict/process-questionnaire`,
+    BY_ADOPTANTE: `http://localhost:8000/api/ml/recommendations/me`,
+    COMPATIBLE_DOGS: (topN: number) => `http://localhost:8000/predict/compatible-dogs?top_n=${topN}`,
+    QUIZ: `http://localhost:8000/api/quiz`,
+    QUIZ_DETAIL: (id: number) => `http://localhost:8000/api/quiz/${id}`,
+    // GENERATE: `${BASE}/predict/compatible-dogs`,
+    // BY_ADOPTANTE: `${BASE}/api/ml/recommendations/me`,
+    // QUIZ: `${BASE}/api/quiz`,
+    // QUIZ_DETAIL: (id: number) => `${BASE}/api/quiz/${id}`,
   },
 
   CHATBOT: {
-    MESSAGE: `${BASE}/api/chatbot/message`,
-    HISTORY: `${BASE}/api/chatbot/history`,
+    // ── Puerto 8006 ──
+    MESSAGE: `http://localhost:8006/api/chat`,
+    HEALTH: `http://localhost:8006/api/health`,
+    INTENTS: `http://localhost:8006/api/intents`,
+    // MESSAGE: `${BASE}/api/chat`,
+    // HEALTH: `${BASE}/api/health`,
+    // INTENTS: `${BASE}/api/intents`,
   },
 
   FAVORITES: {
@@ -127,15 +161,19 @@ export const API_ENDPOINTS = {
   },
 
   APPLICANTS: {
-    REGISTER: `${BASE}/applicants-ms/applicant`,
-    ME: `${BASE}/applicants-ms/applicant/me`,
-    UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
+    // ── Puerto 3009 ──
+    REGISTER: `http://localhost:3009/applicants-ms/applicant`,
+    ME: `http://localhost:3009/applicants-ms/applicant/me`,
+    UPDATE: (userId: string) =>
+      `http://localhost:3009/applicants-ms/applicant/${userId}`,
     UPDATE_USER_VECTOR: (userId: string) =>
-      `${BASE}/applicants-ms/user/${userId}/vector`,
-    ADD_FAVORITE: (applicantId: string, dogId: string) =>
-      `${BASE}/applicants-ms/applicant/${applicantId}/favorite-dogs/${dogId}/add`,
-    REMOVE_FAVORITE: (applicantId: string, dogId: string) =>
-      `${BASE}/applicants-ms/applicant/${applicantId}/favorite-dogs/${dogId}/remove`,
+      `http://localhost:3009/applicants-ms/applicant/${userId}/user-vector`,
+    // REGISTER: `${BASE}/applicants-ms/applicant`,
+    // ME: `${BASE}/applicants-ms/applicant/me`,
+    // UPDATE: (userId: string) => `${BASE}/applicants-ms/applicant/${userId}`,
+    // // TODO(backend): PATCH para persistir el user_vector cuando el endpoint exista.
+    // UPDATE_USER_VECTOR: (userId: string) =>
+    //   `${BASE}/applicants-ms/applicant/${userId}/user-vector`,
   },
 
   ADMIN: {

@@ -3,7 +3,7 @@
 // Detección: tokeniza el mensaje y busca coincidencias por palabra clave.
 
 import type { IChatbotService } from './IChatbotService'
-import type { BotResponse, ChatbotIntent } from '../domain/Chatbot'
+import type { BotResponse, ChatbotIntent, HealthResponse } from '../domain/Chatbot'
 
 // ─── Mapa de intents ───────────────────────────────────────────────────────
 
@@ -154,5 +154,19 @@ export class MockChatbotService implements IChatbotService {
     }
 
     return RESPONSE_DEFAULT
+  }
+
+  async healthCheck(): Promise<HealthResponse> {
+    return {
+      status:  'ok',
+      service: 'adogme-chatbot-mock',
+      version: '1.0.0',
+      dependencies: {
+        beto:          'ok',
+        gemini:        'ok',
+        chromadb:      'ok',
+        knowledge_rag: 'ok',
+      },
+    }
   }
 }
