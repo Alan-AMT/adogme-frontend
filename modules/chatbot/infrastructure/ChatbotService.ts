@@ -5,6 +5,7 @@
 import axios from 'axios'
 import { API_ENDPOINTS } from '@/modules/shared/infrastructure/api/endpoints'
 import type { IChatbotService } from './IChatbotService'
+import { ChatbotRateLimitError } from './ChatbotErrors'
 import type {
   BotResponse,
   ChatCards,
@@ -25,11 +26,16 @@ interface ChatRequest {
 
 type ActionType = 'show_dogs' | 'show_shelters' | 'redirect_login' | 'redirect_quiz'
 
+// El backend puede devolver el listado como array plano o como wrapper paginado:
+//   { data: T[], total, page, totalPages, limit }
+type Paginated<T> = { data: T[]; total?: number; page?: number; totalPages?: number; limit?: number }
+type MaybePaginated<T> = T[] | Paginated<T> | undefined
+
 interface ChatAction {
   type: ActionType
   data?: {
-    dogs?:     ChatDogCard[]
-    shelters?: ChatShelterCard[]
+    dogs?:     MaybePaginated<ChatDogCard>
+    shelters?: MaybePaginated<ChatShelterCard>
   }
 }
 
@@ -42,30 +48,58 @@ interface ChatResponse {
   meta:        ChatMeta | null
 }
 
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+const MAX_CARDS = 4
+
+function unwrap<T>(raw: MaybePaginated<T>): T[] {
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw
+  if (Array.isArray(raw.data)) return raw.data
+  return []
+}
+
 // ─── Mapeo action → links / cards ──────────────────────────────────────────
 
-const MAX_CARDS = 3
-
-function actionToLinks(action: ChatAction | null): ChatLink[] | undefined {
+function actionToLinks(action: ChatAction | null, intent: string): ChatLink[] | undefined {
   if (!action) return undefined
+
   switch (action.type) {
     case 'redirect_login':
-      return [{ label: 'Iniciar sesión',    href: '/login'         }]
+      return [{ label: 'Iniciar sesión', href: '/login' }]
+
     case 'redirect_quiz':
-      return [{ label: 'Hacer el quiz ✨',  href: '/mi-match/quiz' }]
+      return [{ label: 'Hacer el quiz ✨', href: '/mi-match/quiz' }]
+
+    case 'show_dogs':
+      // Para matches personalizados → /mi-match. Para listado general → /perros.
+      return intent === 'dog_match'
+        ? [{ label: 'Ver todos mis matches', href: '/mi-match' }]
+        : [{ label: 'Ver todos los perros',  href: '/perros'   }]
+
+    case 'show_shelters':
+      return [{ label: 'Ver todos los refugios', href: '/refugios' }]
+
     default:
       return undefined
   }
 }
-
+//handlers acciones enviasdas desde el chatbot a cards en ui 
 function actionToCards(action: ChatAction | null): ChatCards | undefined {
   if (!action) return undefined
-  if (action.type === 'show_dogs' && action.data?.dogs?.length) {
-    return { type: 'dogs', items: action.data.dogs.slice(0, MAX_CARDS) }
+
+  if (action.type === 'show_dogs') {
+    const dogs = unwrap<ChatDogCard>(action.data?.dogs)
+    if (dogs.length === 0) return undefined
+    return { type: 'dogs', items: dogs.slice(0, MAX_CARDS) }
   }
-  if (action.type === 'show_shelters' && action.data?.shelters?.length) {
-    return { type: 'shelters', items: action.data.shelters.slice(0, MAX_CARDS) }
+
+  if (action.type === 'show_shelters') {
+    const shelters = unwrap<ChatShelterCard>(action.data?.shelters)
+    if (shelters.length === 0) return undefined
+    return { type: 'shelters', items: shelters.slice(0, MAX_CARDS) }
   }
+
   return undefined
 }
 
@@ -79,18 +113,43 @@ export class ChatbotService implements IChatbotService {
       user_id:    userId ?? null,
     }
 
-    const { data } = await axios.post<ChatResponse>(
-      API_ENDPOINTS.CHATBOT.MESSAGE,
-      payload,
-      { timeout: 15_000 },
-    )
+    try {
+      const { data } = await axios.post<ChatResponse>(
+        API_ENDPOINTS.CHATBOT.MESSAGE,
+        payload,
+        { timeout: 15_000 },
+      )
 
-    return {
-      text:        data.response,
-      links:       actionToLinks(data.action),
-      cards:       actionToCards(data.action),
-      suggestions: data.suggestions ?? [],
-      meta:        data.meta ?? undefined,
+      return {
+        text:        data.response,
+        links:       actionToLinks(data.action, data.intent),
+        cards:       actionToCards(data.action),
+        suggestions: data.suggestions ?? [],
+        meta:        data.meta ?? undefined,
+      }
+    } catch (err) {
+      // 429 Too Many Requests → lanzar error tipado para que el hook lo distinga
+      // de un error genérico (no debe contar al circuit breaker).
+      if (axios.isAxiosError(err) && err.response?.status === 429) {
+        const body = err.response.data as {
+          message?: string
+          retry_after_seconds?: number
+          limit?: string
+        } | undefined
+
+        // Fallback al header Retry-After si el body no lo trae.
+        const headerRetry = Number(err.response.headers['retry-after'])
+        const retryAfterSeconds =
+          body?.retry_after_seconds ??
+          (Number.isFinite(headerRetry) ? headerRetry : 60)
+
+        throw new ChatbotRateLimitError({
+          message: body?.message ?? 'Estás enviando mensajes muy rápido. Espera un momento 🐾',
+          retryAfterSeconds,
+          limit: body?.limit,
+        })
+      }
+      throw err
     }
   }
 

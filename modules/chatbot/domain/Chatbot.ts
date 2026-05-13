@@ -11,15 +11,24 @@ export interface ChatLink {
 // ─── Tarjetas embebidas (perros / refugios) ────────────────────────────────
 
 export interface ChatDogCard {
-  id:           string
-  name:         string
-  breed?:       string
-  size?:        string
-  age?:         string
-  sex?:         string
-  shelter_name?: string
-  description?: string
-  photo_url?:   string | null
+  id:            string
+  name:          string
+  age:           number              // edad en MESES (la formatea el componente)
+  breed?:        string
+  size?:         string              // "pequeño" | "mediano" | "grande"
+  sex?:          string              // "macho" | "hembra"
+  energyLevel?:  string
+  status?:       string
+  photo?:        string | null
+  shelterId?:    string
+  shelterName?:  string | null
+  goodWithKids?: boolean
+  goodWithDogs?: boolean
+  needsYard?:    boolean
+  // Score de compatibilidad. Soporta dos rangos: 0-1 (e.g. 0.95) o 0-100 (e.g. 95).
+  // El componente lo normaliza a porcentaje. Solo se renderiza si viene definido
+  // (típicamente para intent="dog_match", no para "available_dogs").
+  compatibility_score?: number
 }
 
 export interface ChatShelterCard {

@@ -521,6 +521,7 @@
 }
 
 .cb-card {
+  position: relative;
   display: flex;
   gap: 0.6rem;
   padding: 0.5rem;
@@ -531,6 +532,25 @@
   color: inherit;
   transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
+
+/* Badge de compatibilidad — solo visible cuando viene compatibility_score */
+.cb-card__score {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.cb-card__score--high { background: #16a34a; }   /* verde — 80%+ */
+.cb-card__score--mid  { background: #ca8a04; }   /* amarillo — 60-79% */
+.cb-card__score--low  { background: #71717a; }   /* gris — < 60% */
 
 .cb-card:hover {
   border-color: #ff6b6b;

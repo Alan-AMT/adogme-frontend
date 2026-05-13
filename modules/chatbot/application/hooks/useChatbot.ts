@@ -13,6 +13,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { chatbotService } from '../../infrastructure/ChatbotServiceFactory'
+import { ChatbotRateLimitError } from '../../infrastructure/ChatbotErrors'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 import type { UIMessage } from '../../domain/Chatbot'
 
@@ -47,14 +48,15 @@ function buildWelcome(): UIMessage {
 
 export interface UseChatbotReturn {
   // Estado
-  messages:           UIMessage[]
-  input:              string
-  isLoading:          boolean         // true mientras el bot responde
-  isSlowResponse:     boolean         // true si llevamos > 5s esperando
-  isServiceDown:      boolean         // true tras N errores consecutivos
-  unreadCount:        number          // mensajes del bot no leídos (badge)
-  sessionId:          string          // UUID de la sesión actual
-  currentSuggestions: string[]        // chips del último mensaje bot
+  messages:               UIMessage[]
+  input:                  string
+  isLoading:              boolean         // true mientras el bot responde
+  isSlowResponse:         boolean         // true si llevamos > 5s esperando
+  isServiceDown:          boolean         // true tras N errores consecutivos
+  rateLimitRemaining:     number | null   // segundos hasta poder enviar; null = no limitado
+  unreadCount:            number          // mensajes del bot no leídos (badge)
+  sessionId:              string          // UUID de la sesión actual
+  currentSuggestions:     string[]        // chips del último mensaje bot
 
   // Acciones
   setInput:        (v: string) => void
@@ -65,21 +67,21 @@ export interface UseChatbotReturn {
   markRead:        () => void          // resetea unreadCount a 0
 }
 
-// ─── Helpers de localStorage ──────────────────────────────────────────────────
-
-const historyKey = (sid: string) => `chatbot-session-${sid}`
-
-function loadHistory(sid: string): UIMessage[] | null {
+// ─── Limpieza de datos legacy ────────────────────────────────────────────────
+// El chatbot ya NO persiste el historial (refresh = welcome de nuevo). Esta
+// función borra cualquier residuo de versiones previas que sí persistían en
+// localStorage / sessionStorage. Se ejecuta una vez al montar el hook.
+function pruneLegacyChatbotData(): void {
+  if (typeof window === 'undefined') return
   try {
-    const raw = localStorage.getItem(historyKey(sid))
-    return raw ? (JSON.parse(raw) as UIMessage[]) : null
-  } catch { return null }
-}
-
-function saveHistory(sid: string, msgs: UIMessage[]): void {
-  try {
-    localStorage.setItem(historyKey(sid), JSON.stringify(msgs))
-  } catch { /* noop — storage lleno o privado */ }
+    const toRemove: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith('chatbot-session-')) toRemove.push(key)
+    }
+    toRemove.forEach(k => localStorage.removeItem(k))
+    sessionStorage.removeItem('chatbot-sid')
+  } catch { /* noop */ }
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -87,39 +89,36 @@ function saveHistory(sid: string, msgs: UIMessage[]): void {
 export function useChatbot(): UseChatbotReturn {
   const user = useAuthStore(s => s.user)
 
-  // sessionId estable por sesión de browser; persiste mientras no se limpia
-  const [sessionId, setSessionId] = useState<string>(() => {
-    if (typeof window === 'undefined') return crypto.randomUUID()
-    return sessionStorage.getItem('chatbot-sid') ?? (() => {
-      const sid = crypto.randomUUID()
-      sessionStorage.setItem('chatbot-sid', sid)
-      return sid
-    })()
-  })
+  // sessionId fresco en cada montaje del hook (= cada page load). No se
+  // persiste a propósito: refresh = conversación nueva.
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID())
 
-  // Inicializar mensajes desde localStorage si existe el historial
-  const [messages, setMessages] = useState<UIMessage[]>(() => {
-    if (typeof window === 'undefined') return [buildWelcome()]
-    const cached = loadHistory(
-      sessionStorage.getItem('chatbot-sid') ?? ''
-    )
-    return cached ?? [buildWelcome()]
-  })
+  // Mensajes solo en memoria. Refresh borra todo, queda solo el welcome.
+  const [messages, setMessages] = useState<UIMessage[]>(() => [buildWelcome()])
 
-  const [input,          setInput]          = useState('')
-  const [isLoading,      setIsLoading]      = useState(false)
-  const [isSlowResponse, setIsSlowResponse] = useState(false)
-  const [isServiceDown,  setIsServiceDown]  = useState(false)
-  const [unreadCount,    setUnreadCount]    = useState(1)
+  const [input,              setInput]              = useState('')
+  const [isLoading,          setIsLoading]          = useState(false)
+  const [isSlowResponse,     setIsSlowResponse]     = useState(false)
+  const [isServiceDown,      setIsServiceDown]      = useState(false)
+  const [unreadCount,        setUnreadCount]        = useState(1)
+  // timestamp (ms) hasta el cual el chat está rate-limited; null si no aplica
+  const [rateLimitedUntil,   setRateLimitedUntil]   = useState<number | null>(null)
+  // segundos restantes; derivado del anterior con un setInterval
+  const [rateLimitRemaining, setRateLimitRemaining] = useState<number | null>(null)
 
   const consecutiveErrors = useRef(0)
   const slowTimer         = useRef<ReturnType<typeof setTimeout> | null>(null)
   const healthTimer       = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Persistir historial cada vez que cambian los mensajes
-  useEffect(() => {
-    saveHistory(sessionId, messages)
-  }, [messages, sessionId])
+  // Contador de "generación" de requests. Cada request guarda su valor al iniciar;
+  // si cuando resuelve ya no coincide con el actual (porque hubo un reset o un nuevo
+  // envío), descartamos su resultado para no contaminar el estado nuevo.
+  const requestGen = useRef(0)
+
+  // One-shot al montar: limpiar residuos de versiones previas que persistían
+  // el chat en localStorage. Se puede borrar este useEffect en unos meses
+  // cuando ya nadie tenga datos viejos.
+  useEffect(() => { pruneLegacyChatbotData() }, [])
 
   // ── Polling de health mientras isServiceDown ────────────────────────────────
   useEffect(() => {
@@ -150,15 +149,46 @@ export function useChatbot(): UseChatbotReturn {
     }
   }, [])
 
+  // ── Countdown de rate limit ─────────────────────────────────────────────────
+  // Tickea cada segundo mientras rateLimitedUntil esté seteado. Cuando llega a
+  // 0, libera el input.
+  useEffect(() => {
+    if (rateLimitedUntil === null) {
+      setRateLimitRemaining(null)
+      return
+    }
+
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((rateLimitedUntil - Date.now()) / 1000))
+      if (remaining === 0) {
+        setRateLimitedUntil(null)
+        setRateLimitRemaining(null)
+      } else {
+        setRateLimitRemaining(remaining)
+      }
+    }
+
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [rateLimitedUntil])
+
   // ── Núcleo: enviar un texto del usuario ya colocado en el historial ────────
   const submitToBot = useCallback(async (userMsgId: number, text: string) => {
+    const myGen = ++requestGen.current
+
     setIsLoading(true)
     setIsSlowResponse(false)
     if (slowTimer.current) clearTimeout(slowTimer.current)
-    slowTimer.current = setTimeout(() => setIsSlowResponse(true), SLOW_RESPONSE_MS)
+    slowTimer.current = setTimeout(() => {
+      // No prender el aviso si en este momento ya no es nuestra generación
+      // (otro reset o un nuevo envío reemplazó la request).
+      if (myGen === requestGen.current) setIsSlowResponse(true)
+    }, SLOW_RESPONSE_MS)
 
     try {
       const response = await chatbotService.getResponse(text, sessionId, user?.id)
+      if (myGen !== requestGen.current) return  // descartado: hubo reset/envío nuevo
 
       consecutiveErrors.current = 0
 
@@ -179,7 +209,30 @@ export function useChatbot(): UseChatbotReturn {
         botMsg,
       ])
       setUnreadCount(prev => prev + 1)
-    } catch {
+    } catch (err) {
+      if (myGen !== requestGen.current) return  // descartado: hubo reset/envío nuevo
+
+      // Rate limit (429): throttling intencional del backend, NO cuenta como fallo.
+      // El mensaje del usuario sí llegó, el bot solo nos pide esperar.
+      if (err instanceof ChatbotRateLimitError) {
+        consecutiveErrors.current = 0
+        setRateLimitedUntil(Date.now() + err.info.retryAfterSeconds * 1000)
+
+        const botMsg: UIMessage = {
+          id:   nextId(),
+          role: 'bot',
+          text: `⏳ ${err.info.message}`,
+          time: getTime(),
+        }
+        setMessages(prev => [
+          // El user message queda como 'sent' (sí llegó al backend)
+          ...prev.map(m => m.id === userMsgId ? { ...m, status: 'sent' as const } : m),
+          botMsg,
+        ])
+        setUnreadCount(prev => prev + 1)
+        return  // no caer al manejo de error genérico
+      }
+
       consecutiveErrors.current += 1
 
       // Marcar el mensaje del usuario como fallido (habilita botón Reintentar)
@@ -191,11 +244,15 @@ export function useChatbot(): UseChatbotReturn {
         setIsServiceDown(true)
       }
     } finally {
+      // Solo apagar el spinner/timer si seguimos siendo la generación vigente:
+      // si no, una request más nueva los está usando y no queremos pisarla.
+      if (myGen === requestGen.current) {
       setIsLoading(false)
       setIsSlowResponse(false)
       if (slowTimer.current) {
         clearTimeout(slowTimer.current)
         slowTimer.current = null
+        }
       }
     }
   }, [sessionId, user?.id])
@@ -203,7 +260,7 @@ export function useChatbot(): UseChatbotReturn {
   // ── sendMessage ─────────────────────────────────────────────────────────────
   const sendMessage = useCallback((text: string) => {
     const trimmed = text.trim()
-    if (!trimmed || isLoading || isServiceDown) return
+    if (!trimmed || isLoading || isServiceDown || rateLimitedUntil !== null) return
 
     const userMsg: UIMessage = {
       id:     nextId(),
@@ -216,13 +273,13 @@ export function useChatbot(): UseChatbotReturn {
     setMessages(prev => [...prev, userMsg])
     setInput('')
     submitToBot(userMsg.id, trimmed)
-  }, [isLoading, isServiceDown, submitToBot])
+  }, [isLoading, isServiceDown, rateLimitedUntil, submitToBot])
 
   // ── retryLastFailed ─────────────────────────────────────────────────────────
   // Busca el último mensaje del usuario marcado 'failed' y lo reenvía.
   // No crea un nuevo mensaje: actualiza el existente al estado 'sent' tentativo.
   const retryLastFailed = useCallback(() => {
-    if (isLoading || isServiceDown) return
+    if (isLoading || isServiceDown || rateLimitedUntil !== null) return
 
     const lastFailed = [...messages].reverse().find(
       m => m.role === 'user' && m.status === 'failed',
@@ -233,7 +290,7 @@ export function useChatbot(): UseChatbotReturn {
       prev.map(m => m.id === lastFailed.id ? { ...m, status: 'sent' as const } : m),
     )
     submitToBot(lastFailed.id, lastFailed.text)
-  }, [messages, isLoading, isServiceDown, submitToBot])
+  }, [messages, isLoading, isServiceDown, rateLimitedUntil, submitToBot])
 
   // ── retryConnection ─────────────────────────────────────────────────────────
   // Llamado desde el banner "servicio caído". Hace un health check inmediato.
@@ -249,10 +306,16 @@ export function useChatbot(): UseChatbotReturn {
 
   // ── clearHistory ────────────────────────────────────────────────────────────
   const clearHistory = useCallback(() => {
-    try { localStorage.removeItem(historyKey(sessionId)) } catch { /* noop */ }
-    const newSid = crypto.randomUUID()
-    sessionStorage.setItem('chatbot-sid', newSid)
-    setSessionId(newSid)
+    // Invalidar cualquier request en vuelo: cuando resuelva, su generación ya
+    // no coincidirá y no contaminará el nuevo estado.
+    requestGen.current += 1
+    if (slowTimer.current) {
+      clearTimeout(slowTimer.current)
+      slowTimer.current = null
+    }
+
+    // Nada que borrar en storage: el chat solo vive en memoria.
+    setSessionId(crypto.randomUUID())
     setMessages([buildWelcome()])
     setInput('')
     setIsLoading(false)
@@ -260,7 +323,7 @@ export function useChatbot(): UseChatbotReturn {
     setUnreadCount(0)
     consecutiveErrors.current = 0
     setIsServiceDown(false)
-  }, [sessionId])
+  }, [])
 
   // ── markRead ────────────────────────────────────────────────────────────────
   const markRead = useCallback(() => setUnreadCount(0), [])
@@ -275,6 +338,7 @@ export function useChatbot(): UseChatbotReturn {
     isLoading,
     isSlowResponse,
     isServiceDown,
+    rateLimitRemaining,
     unreadCount,
     sessionId,
     currentSuggestions,

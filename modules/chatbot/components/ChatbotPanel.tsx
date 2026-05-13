@@ -7,7 +7,8 @@ import Image from 'next/image'
 import Link  from 'next/link'
 import { KeyboardEvent, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
-import type { ChatMeta, UIMessage } from '../domain/Chatbot'
+import type { ChatLink, ChatMeta, UIMessage } from '../domain/Chatbot'
+import { setPendingAction } from '../application/pendingAction'
 import ChatbotSuggestions from './ChatbotSuggestions'
 import ChatDogCard       from './ChatDogCard'
 import ChatShelterCard   from './ChatShelterCard'
@@ -20,6 +21,7 @@ interface ChatbotPanelProps {
   isLoading:           boolean
   isSlowResponse:      boolean
   isServiceDown:       boolean
+  rateLimitRemaining:  number | null
   currentSuggestions:  string[]
   onClose:             () => void
   setInput:            (v: string) => void
@@ -56,6 +58,7 @@ export default function ChatbotPanel({
   isLoading,
   isSlowResponse,
   isServiceDown,
+  rateLimitRemaining,
   currentSuggestions,
   onClose,
   setInput,
@@ -86,12 +89,28 @@ export default function ChatbotPanel({
   }
 
   // ¿El último mensaje del usuario falló y no está cargando? → mostrar Reintentar
+  // (no si estamos rate-limitados — el botón Reintentar también está bloqueado)
   const lastMsg          = messages[messages.length - 1]
-  const showRetryFailed  = !isLoading && !isServiceDown
+  const showRetryFailed  = !isLoading && !isServiceDown && rateLimitRemaining === null
                             && lastMsg?.role === 'user'
                             && lastMsg.status === 'failed'
 
-  const inputDisabled = isLoading || isServiceDown
+  const isRateLimited = rateLimitRemaining !== null
+  const inputDisabled = isLoading || isServiceDown || isRateLimited
+
+  const inputPlaceholder = isServiceDown
+    ? 'Asistente no disponible…'
+    : isRateLimited
+      ? `Espera ${rateLimitRemaining}s...`
+      : 'Escribe tu pregunta...'
+
+  // Antes de navegar a /login, guardar la última pregunta del usuario como
+  // "intención pendiente" para retomarla automáticamente al volver logueado.
+  function handleLinkClick(link: ChatLink) {
+    if (link.href !== '/login') return
+    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')
+    if (lastUserMsg) setPendingAction(lastUserMsg.text)
+  }
 
   return (
     <div className="cb-window" role="dialog" aria-label="Chat aDOGme">
@@ -184,7 +203,12 @@ export default function ChatbotPanel({
                 {msg.links && msg.links.length > 0 && (
                   <div className="cb-msg__links">
                     {msg.links.map(link => (
-                      <Link key={link.href} href={link.href} className="cb-msg__link">
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="cb-msg__link"
+                        onClick={() => handleLinkClick(link)}
+                      >
                         <span
                           className="material-symbols-outlined"
                           style={{ fontSize: 13, fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 14" }}
@@ -258,7 +282,7 @@ export default function ChatbotPanel({
           ref={inputRef}
           type="text"
           className="cb-input"
-          placeholder={isServiceDown ? 'Asistente no disponible…' : 'Escribe tu pregunta...'}
+          placeholder={inputPlaceholder}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
