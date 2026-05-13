@@ -143,7 +143,7 @@ export class AdoptionService implements IAdoptionService {
 
     try {
       const { data } = await apiClient.post<CreateApplicationApiResponse>(
-        API_ENDPOINTS.ADOPTIONS.APPLICATIONS_CREATE,
+        API_ENDPOINTS.ADOPTIONS.CREATE,
         body,
       );
       return {
