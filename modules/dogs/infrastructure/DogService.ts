@@ -1,10 +1,20 @@
 import axios from "axios";
-import type { Dog, DogFilters, DogListItem, PaginatedDogs } from "@/modules/shared/domain";
+import type {
+  Dog,
+  DogFilters,
+  DogListItem,
+  PaginatedDogs,
+} from "@/modules/shared/domain";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
-import type { CreateDogApiResponse, DogListItemApiResponse, GetDogsApiResponse } from "./ApiResponses";
+import type {
+  CreateDogApiResponse,
+  DogListItemApiResponse,
+  GetDogsApiResponse,
+} from "./ApiResponses";
 import { parseDog, parseDogListItem } from "./parseDog";
 import { DogNotFoundError, type IDogService } from "./IDogService";
+import qs from "qs";
 
 // Filtros expuestos por DogsSearchView + paginación + refugioId (usado por
 // vistas que prefiltran por refugio vía initialFilters).
@@ -86,7 +96,11 @@ export class DogService implements IDogService {
     try {
       const { data } = await apiClient.get<DogListItemApiResponse[]>(
         API_ENDPOINTS.DOGS.BY_IDS,
-        { params: { dogIds: ids } },
+        {
+          params: { dogIds: ids },
+          paramsSerializer: (params) =>
+            qs.stringify(params, { arrayFormat: "repeat" }),
+        },
       );
       return data.map(parseDogListItem);
     } catch (e) {
