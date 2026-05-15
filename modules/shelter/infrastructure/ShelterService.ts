@@ -71,6 +71,7 @@ export class ShelterService implements IShelterService {
         imagenPortada: data.imageUrl ?? "",
         fechaRegistro: new Date(data.createdAt).toLocaleDateString("en-GB"),
         cuotaAdopcion: data.adoptionFee ?? 0,
+        mapIframe: data.mapIframe ?? null,
         donationConfig: {
           aceptaDonaciones: data.acceptsDonations,
           banco: data.donationBankName,
@@ -118,6 +119,7 @@ export class ShelterService implements IShelterService {
           donationPaypalLink: shelterUpdate.donationConfig?.paypalLink,
           donationMercadoPagoLink:
             shelterUpdate.donationConfig?.mercadoPagoLink,
+          mapIframe: shelterUpdate.mapIframe ?? null,
         },
       );
       const s = data.shelter;
@@ -143,6 +145,7 @@ export class ShelterService implements IShelterService {
         imagenPortada: s.imageUrl ?? "",
         fechaRegistro: new Date(s.createdAt).toLocaleDateString("en-GB"),
         cuotaAdopcion: s.adoptionFee ?? 0,
+        mapIframe: s.mapIframe ?? null,
         donationConfig: {
           aceptaDonaciones: s.acceptsDonations,
           banco: s.donationBankName,

@@ -25,6 +25,7 @@ export type GetShelterProfileApiResponse = {
   donationAccountHolder: string | null;
   donationPaypalLink: string | null;
   donationMercadoPagoLink: string | null;
+  mapIframe: string | null;
 };
 
 export type UpdateShelterApiResponse = {
@@ -55,6 +56,7 @@ export type UpdateShelterApiResponse = {
     donationAccountHolder: string | null;
     donationPaypalLink: string | null;
     donationMercadoPagoLink: string | null;
+    mapIframe: string | null;
   };
   uploadUrls?: string[];
 };

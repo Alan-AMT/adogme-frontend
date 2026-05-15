@@ -40,6 +40,7 @@ interface FormState {
   imagenPortada: string;
   socialLinks: SocialLink[];
   cuotaAdopcion: string;
+  mapIframe: string;
   // Donaciones
   aceptaDonaciones: boolean;
   descripcionCausa: string;
@@ -73,6 +74,7 @@ function shelterToForm(s: Shelter): FormState {
     imagenPortada: s.imagenPortada,
     socialLinks: links,
     cuotaAdopcion: s.cuotaAdopcion != null ? String(s.cuotaAdopcion) : "",
+    mapIframe: s.mapIframe ?? "",
     aceptaDonaciones: s.donationConfig?.aceptaDonaciones ?? false,
     descripcionCausa: s.donationConfig?.descripcionCausa ?? "",
     cuentaClabe: s.donationConfig?.cuentaClabe ?? "",
@@ -96,6 +98,7 @@ const EMPTY_FORM: FormState = {
   imagenPortada: "",
   socialLinks: [],
   cuotaAdopcion: "",
+  mapIframe: "",
   aceptaDonaciones: false,
   descripcionCausa: "",
   cuentaClabe: "",
@@ -290,6 +293,7 @@ export default function ShelterProfileView() {
       schedule: form.schedule.trim() || null,
       redesSociales,
       cuotaAdopcion: form.cuotaAdopcion ? Number(form.cuotaAdopcion) : 0,
+      mapIframe: form.mapIframe.trim() || null,
       donationConfig: {
         aceptaDonaciones: form.aceptaDonaciones,
         descripcionCausa: form.descripcionCausa.trim() || undefined,
@@ -872,6 +876,75 @@ export default function ShelterProfileView() {
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+
+          {/* ── Ubicación en mapa ── */}
+          <div className="sv-form-section" style={{ gridColumn: "1 / -1" }}>
+            <div className="sv-form-section__header">
+              <span className="material-symbols-outlined">map</span>
+              Mapa de ubicación
+            </div>
+            <div className="sv-form-section__body">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.5rem",
+                  padding: "0.75rem 1rem",
+                  background: "#f0f9ff",
+                  border: "1.5px solid #bae6fd",
+                  borderRadius: "0.75rem",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{
+                    fontSize: 15,
+                    color: "#0369a1",
+                    flexShrink: 0,
+                    fontVariationSettings: "'FILL' 1",
+                    marginTop: 1,
+                  }}
+                >
+                  info
+                </span>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.75rem",
+                    color: "#0c4a6e",
+                    fontWeight: 500,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Para obtener el código: abre{" "}
+                  <strong>Google Maps</strong>, busca tu refugio, haz clic en{" "}
+                  <strong>Compartir</strong> → <strong>Insertar un mapa</strong>{" "}
+                  y copia el código HTML completo (empieza con{" "}
+                  <code style={{ fontFamily: "monospace" }}>&lt;iframe</code>).
+                </p>
+              </div>
+              <div className="sv-field">
+                <label className="sv-field__label">
+                  Código HTML del iframe de Google Maps
+                </label>
+                <textarea
+                  className="sv-field__textarea"
+                  value={form.mapIframe}
+                  onChange={(e) => update("mapIframe", e.target.value)}
+                  rows={4}
+                  placeholder='<iframe src="https://www.google.com/maps/embed?..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
+                  style={{ fontFamily: "monospace", fontSize: "0.78rem" }}
+                />
+              </div>
+              {form.mapIframe.trim() && (
+                <div
+                  className="sv-map-preview"
+                  dangerouslySetInnerHTML={{ __html: form.mapIframe }}
+                />
+              )}
             </div>
           </div>
 

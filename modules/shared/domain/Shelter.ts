@@ -39,6 +39,7 @@ export interface Shelter {
   };
   donationConfig: DonationConfig;
   cuotaAdopcion?: number;
+  mapIframe?: string | null;
 
   // Contadores (joins del backend)
   totalPerros?: number;

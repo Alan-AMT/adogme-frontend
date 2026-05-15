@@ -55,7 +55,11 @@ const styles = {
     borderRadius: "0.85rem",
     overflow: "hidden",
     fontSize: "0.85rem",
-    zIndex: 10,
+    zIndex: 9999,
+  }),
+  menuPortal: (base: CSSObjectWithLabel) => ({
+    ...base,
+    zIndex: 9999,
   }),
   option: (
     base: CSSObjectWithLabel,
@@ -86,6 +90,8 @@ export function BreedSelect({
     ? knownOption ?? (allowCreate ? { value, label: value } : null)
     : null;
 
+  const portalTarget = typeof document !== "undefined" ? document.body : undefined;
+
   if (allowCreate) {
     return (
       <CreatableSelect
@@ -100,6 +106,8 @@ export function BreedSelect({
         noOptionsMessage={() => "Sin coincidencias"}
         formatCreateLabel={(input) => `Usar "${input}"`}
         styles={styles}
+        menuPortalTarget={portalTarget}
+        menuPosition="fixed"
       />
     );
   }
@@ -115,6 +123,8 @@ export function BreedSelect({
       placeholder={placeholder ?? "Buscar raza..."}
       noOptionsMessage={() => "Sin coincidencias"}
       styles={styles}
+      menuPortalTarget={portalTarget}
+      menuPosition="fixed"
     />
   );
 }

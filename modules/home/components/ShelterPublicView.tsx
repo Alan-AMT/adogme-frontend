@@ -143,6 +143,13 @@ export default function ShelterPublicView({ id }: Props) {
             <p className="sp-desc">{shelter.descripcion}</p>
           </div>
 
+          {shelter.mapIframe && (
+            <div
+              className="sp-map-wrap"
+              dangerouslySetInnerHTML={{ __html: shelter.mapIframe }}
+            />
+          )}
+
           {dogs.length > 0 && (
             <>
               {/* Dogs section header */}
