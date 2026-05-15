@@ -49,7 +49,7 @@ export default async function ShelterGroupLayout({
   if (session.shelterStatus === "rejected") redirect("/login?error=rejected");
   if (session.shelterStatus === "suspended") redirect("/login?error=suspended");
 
-  let shelterStatus = session.shelterStatus;
+  let shelterStatus: ShelterStatus | undefined = session.shelterStatus as ShelterStatus | undefined;
 
   if (!shelterStatus) {
     const cookieStore = await cookies();
