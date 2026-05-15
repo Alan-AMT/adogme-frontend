@@ -33,7 +33,7 @@ export function calculateCompatibilityScore(
   dogVector: [number, number, number, number] | null | undefined,
   adoptionSpeed: number | null,
 ): number | null {
-  if (!userVector || !dogVector || !adoptionSpeed) return null;
+  if (!userVector || !dogVector || adoptionSpeed == null) return null;
 
   const ALPHA = 0.6;
   const BETA = 0.4;

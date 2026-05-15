@@ -44,10 +44,7 @@ const TIMELINE = [
 ];
 
 // ── Contacto de soporte ───────────────────────────────────────────────────────
-const SUPPORT = [
-  { icon: "mail", label: "contacto@adogme.org" },
-  { icon: "phone", label: "55 1234 5678" },
-];
+const SUPPORT = [{ icon: "mail", label: "contacto@adogme.org" }];
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function ShelterPendingView() {

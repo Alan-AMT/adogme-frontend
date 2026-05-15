@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { useShelterRequestDetail } from '../application/hooks/useShelterRequestDetail'
 import type { RequestStatus, StatusChange, AdoptionRequest } from '@/modules/shared/domain/AdoptionRequest'
 import FormSummarySections from '@/modules/adoption/components/FormSummarySections'
+import { useToast } from '@/modules/shared/application/hooks/useToast'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
@@ -96,10 +97,10 @@ function ActionPanel({
   isSaving: boolean
   onUpdate: (status: RequestStatus, comentario?: string) => Promise<void>
 }) {
+  const toast   = useToast()
   const options = NEXT_STATUSES[request.estado] ?? []
   const [selected,   setSelected]   = useState<RequestStatus | ''>(options[0] ?? '')
   const [comentario, setComentario] = useState('')
-  const [localError, setLocalError] = useState<string | null>(null)
 
   if (options.length === 0) {
     return (
@@ -114,12 +115,12 @@ function ActionPanel({
 
   const handleSubmit = async () => {
     if (!selected) return
-    setLocalError(null)
     try {
       await onUpdate(selected as RequestStatus, comentario.trim() || undefined)
       setComentario('')
+      toast.success(`Estado actualizado a "${STATUS_LABELS[selected]}"`)
     } catch {
-      setLocalError('No se pudo actualizar el estado. Intenta de nuevo.')
+      toast.error('No se pudo actualizar el estado. Intenta de nuevo.')
     }
   }
 
@@ -144,10 +145,6 @@ function ActionPanel({
         onChange={e => setComentario(e.target.value)}
         maxLength={500}
       />
-
-      {localError && (
-        <p style={{ fontSize: '0.78rem', color: '#dc2626', fontWeight: 600 }}>{localError}</p>
-      )}
 
       <button
         className="sv-action-panel__btn"
