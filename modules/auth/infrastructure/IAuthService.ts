@@ -50,7 +50,7 @@ export interface IAuthService {
   register(data: RegisterData): Promise<AuthResponse>;
   registerShelter(data: ShelterRegisterData): Promise<void>;
   forgotPassword(email: string): Promise<void>;
-  resetPassword(token: string, password: string): Promise<void>;
+  resetPassword(email: string, token: string, password: string): Promise<void>;
   logout(): Promise<void>;
 }
 

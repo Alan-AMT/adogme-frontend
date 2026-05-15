@@ -168,11 +168,11 @@ export class AuthService implements IAuthService {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    throw new Error("Not implemented");
+    await apiClient.post(API_ENDPOINTS.AUTH.FORGOT, { email });
   }
 
-  async resetPassword(token: string, password: string): Promise<void> {
-    throw new Error("Not implemented");
+  async resetPassword(email: string, token: string, password: string): Promise<void> {
+    await apiClient.post(API_ENDPOINTS.AUTH.RESET, { email, token, newPassword: password });
   }
 
   async logout(): Promise<void> {

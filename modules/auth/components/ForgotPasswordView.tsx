@@ -203,7 +203,7 @@ export default function ForgotPasswordView() {
               style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
             >
               {[
-                { icon: 'timer', text: 'El enlace expira en 30 minutos.' },
+                { icon: 'timer', text: 'El enlace expira en 15 minutos.' },
                 { icon: 'folder', text: 'Revisa también tu carpeta de spam.' },
                 { icon: 'edit', text: 'Verifica que el correo sea correcto.' },
               ].map(({ icon, text }) => (

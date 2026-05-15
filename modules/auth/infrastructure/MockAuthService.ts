@@ -109,7 +109,7 @@ export class MockAuthService implements IAuthService {
     await delay(600);
   }
 
-  async resetPassword(_token: string, _password: string): Promise<void> {
+  async resetPassword(_email: string, _token: string, _password: string): Promise<void> {
     await delay(600);
   }
 

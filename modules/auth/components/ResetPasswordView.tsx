@@ -46,6 +46,7 @@ function MIcon({ name }: { name: string }) {
 function ResetForm() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token') ?? ''
+  const email = searchParams.get('email') ?? ''
 
   const [password,    setPassword]    = useState('')
   const [confirm,     setConfirm]     = useState('')
@@ -130,7 +131,7 @@ function ResetForm() {
 
     setLoading(true)
     try {
-      await authService.resetPassword(token, password)
+      await authService.resetPassword(email, token, password)
       setSuccess(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo restablecer la contraseña. Intenta de nuevo.')
