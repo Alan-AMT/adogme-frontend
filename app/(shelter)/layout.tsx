@@ -14,10 +14,12 @@ import { redirect } from "next/navigation";
 import { getAuthSession } from "@/modules/shared/infrastructure/session";
 import { ShelterPortalLayout } from "@/modules/shelter/components/ShelterPortalLayout";
 
+type ShelterStatus = "pending" | "approved" | "rejected" | "suspended";
+
 async function resolveShelterStatus(
   userId: string,
   token: string,
-): Promise<string | undefined> {
+): Promise<ShelterStatus | undefined> {
   try {
     const base = process.env.NEXT_PUBLIC_API_URL ?? "";
     const res = await fetch(`${base}/shelters-ms/shelter/user/${userId}`, {
@@ -29,7 +31,7 @@ async function resolveShelterStatus(
     });
     if (!res.ok) return undefined;
     const shelter = await res.json();
-    return (shelter.status ?? shelter.shelterStatus) as string | undefined;
+    return (shelter.status ?? shelter.shelterStatus) as ShelterStatus | undefined;
   } catch {
     return undefined;
   }
