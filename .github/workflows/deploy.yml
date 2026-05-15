@@ -45,6 +45,13 @@ jobs:
       #   run: |-
       #     gcloud builds submit --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} .
 
+      # Remove Secret Manager bindings so they can be set as plain env vars
+      - name: Remove secret bindings from Cloud Run
+        run: |
+          gcloud run services update ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --remove-secrets=API_GATEWAY_URL,NEXT_PUBLIC_API_KEY
+
       # Desplegar en Cloud Run
       - name: Deploy to Cloud Run
         uses: "google-github-actions/deploy-cloudrun@v2"
@@ -52,7 +59,7 @@ jobs:
           service: ${{ env.SERVICE_NAME }}
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
-          flags: "--allow-unauthenticated --remove-secrets=API_GATEWAY_URL,NEXT_PUBLIC_API_KEY"
+          flags: "--allow-unauthenticated"
           env_vars: |
             API_GATEWAY_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_API_KEY=${{ secrets.NEXT_PUBLIC_API_KEY }}
