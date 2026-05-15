@@ -6,6 +6,7 @@
 
 import Image from 'next/image'
 import Link  from 'next/link'
+import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState } from 'react'
 
 import { useShelterDogs }      from '../application/hooks/useShelterDogs'
@@ -249,18 +250,28 @@ function DogRow({
 }) {
   const statusStyle = DOG_STATUS_COLORS[dog.estado] ?? { bg: '#f4f4f5', color: '#71717a' }
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 })
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const portalRef  = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!dropdownOpen) return
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false)
-      }
+      const inWrapper = wrapperRef.current?.contains(e.target as Node)
+      const inPortal  = portalRef.current?.contains(e.target as Node)
+      if (!inWrapper && !inPortal) setDropdownOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [dropdownOpen])
+
+  const handleToggle = () => {
+    if (!dropdownOpen && wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect()
+      setDropdownPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right })
+    }
+    setDropdownOpen(o => !o)
+  }
 
   return (
     <tr>
@@ -330,9 +341,9 @@ function DogRow({
           </Link>
 
           {/* Cambiar estado */}
-          <div ref={dropdownRef} style={{ position: 'relative' }}>
+          <div ref={wrapperRef} style={{ position: 'relative' }}>
             <button
-              onClick={() => setDropdownOpen(o => !o)}
+              onClick={handleToggle}
               title="Cambiar estado"
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -344,9 +355,10 @@ function DogRow({
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>swap_horiz</span>
             </button>
 
-            {dropdownOpen && (
-              <div style={{
-                position: 'absolute', top: '110%', right: 0, zIndex: 100,
+            {dropdownOpen && createPortal(
+              <div ref={portalRef} style={{
+                position: 'fixed', top: dropdownPos.top, right: dropdownPos.right,
+                zIndex: 9999,
                 background: '#fff', borderRadius: '0.75rem',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
                 border: '1px solid #f0f0f0',
@@ -389,7 +401,8 @@ function DogRow({
                     </button>
                   )
                 })}
-              </div>
+              </div>,
+              document.body
             )}
           </div>
 
