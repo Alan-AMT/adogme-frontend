@@ -132,6 +132,7 @@ export class AdoptionService implements IAdoptionService {
       shelterName: payload.refugioNombre,
       shelterLogo: payload.refugioLogo,
       applicantName: payload.formulario.nombreCompleto,
+      applicantEmail: payload.formulario.correo,
       formData: payload.formulario,
       compatibilityScore: calculateCompatibilityScore(
         payload.userVector,

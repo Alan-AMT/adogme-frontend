@@ -24,15 +24,25 @@ function toBase64Url(input: string): string {
   // btoa solo acepta latin-1, así que codificamos UTF-8 a bytes primero.
   const utf8Bytes = new TextEncoder().encode(input);
   let binary = "";
-  utf8Bytes.forEach(b => { binary += String.fromCharCode(b); });
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  utf8Bytes.forEach((b) => {
+    binary += String.fromCharCode(b);
+  });
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 }
 
-function buildUserInfoHeader(user: { id: string; role: string; name?: string; email?: string }): string {
+function buildUserInfoHeader(user: {
+  id: string;
+  role: string;
+  name?: string;
+  email?: string;
+}): string {
   const payload = {
-    id:    user.id,
-    role:  user.role,
-    name:  user.name ?? "",
+    id: user.id,
+    role: user.role,
+    name: user.name ?? "",
     email: user.email ?? "",
   };
   return toBase64Url(JSON.stringify(payload));
@@ -54,6 +64,7 @@ async function enrichShelterUser(user: ShelterUser): Promise<ShelterUser> {
   if (!res.ok) throw new Error(`Shelter fetch failed: ${res.status}`);
 
   const shelter = await res.json();
+  console.log(shelter);
 
   const shelterId: string = shelter.id ?? shelter.shelterId;
   const shelterStatus: string = shelter.status ?? shelter.shelterStatus;
@@ -113,8 +124,8 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
   const isValidVector =
     Array.isArray(userVectorRaw) &&
     userVectorRaw.length === 4 &&
-    userVectorRaw.every(v => typeof v === "number" && Number.isFinite(v)) &&
-    !userVectorRaw.every(v => v === 0);
+    userVectorRaw.every((v) => typeof v === "number" && Number.isFinite(v)) &&
+    !userVectorRaw.every((v) => v === 0);
   const userVector = isValidVector
     ? (userVectorRaw as [number, number, number, number])
     : null;
@@ -133,7 +144,16 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
     favoriteDogs,
   });
 
-  return { ...user, phone, address, avatarUrl, applicantId, postalCode, userVector, favoriteDogs };
+  return {
+    ...user,
+    phone,
+    address,
+    avatarUrl,
+    applicantId,
+    postalCode,
+    userVector,
+    favoriteDogs,
+  };
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

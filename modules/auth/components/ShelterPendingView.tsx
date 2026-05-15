@@ -45,7 +45,7 @@ const TIMELINE = [
 
 // ── Contacto de soporte ───────────────────────────────────────────────────────
 const SUPPORT = [
-  { icon: "mail", label: "soporte@adogme.mx" },
+  { icon: "mail", label: "contacto@adogme.org" },
   { icon: "phone", label: "55 1234 5678" },
 ];
 

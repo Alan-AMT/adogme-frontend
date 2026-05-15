@@ -5,6 +5,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useShelterDashboard } from "../application/hooks/useShelterDashboard";
+import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
+import type { ShelterUser } from "@/modules/shared/domain/User";
 import type {
   DashboardPeriod,
   ChartPoint,
@@ -144,6 +146,8 @@ function LineChart({ data }: { data: ChartPoint[] }) {
     x: pad.l + (i / n) * iW,
     y: pad.t + (1 - d.value / max) * iH,
   }));
+
+  if (!pts.length) return <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto" }} />;
 
   let linePath = `M ${pts[0].x} ${pts[0].y}`;
   for (let i = 0; i < pts.length - 1; i++) {
@@ -509,6 +513,9 @@ export default function ShelterDashboardView() {
     chartData,
   } = useShelterDashboard();
 
+  const user = useAuthStore((s) => s.user) as ShelterUser | null;
+  const shelterName = user?.shelterName ?? user?.name ?? "Refugio";
+
   if (error) {
     return (
       <div style={{ padding: "3rem", textAlign: "center", color: "#ef4444" }}>
@@ -555,7 +562,7 @@ export default function ShelterDashboardView() {
             >
               wb_sunny
             </span>
-            {todayGreeting()}, <strong>Huellitas MX</strong>
+            {todayGreeting()}, <strong>{shelterName}</strong>
           </p>
           <p className="sd2-hero__date">{todayLabel()}</p>
           <p className="sd2-hero__summary">
