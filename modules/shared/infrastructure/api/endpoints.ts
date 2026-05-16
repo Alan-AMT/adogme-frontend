@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
     PROCESS_QUESTIONNAIRE: `${BASE}/ml-ms/predict/process-questionnaire`,
     COMPATIBLE_DOGS: `${BASE}/ml-ms/predict/compatible-dogs`,
     GENERAL_RECOMMENDATIONS: `${BASE}/ml-ms/insights/general-recommendations`,
+    COMPATIBILITY_BY_DOG: (dogId: string) => `${BASE}/ml-ms/predict/compatibility/${dogId}`,
   },
 
   RECOMMENDATIONS: {

@@ -13,6 +13,7 @@ import { useShelterDogs }      from '../application/hooks/useShelterDogs'
 import { useToast }            from '@/modules/shared/application/hooks/useToast'
 import type { DogStatusFilter } from '../application/hooks/useShelterDogs'
 import type { DogListItem, DogStatus } from '@/modules/shared/domain/Dog'
+import { CompatibilityCheckModal } from './CompatibilityCheckModal'
 import '../styles/shelterDashboard.css'
 import '../styles/shelterViews.css'
 
@@ -243,10 +244,12 @@ function DogRow({
   dog,
   onDelete,
   onStatusChange,
+  onCompatibilityCheck,
 }: {
-  dog:            DogListItem
-  onDelete:       (dog: DogListItem) => void
-  onStatusChange: (dog: DogListItem, status: DogStatus) => void
+  dog:                  DogListItem
+  onDelete:             (dog: DogListItem) => void
+  onStatusChange:       (dog: DogListItem, status: DogStatus) => void
+  onCompatibilityCheck: (dog: DogListItem) => void
 }) {
   const statusStyle = DOG_STATUS_COLORS[dog.estado] ?? { bg: '#f4f4f5', color: '#71717a' }
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -406,6 +409,20 @@ function DogRow({
             )}
           </div>
 
+          {/* Calcular compatibilidad */}
+          <button
+            onClick={() => onCompatibilityCheck(dog)}
+            title="Calcular compatibilidad"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, borderRadius: '0.5rem', border: 'none',
+              background: '#ede9fe', color: '#7c3aed',
+              cursor: 'pointer', transition: 'background 0.15s',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>favorite_border</span>
+          </button>
+
           {/* Eliminar */}
           <button
             onClick={() => onDelete(dog)}
@@ -480,6 +497,9 @@ export default function ShelterDogsView() {
   const [statusDog,       setStatusDog]       = useState<DogListItem | null>(null)
   const [pendingStatus,   setPendingStatus]   = useState<DogStatus | null>(null)
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+
+  // Estado del CompatibilityCheckModal
+  const [compatibilityDog, setCompatibilityDog] = useState<DogListItem | null>(null)
 
   const handleDeleteRequest = (dog: DogListItem) => setConfirmDog(dog)
 
@@ -600,6 +620,7 @@ export default function ShelterDogsView() {
                     dog={dog}
                     onDelete={handleDeleteRequest}
                     onStatusChange={handleStatusSelect}
+                    onCompatibilityCheck={setCompatibilityDog}
                   />
                 ))}
               </tbody>
@@ -662,6 +683,15 @@ export default function ShelterDogsView() {
           onConfirm={handleStatusConfirm}
           onCancel={() => !isUpdatingStatus && (setStatusDog(null), setPendingStatus(null))}
           isUpdating={isUpdatingStatus}
+        />
+      )}
+
+      {/* CompatibilityCheckModal */}
+      {compatibilityDog && (
+        <CompatibilityCheckModal
+          dogId={compatibilityDog.id}
+          dogName={compatibilityDog.nombre}
+          onClose={() => setCompatibilityDog(null)}
         />
       )}
     </>
