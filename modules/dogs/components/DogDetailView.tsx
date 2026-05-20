@@ -78,7 +78,11 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
 
           {/* Refugio */}
           {dog.refugioNombre && (
-            <div className="dp-shelter-card">
+            <Link
+              href={dog.refugioId ? `/refugios/${dog.refugioId}` : "#"}
+              className="dp-shelter-card"
+              style={{ display: "block", textDecoration: "none" }}
+            >
               <div className="dp-shelter-card__header">
                 {dog.refugioLogo ? (
                   <div className="dp-shelter-card__logo">
@@ -99,7 +103,7 @@ export default function DogDetailView({ dog }: { dog: Dog }) {
                   <p className="dp-shelter-card__name">{dog.refugioNombre}</p>
                 </div>
               </div>
-            </div>
+            </Link>
           )}
 
           {/* Compartir / Reportar */}

@@ -726,6 +726,21 @@ export default function ShelterRegisterView() {
             </div>
           </form>
         )}
+        <div className="flex items-start gap-1.5 mt-3 px-2">
+          <span
+            className="material-symbols-outlined shrink-0"
+            style={{ fontSize: 12, color: "#d1d5db", marginTop: 1 }}
+          >
+            info
+          </span>
+          <p
+            className="text-[#c4c9d2] font-semibold italic leading-relaxed"
+            style={{ fontSize: 10 }}
+          >
+            Al registrarte confirmas que eres mayor de 18 años. Este sitio está
+            disponible únicamente para personas mayores de edad.
+          </p>
+        </div>
       </AuthCard>
     </AuthLayout>
   );
