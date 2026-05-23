@@ -104,7 +104,7 @@ export function Stepper({
 
             {/* Label — .auth-step__label */}
             <span className={[
-              'mt-2.5 text-xs font-[900] text-center whitespace-nowrap transition-colors duration-300',
+              'mt-2.5 text-xs font-[900] text-center whitespace-nowrap transition-colors duration-300 hidden sm:block',
               isActive ? 'text-[var(--brand)]' : isDone ? 'text-[#3f3f46]' : 'text-[#9ca3af]',
             ].join(' ')}>
               {step.label}

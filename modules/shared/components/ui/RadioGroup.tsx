@@ -90,7 +90,7 @@ export function RadioGroup<T extends string | number | boolean>({
   const containerCls =
     layout === "grid"
       ? "grid gap-2.5 grid-cols-2 sm:grid-cols-4"
-      : "flex gap-2";
+      : "flex flex-wrap gap-2";
 
   return (
     <div

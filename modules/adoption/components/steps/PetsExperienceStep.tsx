@@ -20,7 +20,7 @@ export default function PetsExperienceStep() {
   const tuvoExperiencia = useWatch({ control, name: "experienciaPrevia.tuvo" });
 
   return (
-    <div className="min-w-md">
+    <div className="w-full">
       {/* Mascotas actuales */}
       <div className="af-section">
         <p className="af-section-title">

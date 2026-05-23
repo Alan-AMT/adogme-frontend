@@ -201,7 +201,7 @@ export default function AdoptionFormView({
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
               arrow_back
             </span>
-            Volver al perfil
+            <span className="af-dog-bar__back-text">Volver al perfil</span>
           </Link>
         </div>
 
