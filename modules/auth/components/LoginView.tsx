@@ -256,16 +256,6 @@ function LoginForm() {
           </Button>
         </form>
       </AuthCard>
-
-      {/* Hint de credenciales demo */}
-      <div className="auth-footer">
-        <strong className="text-[#6b7280]">Demo:</strong> usa{" "}
-        <code className="text-[#ff6b6b] font-[900] font-mono">
-          ana@test.com
-        </code>{" "}
-        · contraseña{" "}
-        <code className="text-[#ff6b6b] font-[900] font-mono">test1234</code>
-      </div>
     </AuthLayout>
   );
 }

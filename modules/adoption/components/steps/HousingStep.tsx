@@ -47,6 +47,8 @@ export default function HousingStep({
   const {
     register,
     control,
+    setValue,
+    clearErrors,
     formState: { errors },
   } = useFormContext<AdoptionFormData>();
 
@@ -88,7 +90,13 @@ export default function HousingStep({
                 label="¿La vivienda es propia o rentada?"
                 required
                 value={field.value}
-                onChange={field.onChange}
+                onChange={(val) => {
+                  field.onChange(val);
+                  if (val === "propia") {
+                    setValue("vivienda.permiteAnimales", undefined);
+                    clearErrors("vivienda.permiteAnimales");
+                  }
+                }}
                 options={TENENCIA_OPTIONS}
                 error={fieldState.error?.message}
                 layout="inline"
@@ -131,7 +139,15 @@ export default function HousingStep({
               label="¿Tienes jardín, patio o área exterior?"
               required
               value={field.value}
-              onChange={field.onChange}
+              onChange={(val) => {
+                field.onChange(val);
+                if (!val) {
+                  setValue("vivienda.tamanoJardinM2", undefined);
+                  setValue("vivienda.tieneRejaOCerca", undefined);
+                  clearErrors("vivienda.tamanoJardinM2");
+                  clearErrors("vivienda.tieneRejaOCerca");
+                }
+              }}
               error={fieldState.error?.message}
             />
           )}

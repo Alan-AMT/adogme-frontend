@@ -32,6 +32,18 @@ function getTime(): string {
 let _idCounter = 1
 function nextId(): number { return _idCounter++ }
 
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // Fallback to a math-random based UUID (RFC4122 v4 compliant-ish)
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
 // ─── Mensaje de bienvenida ────────────────────────────────────────────────────
 
 function buildWelcome(): UIMessage {
@@ -91,7 +103,7 @@ export function useChatbot(): UseChatbotReturn {
 
   // sessionId fresco en cada montaje del hook (= cada page load). No se
   // persiste a propósito: refresh = conversación nueva.
-  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID())
+  const [sessionId, setSessionId] = useState<string>(() => generateUUID())
 
   // Mensajes solo en memoria. Refresh borra todo, queda solo el welcome.
   const [messages, setMessages] = useState<UIMessage[]>(() => [buildWelcome()])
@@ -315,7 +327,7 @@ export function useChatbot(): UseChatbotReturn {
     }
 
     // Nada que borrar en storage: el chat solo vive en memoria.
-    setSessionId(crypto.randomUUID())
+    setSessionId(generateUUID())
     setMessages([buildWelcome()])
     setInput('')
     setIsLoading(false)

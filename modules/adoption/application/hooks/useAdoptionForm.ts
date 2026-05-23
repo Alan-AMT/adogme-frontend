@@ -77,11 +77,11 @@ export interface UseAdoptionFormReturn {
 const TOTAL_STEPS = ADOPTION_STEPS.length; // 6
 const DEBOUNCE_MS = 600;
 
-// Mapa: para cada step, qué campos top-level del form le pertenecen.
-// Solo se usa para auto-clear de errores y para localizar el primer step
+// Mapa: para cada step, qué campos del form le pertenecen.
+// Se usa para limpiar errores y para localizar el primer step
 // con errores tras un submit completo. La validación real corre contra
 // STEP_SCHEMAS[currentStep].
-const STEP_FIELDS: (keyof AdoptionFormData)[][] = [
+const STEP_FIELDS: FieldPath<AdoptionFormData>[][] = [
   [
     "nombreCompleto",
     "edad",
@@ -91,9 +91,34 @@ const STEP_FIELDS: (keyof AdoptionFormData)[][] = [
     "direccion",
     "redesSociales",
   ],
-  ["vivienda", "entorno"],
-  ["rutina"],
-  ["mascotasActuales", "experienciaPrevia"],
+  [
+    "vivienda.tipo",
+    "vivienda.tenencia",
+    "vivienda.permiteAnimales",
+    "vivienda.tieneJardin",
+    "vivienda.tamanoJardinM2",
+    "vivienda.tieneRejaOCerca",
+    "entorno.quienesViven",
+    "entorno.todosDeAcuerdo",
+    "entorno.hayNinos",
+    "entorno.hayAlergicos",
+  ],
+  [
+    "rutina.horasSolo",
+    "rutina.dondePermaneceSolo",
+    "rutina.dondeDormiria",
+    "rutina.actividadFisica",
+    "rutina.actividadesPlaneadas",
+  ],
+  [
+    "mascotasActuales.tiene",
+    "mascotasActuales.cuantasYCuales",
+    "mascotasActuales.edades",
+    "mascotasActuales.estanEsterilizadas",
+    "mascotasActuales.descripcionConvivencia",
+    "experienciaPrevia.tuvo",
+    "experienciaPrevia.quePaso",
+  ],
   [
     "motivacion",
     "siMudanza",
@@ -253,11 +278,11 @@ export function useAdoptionForm(
 
   // ── Helpers de validación ─────────────────────────────────────────────────
 
-  /** Limpia los errores de todos los campos top-level de un step. */
+  /** Limpia los errores de todos los campos de un step. */
   const clearStepErrors = useCallback(
     (step: number) => {
       const fields = STEP_FIELDS[step] ?? [];
-      fields.forEach((f) => form.clearErrors(f as FieldPath<AdoptionFormData>));
+      fields.forEach((f) => form.clearErrors(f));
     },
     [form],
   );
@@ -328,10 +353,11 @@ export function useAdoptionForm(
       // Localiza el primer step con errores y navega allí.
       const firstStep = parsed.error.issues
         .map((i) => {
-          const top = i.path[0];
-          if (typeof top !== "string") return -1;
+          const pathStr = i.path
+            .map((seg) => (typeof seg === "number" ? `${seg}` : String(seg)))
+            .join(".");
           return STEP_FIELDS.findIndex((fields) =>
-            fields.includes(top as keyof AdoptionFormData),
+            fields.some((f) => f === pathStr || pathStr.startsWith(f + ".") || f.startsWith(pathStr + "."))
           );
         })
         .filter((idx) => idx >= 0)

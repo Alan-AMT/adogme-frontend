@@ -12,6 +12,7 @@ export default function PetsExperienceStep() {
     register,
     control,
     setValue,
+    clearErrors,
     formState: { errors },
   } = useFormContext<AdoptionFormData>();
 
@@ -42,6 +43,10 @@ export default function PetsExperienceStep() {
                   setValue("mascotasActuales.edades", "");
                   setValue("mascotasActuales.estanEsterilizadas", undefined);
                   setValue("mascotasActuales.descripcionConvivencia", "");
+                  clearErrors("mascotasActuales.cuantasYCuales");
+                  clearErrors("mascotasActuales.edades");
+                  clearErrors("mascotasActuales.estanEsterilizadas");
+                  clearErrors("mascotasActuales.descripcionConvivencia");
                 }
               }}
               error={fieldState.error?.message}
@@ -113,6 +118,7 @@ export default function PetsExperienceStep() {
                 field.onChange(val);
                 if (!val) {
                   setValue("experienciaPrevia.quePaso", "");
+                  clearErrors("experienciaPrevia.quePaso");
                 }
               }}
               error={fieldState.error?.message}
