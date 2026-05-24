@@ -11,24 +11,41 @@ export interface ChatLink {
 // ─── Tarjetas embebidas (perros / refugios) ────────────────────────────────
 
 export interface ChatDogCard {
-  id:            string
-  name:          string
-  age:           number              // edad en MESES (la formatea el componente)
-  breed?:        string
-  size?:         string              // "pequeño" | "mediano" | "grande"
-  sex?:          string              // "macho" | "hembra"
-  energyLevel?:  string
-  status?:       string
-  photo?:        string | null
-  shelterId?:    string
-  shelterName?:  string | null
-  goodWithKids?: boolean
-  goodWithDogs?: boolean
-  needsYard?:    boolean
-  // Score de compatibilidad. Soporta dos rangos: 0-1 (e.g. 0.95) o 0-100 (e.g. 95).
-  // El componente lo normaliza a porcentaje. Solo se renderiza si viene definido
-  // (típicamente para intent="dog_match", no para "available_dogs").
+  id:                  string
+  name:                string
+  age:                 number              // edad en MESES (la formatea el componente)
+  breed?:              string
+  breed2?:             string              // raza secundaria si es mestizo
+  ageCategory?:        string              // "cachorro" | "joven" | "adulto" | "senior"
+  size?:               string              // "pequeño" | "mediano" | "grande"
+  sex?:                string              // "macho" | "hembra"
+  energyLevel?:        string
+  furLength?:          string
+  weightKg?:           number
+  status?:             string
+  health?:             string
+  photo?:              string | null
+  shelterId?:          string
+  shelterName?:        string | null
+  isVaccinated?:       boolean
+  isDewormed?:         boolean
+  sterilized?:         boolean
+  goodWithKids?:       boolean
+  goodWithDogs?:       boolean
+  goodWithCats?:       boolean
+  needsYard?:          boolean
+  personality?:        string              // tags separados por coma
+  vaccinations?:       string
+  description?:        string
+  // Score de compatibilidad para intent="dog_match". Soporta 0-1 o 0-100.
+  // Solo se renderiza si viene definido.
   compatibility_score?: number
+  // Para intent="specific_dog_info". Indica si este perro cumple los criterios
+  // exactos de la búsqueda. La UI agrupa por este flag (coincidencias vs alts).
+  is_exact_match?:     boolean
+  // Debug interno del backend, no se muestra al usuario.
+  relevance?:          number
+  dense_score?:        number
 }
 
 export interface ChatShelterCard {

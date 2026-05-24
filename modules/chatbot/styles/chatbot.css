@@ -548,9 +548,24 @@
   z-index: 1;
 }
 
-.cb-card__score--high { background: #16a34a; }   /* verde — 80%+ */
-.cb-card__score--mid  { background: #ca8a04; }   /* amarillo — 60-79% */
-.cb-card__score--low  { background: #71717a; }   /* gris — < 60% */
+.cb-card__score--high  { background: #16a34a; }   /* verde — 80%+ */
+.cb-card__score--mid   { background: #ca8a04; }   /* amarillo — 60-79% */
+.cb-card__score--low   { background: #71717a; }   /* gris — < 60% */
+.cb-card__score--exact { background: #ff6b6b; }   /* rojo brand — "Coincide" */
+
+/* Label de sección dentro del grupo de cards (specific_dog_info) */
+.cb-msg__cards-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #52525b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.cb-msg__cards-label:first-child {
+  margin-top: 0;
+}
 
 .cb-card:hover {
   border-color: #ff6b6b;
