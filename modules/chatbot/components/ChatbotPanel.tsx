@@ -7,7 +7,7 @@ import Image from 'next/image'
 import Link  from 'next/link'
 import { KeyboardEvent, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
-import type { ChatLink, ChatMeta, UIMessage } from '../domain/Chatbot'
+import type { ChatDogCard as DogCardData, ChatLink, ChatMeta, UIMessage } from '../domain/Chatbot'
 import { setPendingAction } from '../application/pendingAction'
 import ChatbotSuggestions from './ChatbotSuggestions'
 import ChatDogCard       from './ChatDogCard'
@@ -33,6 +33,48 @@ interface ChatbotPanelProps {
 
 // ─── Markdown allowlist ──────────────────────────────────────────────────────
 const MD_ALLOWED = ['p', 'strong', 'em', 'ul', 'ol', 'li', 'br', 'code']
+
+// ─── Renderizado de perros con grouping (intent specific_dog_info) ───────────
+// Si los perros traen is_exact_match definido, aplicamos los 3 casos del spec:
+//   - Caso A: todos coinciden → render plano, sin badge
+//   - Caso B: mezcla → secciones "Coincidencias" + "Otras opciones"
+//   - Caso C: ninguno coincide → sección "Sugerencias"
+// Si NO traen is_exact_match (intents available_dogs, dog_match) → render plano.
+function renderDogCards(dogs: DogCardData[]) {
+  const hasExactInfo = dogs.some(d => d.is_exact_match !== undefined)
+
+  if (!hasExactInfo) {
+    return dogs.map(d => <ChatDogCard key={d.id} dog={d} />)
+  }
+
+  const exact = dogs.filter(d => d.is_exact_match === true)
+  const alts  = dogs.filter(d => d.is_exact_match !== true)
+
+  // Caso A — todos exactos
+  if (exact.length === dogs.length) {
+    return dogs.map(d => <ChatDogCard key={d.id} dog={d} />)
+  }
+
+  // Caso C — solo alternativas
+  if (exact.length === 0) {
+    return (
+      <>
+        <p className="cb-msg__cards-label">Sugerencias</p>
+        {alts.map(d => <ChatDogCard key={d.id} dog={d} />)}
+      </>
+    )
+  }
+
+  // Caso B — mezcla
+  return (
+    <>
+      <p className="cb-msg__cards-label">Coincidencias</p>
+      {exact.map(d => <ChatDogCard key={d.id} dog={d} showMatchBadge />)}
+      <p className="cb-msg__cards-label">Otras opciones</p>
+      {alts.map(d => <ChatDogCard key={d.id} dog={d} />)}
+    </>
+  )
+}
 
 // ─── Etiqueta humana de respuesta degradada ──────────────────────────────────
 function degradedLabel(meta: ChatMeta): string {
@@ -193,7 +235,7 @@ export default function ChatbotPanel({
                 {msg.cards && msg.cards.items.length > 0 && (
                   <div className="cb-msg__cards">
                     {msg.cards.type === 'dogs'
-                      ? msg.cards.items.map(d => <ChatDogCard     key={d.id} dog={d}     />)
+                      ? renderDogCards(msg.cards.items)
                       : msg.cards.items.map(s => <ChatShelterCard key={s.id} shelter={s} />)
                     }
                   </div>
