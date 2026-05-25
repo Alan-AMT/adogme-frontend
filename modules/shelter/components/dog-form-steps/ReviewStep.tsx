@@ -200,19 +200,22 @@ export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress
           onClick={handlePublish}
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
-            <>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 1s linear infinite' }}>progress_activity</span>
-              {uploadProgress
+          <span
+            className="material-symbols-outlined"
+            style={{
+              fontSize: 16,
+              animation: isSubmitting ? 'spin 1s linear infinite' : 'none',
+            }}
+          >
+            {isSubmitting ? 'progress_activity' : 'publish'}
+          </span>
+          <span>
+            {isSubmitting
+              ? uploadProgress
                 ? `Subiendo ${uploadProgress.current}/${uploadProgress.total} fotos...`
-                : 'Publicando...'}
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>publish</span>
-              Publicar perro
-            </>
-          )}
+                : 'Publicando...'
+              : 'Publicar perro'}
+          </span>
         </button>
       </div>
     </>
