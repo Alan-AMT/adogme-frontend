@@ -123,7 +123,7 @@ export function ReviewStep({ formData, isSubmitting, submitError, uploadProgress
 
           {/* Descripción */}
           {formData.descripcion && (
-            <p style={{ fontSize: '0.88rem', color: '#374151', fontWeight: 500, lineHeight: 1.6, marginBottom: '1rem' }}>
+            <p style={{ fontSize: '0.88rem', color: '#374151', fontWeight: 500, lineHeight: 1.6, marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
               {formData.descripcion}
             </p>
           )}

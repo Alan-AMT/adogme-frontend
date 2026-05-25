@@ -555,4 +555,5 @@
   line-height: 1.7;
   color: #52525b;
   font-weight: 400;
+  white-space: pre-wrap;
 }

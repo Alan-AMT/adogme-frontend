@@ -82,8 +82,8 @@ function DogCard({ dog }: { dog: Dog }) {
         {/* Info rows */}
         {[
           { label: 'Refugio',      value: dog.refugioNombre ?? '—' },
-          { label: 'Descripción',  value: dog.descripcion },
-          { label: 'Salud',        value: dog.salud },
+          { label: 'Descripción',  value: dog.descripcion, preWrap: true },
+          { label: 'Salud',        value: dog.salud, preWrap: true },
           { label: 'Castrado',     value: dog.castrado ? 'Sí' : 'No' },
           { label: 'Vacunado',     value: dog.estaVacunado ? 'Sí' : 'No' },
           { label: 'Desparasitado', value: dog.estaDesparasitado ? 'Sí' : 'No' },
@@ -91,10 +91,10 @@ function DogCard({ dog }: { dog: Dog }) {
           { label: 'Apto perros',  value: dog.aptoPerros ? 'Sí' : 'No' },
           { label: 'Apto gatos',   value: dog.aptoGatos ? 'Sí' : 'No' },
           { label: 'Vacunas',      value: dog.vacunas.map(v => v.nombre).join(', ') || '—' },
-        ].map(({ label, value }) => (
+        ].map(({ label, value, preWrap }) => (
           <div key={label} className="ad-info-row">
             <span className="ad-info-row__label">{label}</span>
-            <span className="ad-info-row__value">{value}</span>
+            <span className="ad-info-row__value" style={preWrap ? { whiteSpace: 'pre-wrap' } : undefined}>{value}</span>
           </div>
         ))}
       </div>

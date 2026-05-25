@@ -306,11 +306,11 @@ export function BasicDataStep({ formData, errors, update }: Props) {
               onChange={(e) => update("descripcion", e.target.value)}
               placeholder="Cuéntanos sobre la personalidad, historia y necesidades especiales de este perro..."
               rows={5}
-              maxLength={1000}
+              maxLength={2000}
               style={{ minHeight: 120 }}
             />
             <p className="sv-field__helper">
-              {formData.descripcion.length}/1000 caracteres
+              {formData.descripcion.length}/2000 caracteres
             </p>
             {errors.descripcion && (
               <p className="sv-field__error">{errors.descripcion}</p>
