@@ -40,6 +40,11 @@ export class MockProfileService implements IProfileService {
     return updated
   }
 
+  // ── updateShelterAdminProfile ───────────────────────────────────────────────
+  async updateShelterAdminProfile(userId: string, data: ProfileUpdateData): Promise<ProfileUser> {
+    return this.updateProfile(userId, data)
+  }
+
   // ── changePassword ────────────────────────────────────────────────────────────
   async changePassword(
     userId: string,
