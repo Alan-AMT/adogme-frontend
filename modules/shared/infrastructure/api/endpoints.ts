@@ -39,6 +39,7 @@ export const API_ENDPOINTS = {
     BY_ID: (id: string | number) => `${BASE}/shelters-ms/shelter/${id}`,
     BY_OWNER: (userId: string) => `${BASE}/shelters-ms/shelter/user/${userId}`,
     UPDATE: (id: string | number) => `${BASE}/shelters-ms/shelter/${id}`,
+    UPDATE_ADMIN_DATA: (id: string) => `${BASE}/auth-ms/user/${id}/name`,
   },
 
   APPLICANTS: {

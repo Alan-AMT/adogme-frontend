@@ -2,7 +2,7 @@
 import axios from "axios";
 import { apiClient } from "@/modules/shared/infrastructure/api/apiClient";
 import { API_ENDPOINTS } from "@/modules/shared/infrastructure/api/endpoints";
-import type { Adoptante } from "@/modules/shared/domain/User";
+import type { Adoptante, ShelterUser } from "@/modules/shared/domain/User";
 import type { IProfileService, ProfileUser } from "./IProfileService";
 import type { ProfileUpdateData } from "../domain/ProfileTypes";
 
@@ -44,6 +44,31 @@ export class ProfileService implements IProfileService {
     };
 
     return adoptante;
+  }
+
+  async updateShelterAdminProfile(
+    userId: string,
+    data: ProfileUpdateData,
+  ): Promise<ProfileUser> {
+    const payload = {
+      name: data.nombre,
+    };
+
+    const { data: profile } = await apiClient.patch<{
+      name: string;
+      email: string;
+      user_id: string;
+      role: string;
+    }>(API_ENDPOINTS.SHELTERS.UPDATE_ADMIN_DATA(userId), payload);
+
+    const shelter: ShelterUser = {
+      id: profile.user_id,
+      name: profile.name,
+      email: profile.email,
+      role: "shelter",
+    };
+
+    return shelter;
   }
 
   async changePassword(

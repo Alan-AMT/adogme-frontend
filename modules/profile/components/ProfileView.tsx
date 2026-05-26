@@ -48,14 +48,6 @@ const ROLE_LABEL: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("es-MX", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
 function pwdStrength(pwd: string): 0 | 1 | 2 | 3 {
   if (!pwd) return 0;
   if (pwd.length < 6) return 1;
@@ -425,10 +417,10 @@ function TabSecurity() {
 // ── TabPreferences ────────────────────────────────────────────────────────────
 
 const CATEGORY_LABELS = [
-  { label: "Actividad",   icon: "directions_run", idx: 0 },
-  { label: "Hogar",       icon: "home",           idx: 1 },
-  { label: "Experiencia", icon: "school",         idx: 2 },
-  { label: "Recursos",    icon: "favorite",       idx: 3 },
+  { label: "Actividad", icon: "directions_run", idx: 0 },
+  { label: "Hogar", icon: "home", idx: 1 },
+  { label: "Experiencia", icon: "school", idx: 2 },
+  { label: "Recursos", icon: "favorite", idx: 3 },
 ];
 
 function TabPreferences() {

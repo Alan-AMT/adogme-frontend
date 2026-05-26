@@ -76,6 +76,11 @@ const DROPDOWN_REFUGIO = [
   {
     href: "/refugio/perfil",
     label: "Perfil del refugio",
+    icon: "corporate_fare",
+  },
+  {
+    href: "/admin-refugio-perfil",
+    label: "Perfil personal",
     icon: "manage_accounts",
   },
 ];
@@ -699,20 +704,20 @@ export default function Navbar() {
 
   const user: NavUser | null = authUser
     ? {
-        role:
-          authUser.role === "applicant"
-            ? "adoptante"
-            : authUser.role === "shelter"
-              ? "refugio"
-              : "admin",
-        name: (authUser as { name: string }).name,
-        email: (authUser as { email: string }).email,
-        avatar: (authUser as { avatarUrl?: string }).avatarUrl,
-        shelterName:
-          authUser.role === "shelter"
-            ? (authUser as { nombreRefugio?: string }).nombreRefugio
-            : undefined,
-      }
+      role:
+        authUser.role === "applicant"
+          ? "adoptante"
+          : authUser.role === "shelter"
+            ? "refugio"
+            : "admin",
+      name: (authUser as { name: string }).name,
+      email: (authUser as { email: string }).email,
+      avatar: (authUser as { avatarUrl?: string }).avatarUrl,
+      shelterName:
+        authUser.role === "shelter"
+          ? (authUser as { nombreRefugio?: string }).nombreRefugio
+          : undefined,
+    }
     : null;
 
   const handleLogout = () => {

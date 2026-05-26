@@ -7,7 +7,8 @@ import { useState, useCallback } from 'react'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 import { profileService } from '../../infrastructure/ProfileServiceFactory'
 import type { ProfileUpdateData } from '../../domain/ProfileTypes'
-import type { Adoptante } from '@/modules/shared/domain/User'
+import type { Adoptante, ShelterUser } from '@/modules/shared/domain/User'
+import { ProfileUser } from '../../infrastructure/IProfileService'
 
 // ─── Tipos de retorno ─────────────────────────────────────────────────────────
 
@@ -61,17 +62,14 @@ export function useProfile(): UseProfileReturn {
       setSaveError(null)
       setSaveOk(false)
       try {
-        const adoptante = user.role === 'applicant' ? (user as Adoptante) : null
-        const fullData: ProfileUpdateData = {
-          nombre:    data.nombre    ?? user.name,
-          email:     data.email     ?? user.email,
-          telefono:  data.telefono  ?? adoptante?.phone,
-          direccion: data.direccion ?? adoptante?.address,
-          cp:        data.cp        ?? adoptante?.postalCode,
-          avatarUrl: data.avatarUrl ?? adoptante?.avatarUrl,
+        let updated: ProfileUser
+        if (user.role === 'shelter') {
+          updated = await updateShelterProfile(data)
+          setUser({ ...user, ...updated } as ShelterUser)
+        } else {
+          updated = await updateApplicantProfile(data)
+          setUser({ ...user, ...updated } as Adoptante)
         }
-        const updated = await profileService.updateProfile(user.id, fullData)
-        setUser(updated)
         setSaveOk(true)
       } catch (err) {
         setSaveError(err instanceof Error ? err.message : 'Error al guardar los datos.')
@@ -81,6 +79,40 @@ export function useProfile(): UseProfileReturn {
     },
     [user, setUser],
   )
+
+  const updateApplicantProfile = async (data: ProfileUpdateData): Promise<ProfileUser> => {
+    if (!user) {
+      throw new Error('Usuario no logueado')
+    }
+    if (user.role !== 'applicant') {
+      throw new Error('El usuario no es adoptante')
+    }
+    const adoptante = user as Adoptante
+    const fullData: ProfileUpdateData = {
+          nombre:    data.nombre    ?? user.name,
+          email:     data.email     ?? user.email,
+          telefono:  data.telefono  ?? adoptante?.phone,
+          direccion: data.direccion ?? adoptante?.address,
+          cp:        data.cp        ?? adoptante?.postalCode,
+          avatarUrl: data.avatarUrl ?? adoptante?.avatarUrl,
+        }
+        const updated = await profileService.updateProfile(user.id, fullData)
+        return updated
+  }
+
+  const updateShelterProfile = async (data: ProfileUpdateData): Promise<ProfileUser> => {
+    if (!user) {
+      throw new Error('Usuario no logueado')
+    }
+    if (user.role !== 'shelter') {
+      throw new Error('El usuario no es refugio')
+    }
+    const fullData: ProfileUpdateData = {
+          nombre:    data.nombre    ?? user.name,
+        }
+        const updated = await profileService.updateShelterAdminProfile(user.id, fullData)
+        return updated
+  }
 
   // ── changePassword ─────────────────────────────────────────────────────────
   const changePassword = useCallback(

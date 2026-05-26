@@ -10,6 +10,8 @@ export interface IProfileService {
   /** Actualiza datos básicos (nombre, teléfono, dirección, avatar) */
   updateProfile(userId: string, data: ProfileUpdateData): Promise<ProfileUser>
 
+  updateShelterAdminProfile(userId: string, data: ProfileUpdateData): Promise<ProfileUser>
+
   /** Cambia contraseña; lanza error si currentPassword no coincide */
   changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void>
 

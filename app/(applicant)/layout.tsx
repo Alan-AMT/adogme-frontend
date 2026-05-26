@@ -5,14 +5,14 @@
 
 import { useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar  from '@/modules/shared/components/layout/Navbar'
-import Footer  from '@/modules/shared/components/layout/Footer'
+import Navbar from '@/modules/shared/components/layout/Navbar'
+import Footer from '@/modules/shared/components/layout/Footer'
 import { Spinner } from '@/modules/shared/components/ui/Spinner'
 import { useAuthStore } from '@/modules/shared/infrastructure/store/authStore'
 
 export default function ApplicantLayout({ children }: { children: ReactNode }) {
-  const router   = useRouter()
-  const user     = useAuthStore(s => s.user)
+  const router = useRouter()
+  const user = useAuthStore(s => s.user)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function ApplicantLayout({ children }: { children: ReactNode }) {
       return
     }
     if (user.role === 'shelter') { router.replace('/refugio/dashboard'); return }
-    if (user.role === 'admin')   { router.replace('/admin'); return }
+    if (user.role === 'admin') { router.replace('/admin'); return }
   }, [ready, user, router])
 
   if (!ready || !user || user.role !== 'applicant') {
