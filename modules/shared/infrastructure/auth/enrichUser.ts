@@ -109,10 +109,12 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
 
   const profile = await res.json();
 
+
+  const name: string = profile.userName ?? user.name;
   const phone: string | undefined = profile.phone;
   const address: string | undefined = profile.address;
   const applicantId: string = profile.id;
-  const postalCode: string | undefined = profile.address;
+  const postalCode: string | undefined = profile.postalCode;
   const avatarUrl: string | undefined = profile.avatarUrl ?? profile.avatar;
   // applicants-ms puede devolver el userVector en el campo `vector` o `userVector`.
   // Lo tratamos como "no hizo el quiz" cuando:
@@ -133,8 +135,10 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
     ? profile.favoriteDogs
     : [];
 
+
   // Persist to Web Storage API for fast hydration on refresh
   setUserProfileCache(user.id, {
+    name,
     phone,
     address,
     avatarUrl,
@@ -146,6 +150,7 @@ async function enrichApplicant(user: Adoptante): Promise<Adoptante> {
 
   return {
     ...user,
+    name,
     phone,
     address,
     avatarUrl,

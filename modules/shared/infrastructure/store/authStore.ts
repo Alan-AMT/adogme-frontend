@@ -41,7 +41,7 @@ interface AuthState {
   setTokens: (accessToken: string, refreshToken: string) => void;
   patchFavoriteDogs: (favoriteDogs: string[]) => void;
   logout: () => void;
-  hydrate: () => Promise<void>;
+  hydrate: (fetchData?: boolean) => Promise<void>;
 }
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
 
-  hydrate: async () => {
+  hydrate: async (fetchData = false) => {
     // Phase 1 — identity (always synchronous, no network)
     const token = getTokenFromCookie(); //obtener el token de las cookies
     if (!token) return;
@@ -154,7 +154,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     }
 
-    if (!needsFetch) {
+    if (!needsFetch && !fetchData) {
       set({ user: enriched });
       return;
     }

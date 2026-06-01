@@ -43,6 +43,7 @@ export interface UseProfileReturn {
 
 export function useProfile(): UseProfileReturn {
   const { user, setUser } = useAuthStore()
+  const hydrate = useAuthStore((s) => s.hydrate)
 
   // ── Estado de guardado ─────────────────────────────────────────────────────
   const [saving,           setSaving]           = useState(false)
@@ -71,12 +72,14 @@ export function useProfile(): UseProfileReturn {
           setUser({ ...user, ...updated } as Adoptante)
         }
         setSaveOk(true)
+        await hydrate(true)
       } catch (err) {
         setSaveError(err instanceof Error ? err.message : 'Error al guardar los datos.')
       } finally {
         setSaving(false)
       }
     },
+    
     [user, setUser],
   )
 
@@ -89,14 +92,17 @@ export function useProfile(): UseProfileReturn {
     }
     const adoptante = user as Adoptante
     const fullData: ProfileUpdateData = {
-          nombre:    data.nombre    ?? user.name,
+          nombre:    data.nombre    ?? user?.name,
           email:     data.email     ?? user.email,
           telefono:  data.telefono  ?? adoptante?.phone,
           direccion: data.direccion ?? adoptante?.address,
           cp:        data.cp        ?? adoptante?.postalCode,
           avatarUrl: data.avatarUrl ?? adoptante?.avatarUrl,
         }
-        const updated = await profileService.updateProfile(user.id, fullData)
+        const updated = await profileService.updateProfile(adoptante.applicantId ?? '', fullData)
+        if (user?.name !== data.nombre) {
+          await profileService.updateShelterAdminProfile(user.id, { nombre: data.nombre })
+        }
         return updated
   }
 

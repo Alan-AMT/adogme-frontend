@@ -178,6 +178,7 @@ export function getShelterProfileCache(
 // ─── Web Storage API: applicant profile cache ─────────────────────────────────
 
 export interface UserProfileCache {
+  name?: string;
   phone?: string;
   applicantId?: string;
   address?: string;

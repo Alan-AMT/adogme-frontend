@@ -4,7 +4,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link  from 'next/link'
+import Link from 'next/link'
 import { useState } from 'react'
 import { useShelterRequestDetail } from '../application/hooks/useShelterRequestDetail'
 import type { RequestStatus, StatusChange, AdoptionRequest } from '@/modules/shared/domain/AdoptionRequest'
@@ -16,23 +16,23 @@ import '../styles/shelterViews.css'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_LABELS: Record<string, string> = {
-  pending:   'Pendiente',
+  pending: 'Pendiente',
   in_review: 'En revisión',
-  approved:  'Aprobada',
-  rejected:  'Rechazada',
+  approved: 'Aprobada',
+  rejected: 'Rechazada',
   cancelled: 'Cancelada',
 }
 
 const STATUS_ICONS: Record<string, string> = {
-  pending:   'schedule',
+  pending: 'schedule',
   in_review: 'manage_search',
-  approved:  'check_circle',
-  rejected:  'cancel',
+  approved: 'check_circle',
+  rejected: 'cancel',
   cancelled: 'block',
 }
 
 const NEXT_STATUSES: Partial<Record<RequestStatus, RequestStatus[]>> = {
-  pending:   ['in_review', 'rejected'],
+  pending: ['in_review', 'rejected'],
   in_review: ['approved', 'rejected'],
 }
 
@@ -93,13 +93,13 @@ function ActionPanel({
   isSaving,
   onUpdate,
 }: {
-  request:  AdoptionRequest
+  request: AdoptionRequest
   isSaving: boolean
   onUpdate: (status: RequestStatus, comentario?: string) => Promise<void>
 }) {
-  const toast   = useToast()
+  const toast = useToast()
   const options = NEXT_STATUSES[request.estado] ?? []
-  const [selected,   setSelected]   = useState<RequestStatus | ''>(options[0] ?? '')
+  const [selected, setSelected] = useState<RequestStatus | ''>(options[0] ?? '')
   const [comentario, setComentario] = useState('')
 
   if (options.length === 0) {
@@ -119,6 +119,7 @@ function ActionPanel({
       await onUpdate(selected as RequestStatus, comentario.trim() || undefined)
       setComentario('')
       toast.success(`Estado actualizado a "${STATUS_LABELS[selected]}"`)
+      setSelected(NEXT_STATUSES[selected]?.[0] ?? '')
     } catch {
       toast.error('No se pudo actualizar el estado. Intenta de nuevo.')
     }
@@ -312,13 +313,12 @@ export default function ShelterRequestDetailView({ requestId }: { requestId: str
                     : request.compatibilityScore >= 60
                       ? 'rgba(202,138,4,0.1)'
                       : 'rgba(220,38,38,0.1)',
-                  border: `3px solid ${
-                    request.compatibilityScore >= 80
-                      ? '#16a34a'
-                      : request.compatibilityScore >= 60
-                        ? '#ca8a04'
-                        : '#dc2626'
-                  }`,
+                  border: `3px solid ${request.compatibilityScore >= 80
+                    ? '#16a34a'
+                    : request.compatibilityScore >= 60
+                      ? '#ca8a04'
+                      : '#dc2626'
+                    }`,
                 }}>
                   <span style={{
                     fontSize: '1.4rem',

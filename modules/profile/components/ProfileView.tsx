@@ -75,7 +75,7 @@ function TabData() {
 
   const applicant = isApplicant ? (user as Adoptante) : null;
 
-  const [nombre, setNombre] = useState(user?.name ?? "");
+  const [nombre, setNombre] = useState(applicant?.name ?? "");
   const [telefono, setTelefono] = useState(applicant?.phone ?? "");
   const [direccion, setDireccion] = useState(applicant?.address ?? "");
   const [cp, setCp] = useState(applicant?.postalCode ?? "");
@@ -777,19 +777,6 @@ export default function ProfileView() {
         <div className="pf-cover-body">
           <div className="pf-header__avatar-wrap">
             <Avatar name={user.name} size="xl" />
-            <button
-              type="button"
-              className="pf-header__avatar-edit"
-              aria-label="Cambiar foto de perfil"
-              title="Cambiar foto (próximamente)"
-            >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: 13 }}
-              >
-                photo_camera
-              </span>
-            </button>
           </div>
 
           <div className="pf-header__info">
