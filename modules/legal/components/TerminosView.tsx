@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const LAST_UPDATED = "1 de mayo de 2025";
+const LAST_UPDATED = "1 de mayo de 2026";
 
 interface Section {
   id: string;

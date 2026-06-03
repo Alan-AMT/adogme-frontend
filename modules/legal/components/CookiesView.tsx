@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const LAST_UPDATED = "1 de mayo de 2025";
+const LAST_UPDATED = "1 de mayo de 2026";
 
 interface CookieRow {
   nombre: string;
@@ -43,9 +43,9 @@ const COOKIES: CookieRow[] = [
 ];
 
 const TIPO_COLORS: Record<CookieRow["tipo"], { bg: string; color: string }> = {
-  Esencial:   { bg: "rgba(34,197,94,0.1)",  color: "#16a34a" },
-  Funcional:  { bg: "rgba(59,130,246,0.1)", color: "#2563eb" },
-  Analítica:  { bg: "rgba(250,82,82,0.1)",  color: "#FA5252" },
+  Esencial: { bg: "rgba(34,197,94,0.1)", color: "#16a34a" },
+  Funcional: { bg: "rgba(59,130,246,0.1)", color: "#2563eb" },
+  Analítica: { bg: "rgba(250,82,82,0.1)", color: "#FA5252" },
 };
 
 export default function CookiesView() {
@@ -156,7 +156,7 @@ export default function CookiesView() {
             {(["Esencial", "Funcional", "Analítica"] as CookieRow["tipo"][]).map((tipo) => {
               const { bg, color } = TIPO_COLORS[tipo];
               const descripciones: Record<CookieRow["tipo"], string> = {
-                Esencial:  "Imprescindibles para que la plataforma funcione. No pueden desactivarse.",
+                Esencial: "Imprescindibles para que la plataforma funcione. No pueden desactivarse.",
                 Funcional: "Recuerdan tus preferencias para mejorar tu experiencia.",
                 Analítica: "Nos ayudan a entender cómo se usa la plataforma de forma anónima.",
               };

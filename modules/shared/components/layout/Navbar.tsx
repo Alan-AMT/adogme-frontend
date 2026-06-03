@@ -656,7 +656,7 @@ function MobileDrawer({
         <div className="px-5 py-4 border-t border-[#f4f4f5] bg-[#fafafa] shrink-0">
           <div className="flex items-center justify-between">
             <p className="text-[11px] text-[#c4c4c7] font-[600]">
-              © 2025 aDOGme · CDMX
+              © 2026 aDOGme · CDMX
             </p>
             <div className="flex items-center gap-3">
               <Link
