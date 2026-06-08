@@ -28,7 +28,7 @@ const COLS: FooterCol[] = [
     title: "Legal",
     links: [
       { label: "Privacidad", href: "/privacidad" },
-      { label: "Términos", href: "/terminos" },
+      { label: "Términos y condiciones", href: "/terminos" },
       { label: "Cookies", href: "/cookies" },
     ],
   },
@@ -45,7 +45,7 @@ const COLS: FooterCol[] = [
 const SOCIALS = [
   {
     label: "Instagram",
-    href: "https://instagram.com/adogme",
+    href: "https://www.instagram.com/adogme_org/",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -60,7 +60,7 @@ const SOCIALS = [
   },
   {
     label: "Facebook",
-    href: "https://facebook.com/adogme",
+    href: "",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -75,7 +75,7 @@ const SOCIALS = [
   },
   {
     label: "TikTok",
-    href: "https://tiktok.com/@adogme",
+    href: "",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -90,7 +90,7 @@ const SOCIALS = [
   },
   {
     label: "WhatsApp",
-    href: "https://wa.me/525500000000",
+    href: "",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -189,20 +189,31 @@ export default function Footer() {
 
             {/* Socials — centrados */}
             <div className="flex items-center justify-center gap-2 flex-wrap">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  className="w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-150
-                             bg-white/5 border-white/10 text-[#71717a]
-                             hover:bg-[#ff6b6b]/15 hover:border-[#ff6b6b]/30 hover:text-[#ff6b6b] hover:-translate-y-[2px]"
-                >
-                  {s.icon}
-                </a>
-              ))}
+              {SOCIALS.map((s) =>
+                s.href ? (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-150
+                               bg-white/5 border-white/10 text-[#71717a]
+                               hover:bg-[#ff6b6b]/15 hover:border-[#ff6b6b]/30 hover:text-[#ff6b6b] hover:-translate-y-[2px]"
+                  >
+                    {s.icon}
+                  </a>
+                ) : (
+                  <span
+                    key={s.label}
+                    aria-label={`${s.label} no disponible`}
+                    className="w-9 h-9 flex items-center justify-center rounded-full border
+                               bg-white/5 border-white/10 text-[#52525b]"
+                  >
+                    {s.icon}
+                  </span>
+                ),
+              )}
             </div>
 
             {/* CTA donar */}

@@ -50,6 +50,9 @@ export interface RegisterFormData {
   refHorario: string;
   refWebsite: string;
   refDescripcion: string;
+
+  // Confirmaciones
+  aceptaTerminos: boolean;
 }
 
 const INITIAL_DATA: RegisterFormData = {
@@ -68,6 +71,7 @@ const INITIAL_DATA: RegisterFormData = {
   refHorario: "",
   refWebsite: "",
   refDescripcion: "",
+  aceptaTerminos: false,
 };
 
 export interface UseRegisterReturn {
@@ -78,7 +82,10 @@ export interface UseRegisterReturn {
 
   // Datos
   data: RegisterFormData;
-  update: <K extends keyof RegisterFormData>(key: K, value: string) => void;
+  update: <K extends keyof RegisterFormData>(
+    key: K,
+    value: RegisterFormData[K],
+  ) => void;
 
   // Estado
   loading: boolean;
@@ -132,12 +139,60 @@ const REFUGIO_STEPS = [
 
 // ── Validaciones por paso ─────────────────────────────────────────────────────
 
+const NAME_RE =
+  /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?:[ '-][A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)+$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const POSTAL_CODE_RE = /^\d{5}$/;
+const SHELTER_NAME_RE =
+  /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 .,'&()/-]{3,80}$/;
+const ADDRESS_RE =
+  /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 .,#'°º/-]{8,160}$/;
+const SCHEDULE_RE =
+  /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 .,:;()/-]{3,80}$/;
+
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  return digits.length === 12 && digits.startsWith("52")
+    ? digits.slice(2)
+    : digits;
+}
+
+function isValidMxPhone(phone: string): boolean {
+  const normalized = normalizePhone(phone);
+  return /^\d{10}$/.test(normalized) && !/^(\d)\1{9}$/.test(normalized);
+}
+
+function isValidOptionalEmail(email: string): boolean {
+  return !email.trim() || EMAIL_RE.test(email.trim());
+}
+
+function isValidOptionalUrl(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+
+  try {
+    const parsed = new URL(
+      /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`,
+    );
+    return ["http:", "https:"].includes(parsed.protocol) && !!parsed.hostname;
+  } catch {
+    return false;
+  }
+}
+
 function validateStep1(d: RegisterFormData): string {
-  if (!d.nombre.trim()) return "El nombre completo es requerido.";
-  if (!d.correo.trim()) return "El correo electrónico es requerido.";
-  if (!/\S+@\S+\.\S+/.test(d.correo.trim()))
+  const nombre = d.nombre.trim();
+  const correo = d.correo.trim();
+
+  if (!nombre) return "El nombre completo es requerido.";
+  if (!NAME_RE.test(nombre))
+    return "Ingresa nombre y apellido, usando solo letras y separadores válidos.";
+  if (!correo) return "El correo electrónico es requerido.";
+  if (!EMAIL_RE.test(correo))
     return "El correo electrónico no es válido.";
   if (!d.telefono.trim()) return "El teléfono es requerido.";
+  if (!isValidMxPhone(d.telefono))
+    return "El teléfono debe tener 10 dígitos válidos.";
   return "";
 }
 
@@ -145,23 +200,51 @@ function validateStep2(d: RegisterFormData): string {
   if (!d.password) return "La contraseña es requerida.";
   if (d.password.length < 8)
     return "La contraseña debe tener al menos 8 caracteres.";
+  if (!/[A-Z]/.test(d.password))
+    return "La contraseña debe incluir al menos una letra mayúscula.";
+  if (!/[a-z]/.test(d.password))
+    return "La contraseña debe incluir al menos una letra minúscula.";
+  if (!/\d/.test(d.password))
+    return "La contraseña debe incluir al menos un número.";
+  if (!/[^A-Za-z0-9]/.test(d.password))
+    return "La contraseña debe incluir al menos un carácter especial.";
   if (d.password !== d.confirmar) return "Las contraseñas no coinciden.";
   return "";
 }
 
 function validateStep3Adoptante(d: RegisterFormData): string {
   if (!d.direccion.trim()) return "La dirección es requerida.";
-  if (!d.cp.trim() || d.cp.trim().length !== 5)
+  if (!ADDRESS_RE.test(d.direccion.trim()))
+    return "La dirección contiene caracteres no válidos o es demasiado corta.";
+  if (!POSTAL_CODE_RE.test(d.cp.trim()))
     return "El código postal debe tener 5 dígitos.";
+  if (!d.aceptaTerminos)
+    return "Debes aceptar los términos y condiciones para continuar.";
   return "";
 }
 
 function validateStep3Refugio(d: RegisterFormData): string {
   if (!d.refNombre.trim()) return "El nombre del refugio es requerido.";
+  if (!SHELTER_NAME_RE.test(d.refNombre.trim()))
+    return "El nombre del refugio contiene caracteres no válidos.";
   if (!d.refAlcaldia) return "Selecciona la alcaldía del refugio.";
   if (!d.refUbicacion.trim()) return "La dirección del refugio es requerida.";
+  if (!ADDRESS_RE.test(d.refUbicacion.trim()))
+    return "La dirección del refugio contiene caracteres no válidos o es demasiado corta.";
+  if (d.refTelefono.trim() && !isValidMxPhone(d.refTelefono))
+    return "El teléfono del refugio debe tener 10 dígitos válidos.";
+  if (!isValidOptionalEmail(d.refCorreo))
+    return "El correo del refugio no es válido.";
+  if (!isValidOptionalUrl(d.refWebsite))
+    return "La página web del refugio no es válida.";
+  if (d.refHorario.trim() && !SCHEDULE_RE.test(d.refHorario.trim()))
+    return "El horario contiene caracteres no válidos.";
   if (!d.refDescripcion.trim())
     return "La descripción del refugio es requerida.";
+  if (d.refDescripcion.trim().length < 30)
+    return "La descripción del refugio debe tener al menos 30 caracteres.";
+  if (!d.aceptaTerminos)
+    return "Debes aceptar los términos y condiciones para continuar.";
   return "";
 }
 
@@ -181,7 +264,10 @@ export function useRegister(): UseRegisterReturn {
 
   // ── update: actualiza un campo del form ────────────────────────────────────
   const update = useCallback(
-    <K extends keyof RegisterFormData>(key: K, value: string) => {
+    <K extends keyof RegisterFormData>(
+      key: K,
+      value: RegisterFormData[K],
+    ) => {
       setData((prev) => ({ ...prev, [key]: value }));
     },
     [],
@@ -232,29 +318,31 @@ export function useRegister(): UseRegisterReturn {
     try {
       if (role === "applicant") {
         await authService.register({
-          name: data.nombre,
-          email: data.correo,
-          phone: data.telefono,
+          name: data.nombre.trim(),
+          email: data.correo.trim(),
+          phone: normalizePhone(data.telefono),
           password: data.password,
-          address: data.direccion,
-          postalCode: data.cp,
+          address: data.direccion.trim(),
+          postalCode: data.cp.trim(),
         });
         router.push("mi-match");
         router.refresh();
       } else {
         await authService.registerShelter({
-          name: data.nombre,
-          email: data.correo,
-          phone: data.telefono,
+          name: data.nombre.trim(),
+          email: data.correo.trim(),
+          phone: normalizePhone(data.telefono),
           password: data.password,
-          shelterName: data.refNombre,
-          description: data.refDescripcion,
-          shelterPhone: data.refTelefono || undefined,
-          shelterEmail: data.refCorreo || undefined,
-          shelterWebsite: data.refWebsite || undefined,
+          shelterName: data.refNombre.trim(),
+          description: data.refDescripcion.trim(),
+          shelterPhone: data.refTelefono
+            ? normalizePhone(data.refTelefono)
+            : undefined,
+          shelterEmail: data.refCorreo.trim() || undefined,
+          shelterWebsite: data.refWebsite.trim() || undefined,
           municipality: data.refAlcaldia,
-          fullAddress: data.refUbicacion,
-          schedule: data.refHorario || undefined,
+          fullAddress: data.refUbicacion.trim(),
+          schedule: data.refHorario.trim() || undefined,
         });
       }
       setSuccess(true);
