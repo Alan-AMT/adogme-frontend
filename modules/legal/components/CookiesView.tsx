@@ -363,10 +363,10 @@ export default function CookiesView() {
         <p style={{ color: "var(--muted, #475569)", fontSize: "0.85rem", margin: 0 }}>
           ¿Preguntas?{" "}
           <a
-            href="mailto:privacidad@adogme.mx"
+            href="mailto:contacto@adogme.org"
             style={{ color: "var(--brand, #FA5252)", fontWeight: 700, textDecoration: "none" }}
           >
-            privacidad@adogme.mx
+            contacto@adogme.org
           </a>
         </p>
         <div style={{ display: "flex", gap: "1rem" }}>

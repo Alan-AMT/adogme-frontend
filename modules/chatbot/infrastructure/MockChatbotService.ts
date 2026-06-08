@@ -57,7 +57,7 @@ const INTENTS: ChatbotIntent[] = [
     id: 'refugios',
     keywords: ['refugio', 'refugios', 'donde', 'dónde', 'ubicacion', 'ubicación', 'gam', 'gustavo', 'coyoacan', 'iztapalapa', 'alcaldia', 'alcaldía'],
     response: {
-      text: 'Trabajamos con refugios en varias alcaldías de la CDMX: Gustavo A. Madero, Coyoacán e Iztapalapa 📍.\n\nPuedes explorar todos los refugios y ver sus perros disponibles en la plataforma.',
+      text: 'Trabajamos con refugios en CDMX y área metropolitana. 📍.\n\nPuedes explorar todos los refugios y ver sus perros disponibles en la plataforma.',
       links: [{ label: 'Ver todos los refugios', href: '/refugios' }],
       suggestions: ['¿Cómo agendo una visita?', '¿Cómo es el proceso de adopción?'],
     },

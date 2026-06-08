@@ -176,14 +176,14 @@ export default function TerminosView() {
         >
           Al usar aDOGme aceptas estos términos. Si tienes dudas, escríbenos a{" "}
           <a
-            href="mailto:hola@adogme.mx"
+            href="mailto:contacto@adogme.org"
             style={{
               color: "var(--brand, #FA5252)",
               fontWeight: 700,
               textDecoration: "none",
             }}
           >
-            hola@adogme.mx
+            contacto@adogme.org
           </a>{" "}
           antes de continuar.
         </p>
@@ -334,7 +334,7 @@ export default function TerminosView() {
         >
           ¿Tienes dudas?{" "}
           <a
-            href="mailto:hola@adogme.mx"
+            href="mailto:contacto@adogme.org"
             style={{
               color: "var(--brand, #FA5252)",
               fontWeight: 700,

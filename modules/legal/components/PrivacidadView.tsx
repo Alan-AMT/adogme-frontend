@@ -13,7 +13,7 @@ const SECTIONS: Section[] = [
     id: "responsable",
     title: "1. Responsable del tratamiento",
     content:
-      "aDOGme (en adelante, \"la Plataforma\") es responsable del tratamiento de los datos personales que recopila a través de adogme.mx. Para cualquier consulta relacionada con privacidad puedes contactarnos en privacidad@adogme.mx.",
+      "aDOGme (en adelante, \"la Plataforma\") es responsable del tratamiento de los datos personales que recopila a través de adogme.org. Para cualquier consulta relacionada con privacidad puedes contactarnos en contacto@adogme.org.",
   },
   {
     id: "datos",
@@ -72,7 +72,7 @@ const SECTIONS: Section[] = [
       "Rectificación: corrige datos inexactos o incompletos.",
       "Cancelación: solicita la eliminación de tus datos cuando ya no sean necesarios.",
       "Oposición: oponte al tratamiento en determinadas circunstancias.",
-      "Para ejercer cualquiera de estos derechos, escríbenos a privacidad@adogme.mx desde el correo asociado a tu cuenta.",
+      "Para ejercer cualquiera de estos derechos, escríbenos a contacto@adogme.org desde el correo asociado a tu cuenta.",
     ],
   },
   {
@@ -180,7 +180,7 @@ export default function PrivacidadView() {
             margin: 0,
           }}
         >
-          Tus datos están protegidos. Solo recopilamos lo estrictamente necesario
+          Tus datos están protegidos conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP). Solo recopilamos lo estrictamente necesario
           para facilitar adopciones y nunca los vendemos a terceros.
         </p>
       </div>
@@ -327,14 +327,14 @@ export default function PrivacidadView() {
         >
           ¿Dudas sobre tus datos?{" "}
           <a
-            href="mailto:privacidad@adogme.mx"
+            href="mailto:contacto@adogme.org"
             style={{
               color: "var(--brand, #FA5252)",
               fontWeight: 700,
               textDecoration: "none",
             }}
           >
-            privacidad@adogme.mx
+            contacto@adogme.org
           </a>
         </p>
         <div style={{ display: "flex", gap: "1rem" }}>

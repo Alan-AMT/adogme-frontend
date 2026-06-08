@@ -143,7 +143,7 @@ function TopBar() {
           </div>
 
           <div className="flex items-center justify-center gap-5">
-            <Link
+            {/* <Link
               href="/refugios"
               className="topbar-link topbar-link-black inline-flex items-center gap-1 text-[10px] lg:text-[11px] font-[800] uppercase tracking-[0.08em] text-[#ff6b6b] hover:text-[#fa5252] transition-colors"
             >
@@ -159,7 +159,7 @@ function TopBar() {
                 favorite
               </span>
               Donar
-            </Link>
+            </Link> */}
 
             <Link
               href="/proceso-adopcion"

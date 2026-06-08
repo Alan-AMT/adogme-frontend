@@ -14,10 +14,10 @@ import '../styles/admin.css'
 type ContentTab = 'proceso' | 'faqs' | 'general'
 
 const CATEGORIA_LABELS: Record<string, string> = {
-  adopcion:   'Adopción',
+  adopcion: 'Adopción',
   requisitos: 'Requisitos',
-  proceso:    'Proceso',
-  cuidados:   'Cuidados',
+  proceso: 'Proceso',
+  cuidados: 'Cuidados',
   plataforma: 'Plataforma',
   donaciones: 'Donaciones',
 }
@@ -740,8 +740,8 @@ function GeneralTab() {
   const [generalContent, setGeneralContent] = useState({
     plataformaNombre: 'aDOGme',
     plataformaDescripcion: 'La plataforma de adopción responsable de mascotas más grande de México.',
-    correoContacto: 'hola@adogme.mx',
-    correoSoporte: 'soporte@adogme.mx',
+    correoContacto: 'contacto@adogme.org',
+    correoSoporte: 'contacto@adogme.org',
     mensajeBienvenida: '¡Bienvenido a aDOGme! Aquí encontrarás a tu compañero ideal.',
     textoPolitica: 'Todas las adopciones son gratuitas. El refugio puede solicitar una cuota simbólica.',
   })
@@ -756,12 +756,12 @@ function GeneralTab() {
   }
 
   const fields: Array<{ key: keyof typeof generalContent; label: string; multiline?: boolean }> = [
-    { key: 'plataformaNombre',       label: 'Nombre de la plataforma' },
-    { key: 'plataformaDescripcion',  label: 'Descripción de la plataforma', multiline: true },
-    { key: 'correoContacto',         label: 'Correo de contacto' },
-    { key: 'correoSoporte',          label: 'Correo de soporte' },
-    { key: 'mensajeBienvenida',      label: 'Mensaje de bienvenida', multiline: true },
-    { key: 'textoPolitica',          label: 'Texto de política de adopción', multiline: true },
+    { key: 'plataformaNombre', label: 'Nombre de la plataforma' },
+    { key: 'plataformaDescripcion', label: 'Descripción de la plataforma', multiline: true },
+    { key: 'correoContacto', label: 'Correo de contacto' },
+    { key: 'correoSoporte', label: 'Correo de soporte' },
+    { key: 'mensajeBienvenida', label: 'Mensaje de bienvenida', multiline: true },
+    { key: 'textoPolitica', label: 'Texto de política de adopción', multiline: true },
   ]
 
   return (
@@ -815,9 +815,9 @@ function GeneralTab() {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const TAB_CONFIG: Array<{ id: ContentTab; label: string; icon: string }> = [
-  { id: 'proceso',  label: 'Proceso de adopción', icon: 'route' },
-  { id: 'faqs',     label: 'Chatbot FAQs',         icon: 'smart_toy' },
-  { id: 'general',  label: 'Contenido general',    icon: 'settings' },
+  { id: 'proceso', label: 'Proceso de adopción', icon: 'route' },
+  { id: 'faqs', label: 'Chatbot FAQs', icon: 'smart_toy' },
+  { id: 'general', label: 'Contenido general', icon: 'settings' },
 ]
 
 export default function AdminContentView() {
@@ -825,10 +825,10 @@ export default function AdminContentView() {
   const [activeTab, setActiveTab] = useState<ContentTab>('proceso')
 
   const [localSteps, setLocalSteps] = useState<AdoptionStep[]>([])
-  const [localFaqs,  setLocalFaqs]  = useState<ChatbotFAQ[]>([])
+  const [localFaqs, setLocalFaqs] = useState<ChatbotFAQ[]>([])
 
   useEffect(() => { if (steps.length) setLocalSteps(steps) }, [steps])
-  useEffect(() => { if (faqs.length)  setLocalFaqs(faqs)   }, [faqs])
+  useEffect(() => { if (faqs.length) setLocalFaqs(faqs) }, [faqs])
 
   if (isLoading) {
     return (
