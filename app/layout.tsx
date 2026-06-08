@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: "%s · aDOGme",
   },
   description:
-    "Plataforma de adopción canina responsable en CDMX y área metropolitana " +
+    "Plataforma de adopción canina responsable en CDMX y área metropolitana." +
     "Conectamos adoptantes con refugios verificados para facilitar adopciones seguras.",
   keywords: [
     "adopción perros",
