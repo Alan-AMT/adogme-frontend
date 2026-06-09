@@ -13,6 +13,14 @@ import { Toggle } from "../../shared/components/ui/Toggle";
 import { useProfile } from "../application/hooks/useProfile";
 import type { Adoptante } from "../../shared/domain/User";
 import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
+import {
+  isValidAddress,
+  isValidMxPhone,
+  isValidPersonName,
+  isValidPostalCode,
+  isStrongPassword,
+  normalizeMxPhone,
+} from "@/modules/shared/utils/validators";
 import "../styles/profile.css";
 import "../../recommendations/styles/quiz.css";
 
@@ -79,18 +87,52 @@ function TabData() {
   const [telefono, setTelefono] = useState(applicant?.phone ?? "");
   const [direccion, setDireccion] = useState(applicant?.address ?? "");
   const [cp, setCp] = useState(applicant?.postalCode ?? "");
+  const [localErr, setLocalErr] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setLocalErr(null);
     clearStatus("data");
+
+    const nextNombre = nombre.trim();
+    const nextTelefono = telefono.trim();
+    const nextDireccion = direccion.trim();
+    const nextCp = cp.trim();
+
+    if (!nextNombre) {
+      setLocalErr("El nombre completo es obligatorio.");
+      return;
+    }
+    if (!isValidPersonName(nextNombre)) {
+      setLocalErr("Ingresa nombre y apellido válidos.");
+      return;
+    }
+    if (isApplicant) {
+      if (nextTelefono && !isValidMxPhone(nextTelefono)) {
+        setLocalErr("El teléfono debe tener 10 dígitos válidos.");
+        return;
+      }
+      if (nextDireccion && !isValidAddress(nextDireccion)) {
+        setLocalErr("La dirección contiene caracteres no válidos o es demasiado corta.");
+        return;
+      }
+      if (nextCp && !isValidPostalCode(nextCp)) {
+        setLocalErr("El código postal debe tener 5 dígitos.");
+        return;
+      }
+    }
+
     await updateProfile({
-      nombre: nombre !== user?.name ? nombre : undefined,
-      telefono: telefono !== (applicant?.phone ?? "") ? telefono : undefined,
-      direccion:
-        isApplicant && direccion !== (applicant?.address ?? "")
-          ? direccion
+      nombre: nextNombre !== user?.name ? nextNombre : undefined,
+      telefono:
+        nextTelefono !== (applicant?.phone ?? "")
+          ? normalizeMxPhone(nextTelefono)
           : undefined,
-      cp: isApplicant && cp !== (applicant?.postalCode ?? "") ? cp : undefined,
+      direccion:
+        isApplicant && nextDireccion !== (applicant?.address ?? "")
+          ? nextDireccion
+          : undefined,
+      cp: isApplicant && nextCp !== (applicant?.postalCode ?? "") ? nextCp : undefined,
     });
   }
 
@@ -170,9 +212,9 @@ function TabData() {
           )}
         </div>
 
-        {saveError && (
+        {(localErr ?? saveError) && (
           <div style={{ marginTop: "1rem" }}>
-            <Alert type="error" message={saveError} closable />
+            <Alert type="error" message={localErr ?? saveError ?? ""} closable />
           </div>
         )}
         {saveOk && (
@@ -225,8 +267,10 @@ function TabSecurity() {
     setLocalErr(null);
     clearStatus("password");
 
-    if (newPwd.length < 8) {
-      setLocalErr("La nueva contraseña debe tener al menos 8 caracteres.");
+    if (!isStrongPassword(newPwd)) {
+      setLocalErr(
+        "La nueva contraseña debe tener mínimo 8 caracteres, mayúscula, minúscula, número y carácter especial.",
+      );
       return;
     }
     if (newPwd !== confirm) {

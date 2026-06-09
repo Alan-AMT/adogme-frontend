@@ -123,6 +123,9 @@ export function BasicDataStep({ formData, errors, update }: Props) {
                 parece. No te preocupes si no estás seguro/a, ¡una aproximación
                 es suficiente!
               </p>
+              {errors.raza2 && (
+                <p className="sv-field__error">{errors.raza2}</p>
+              )}
             </div>
           </div>
 
@@ -163,6 +166,9 @@ export function BasicDataStep({ formData, errors, update }: Props) {
                 step={0.1}
               />
               <p className="sv-field__helper">Kilogramos · opcional</p>
+              {errors.pesoKg && (
+                <p className="sv-field__error">{errors.pesoKg}</p>
+              )}
             </div>
           </div>
         </div>

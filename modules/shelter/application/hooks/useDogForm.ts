@@ -25,6 +25,11 @@ import type {
   DogUpdateData,
 } from "../../infrastructure/IShelterService";
 import { shelterService } from "../../infrastructure/ShelterServiceFactory";
+import {
+  isValidDogAgeMonths,
+  isValidDogName,
+  isValidDogWeightKg,
+} from "@/modules/shared/utils/validators";
 
 // ─── Definición de pasos ──────────────────────────────────────────────────────
 
@@ -126,12 +131,30 @@ function validateStep(step: number, data: DogFormData): Record<string, string> {
   const e: Record<string, string> = {};
   if (step === 0) {
     if (!data.nombre.trim()) e.nombre = "El nombre es requerido";
+    else if (!isValidDogName(data.nombre))
+      e.nombre = "Usa entre 2 y 60 caracteres válidos";
     if (!data.raza.trim()) e.raza = "La raza es requerida";
-    if (!data.edad || data.edad <= 0) e.edad = "Ingresa la edad en meses";
+    else if (data.raza.trim().length > 80) e.raza = "Máximo 80 caracteres";
+    if (data.raza2.trim().length > 80)
+      e.raza2 = "Máximo 80 caracteres";
+    if (!isValidDogAgeMonths(data.edad))
+      e.edad = "Ingresa una edad válida entre 1 y 300 meses";
+    if (!isValidDogWeightKg(data.pesoKg))
+      e.pesoKg = "El peso debe estar entre 0.5 y 100 kg";
     if (!data.tamano) e.tamano = "Selecciona el tamaño";
     if (!data.sexo) e.sexo = "Selecciona el sexo";
     if (!data.nivelEnergia) e.nivelEnergia = "Selecciona el nivel de energía";
     if (!data.descripcion.trim()) e.descripcion = "Agrega una descripción";
+    else if (data.descripcion.trim().length < 30)
+      e.descripcion = "La descripción debe tener al menos 30 caracteres";
+    else if (data.descripcion.length > 2000)
+      e.descripcion = "Máximo 2000 caracteres";
+  }
+  if (step === 1) {
+    if (data.personalidad.length < 1)
+      e.personalidad = "Selecciona al menos un rasgo de personalidad";
+    if (data.personalidad.length > 8)
+      e.personalidad = "Selecciona máximo 8 rasgos de personalidad";
   }
   if (step === 4) {
     if (!data.foto.trim()) e.foto = "Debes agregar al menos una foto principal";
@@ -378,14 +401,16 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
   // ── Submit ───────────────────────────────────────────────────────────────────
 
   const submit = useCallback(async (): Promise<boolean> => {
-    // Validar paso 0 (básicos) y paso 4 (fotos) como mínimo
+    // Validar pasos críticos antes de guardar/publicar.
     const step0Errors = validateStep(0, formData);
+    const step1Errors = validateStep(1, formData);
     const step4Errors = validateStep(4, formData);
-    const allErrors = { ...step0Errors, ...step4Errors };
+    const allErrors = { ...step0Errors, ...step1Errors, ...step4Errors };
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
       // Llevar al primer paso con error
       if (Object.keys(step0Errors).length > 0) setCurrentStep(0);
+      else if (Object.keys(step1Errors).length > 0) setCurrentStep(1);
       else setCurrentStep(4);
       return false;
     }
@@ -406,21 +431,21 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
           cover?.kind === "existing" ? cover.imageId : null;
 
         const updateData: DogUpdateData = {
-          nombre: formData.nombre,
+          nombre: formData.nombre.trim(),
           edad: formData.edad,
           refugioLogo: formData.refugioLogo,
-          refugioNombre: formData.refugioNombre,
-          raza: formData.raza,
-          raza2: formData.raza2 || undefined,
+          refugioNombre: formData.refugioNombre?.trim(),
+          raza: formData.raza.trim(),
+          raza2: formData.raza2.trim() || undefined,
           tamano: formData.tamano || undefined,
           sexo: formData.sexo || undefined,
           nivelEnergia: formData.nivelEnergia || undefined,
-          descripcion: formData.descripcion,
+          descripcion: formData.descripcion.trim(),
           foto: formData.foto || undefined,
           estaVacunado: formData.estaVacunado,
           estaDesparasitado: formData.estaDesparasitado,
           largoPelaje: formData.largoPelaje,
-          salud: formData.salud,
+          salud: formData.salud.trim(),
           personalidad: formData.personalidad,
           aptoNinos: formData.aptoNinos,
           aptoPerros: formData.aptoPerros,
@@ -452,20 +477,20 @@ export function useDogForm(dogId?: string): UseDogFormReturn {
         // Modo crear — los campos vacíos no son posibles aquí por la validación
         const createData: DogCreateData = {
           refugioId: formData.refugioId,
-          nombre: formData.nombre,
+          nombre: formData.nombre.trim(),
           edad: formData.edad,
-          raza: formData.raza,
-          raza2: formData.raza2 || undefined,
+          raza: formData.raza.trim(),
+          raza2: formData.raza2.trim() || undefined,
           tamano: formData.tamano as DogSize,
           sexo: formData.sexo as DogSex,
           nivelEnergia: formData.nivelEnergia as EnergyLevel,
-          descripcion: formData.descripcion,
+          descripcion: formData.descripcion.trim(),
           foto: formData.foto || undefined,
           fotos: formData.fotos.map((s) => s.url),
           estaVacunado: formData.estaVacunado,
           estaDesparasitado: formData.estaDesparasitado,
           largoPelaje: formData.largoPelaje,
-          salud: formData.salud,
+          salud: formData.salud.trim(),
           personalidad: formData.personalidad,
           aptoNinos: formData.aptoNinos,
           aptoPerros: formData.aptoPerros,

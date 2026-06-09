@@ -677,6 +677,7 @@ export default function RegisterView() {
                 <Button
                   type="submit"
                   loading={loading}
+                  disabled={!data.aceptaTerminos}
                   className="flex-[2] !font-[950] !text-[13px] !rounded-full"
                   style={
                     {
@@ -820,6 +821,7 @@ export default function RegisterView() {
                 <Button
                   type="submit"
                   loading={loading}
+                  disabled={!data.aceptaTerminos}
                   className="flex-[2] !font-[950] !text-[13px] !rounded-full"
                   style={
                     {

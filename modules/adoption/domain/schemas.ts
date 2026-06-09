@@ -4,6 +4,14 @@
 // compatibles con AdoptionFormData del dominio compartido.
 
 import { z } from 'zod'
+import {
+  isValidAddress,
+  isValidEmail,
+  isValidMxPhone,
+  isValidPersonName,
+  isValidSimpleText,
+  isValidSocialReference,
+} from '@/modules/shared/utils/validators'
 
 // ─── Mensajes ─────────────────────────────────────────────────────────────────
 
@@ -79,16 +87,45 @@ const experienciaPreviaSchema = z.object({
 // adoptionFormSchema (zod 4 desaconseja chainear después de superRefine).
 
 export const personalDataSchema = z.object({
-  nombreCompleto: z.string().min(1, REQUIRED),
+  nombreCompleto: z
+    .string()
+    .trim()
+    .min(1, REQUIRED)
+    .refine(isValidPersonName, 'Ingresa nombre y apellido válidos'),
   edad: z
     .number({ error: 'Ingresa una edad válida' })
     .int('Debe ser un número entero')
-    .min(18, 'Debes ser mayor de edad'),
-  telefono: z.string().min(1, REQUIRED),
-  correo: z.email('Correo inválido'),
-  ocupacion: z.string().min(1, REQUIRED),
-  direccion: z.string().min(1, REQUIRED),
-  redesSociales: z.string().optional(),
+    .min(18, 'Debes ser mayor de edad')
+    .max(100, 'Ingresa una edad válida'),
+  telefono: z
+    .string()
+    .trim()
+    .min(1, REQUIRED)
+    .refine(isValidMxPhone, 'El teléfono debe tener 10 dígitos válidos'),
+  correo: z
+    .string()
+    .trim()
+    .min(1, REQUIRED)
+    .refine(isValidEmail, 'Correo inválido'),
+  ocupacion: z
+    .string()
+    .trim()
+    .min(2, 'Ingresa una ocupación válida')
+    .max(80, 'Máximo 80 caracteres')
+    .refine(isValidSimpleText, 'La ocupación contiene caracteres no válidos'),
+  direccion: z
+    .string()
+    .trim()
+    .min(8, 'Ingresa una dirección más específica')
+    .max(180, 'Máximo 180 caracteres')
+    .refine(isValidAddress, 'La dirección contiene caracteres no válidos'),
+  redesSociales: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || isValidSocialReference(value),
+      'Ingresa un @usuario o una URL válida',
+    ),
 })
 
 export const housingSchema = z.object({

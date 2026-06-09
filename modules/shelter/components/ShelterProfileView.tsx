@@ -15,6 +15,18 @@ import { useShelterProfile } from "../application/hooks/useShelterProfile";
 import type { Shelter } from "@/modules/shared/domain/Shelter";
 import { useToast } from "@/modules/shared/application/hooks/useToast";
 import { ProgressBar } from "@/modules/shared/components/ui/ProgressBar";
+import {
+  isValidClabe,
+  isValidEmail,
+  isValidMoneyAmount,
+  isValidMxPhone,
+  isValidOptionalUrl,
+  isValidSchedule,
+  isValidShelterName,
+  isValidAddress,
+  isValidSimpleText,
+  normalizeMxPhone,
+} from "@/modules/shared/utils/validators";
 import "../styles/shelterDashboard.css";
 import "../styles/shelterViews.css";
 
@@ -269,35 +281,100 @@ export default function ShelterProfileView() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    if (!form.nombre.trim()) {
+    const nombre = form.nombre.trim();
+    const descripcion = form.descripcion.trim();
+    const correo = form.correo.trim();
+    const telefono = form.telefono.trim();
+    const direccionCompleta = form.direccionCompleta.trim();
+    const ubicacion = form.ubicacion.trim();
+    const schedule = form.schedule.trim();
+
+    if (!nombre) {
       toast.error("El nombre del refugio es obligatorio");
       return;
     }
-    if (!form.descripcion.trim()) {
-      toast.error("La descripción es obligatoria");
+    if (!isValidShelterName(nombre)) {
+      toast.error("El nombre del refugio contiene caracteres no válidos");
+      return;
+    }
+    if (descripcion.length < 30) {
+      toast.error("La descripción debe tener al menos 30 caracteres");
+      return;
+    }
+    if (!correo || !isValidEmail(correo)) {
+      toast.error("Ingresa un correo electrónico válido del refugio");
+      return;
+    }
+    if (!telefono || !isValidMxPhone(telefono)) {
+      toast.error("El teléfono del refugio debe tener 10 dígitos válidos");
+      return;
+    }
+    if (!form.alcaldia.trim()) {
+      toast.error("La alcaldía del refugio es obligatoria");
+      return;
+    }
+    if (!direccionCompleta || !isValidAddress(direccionCompleta)) {
+      toast.error("Ingresa una dirección completa válida del refugio");
+      return;
+    }
+    if (ubicacion && !isValidSimpleText(ubicacion)) {
+      toast.error("La ubicación contiene caracteres no válidos");
+      return;
+    }
+    if (schedule && !isValidSchedule(schedule)) {
+      toast.error("El horario contiene caracteres no válidos");
+      return;
+    }
+    if (!isValidMoneyAmount(form.cuotaAdopcion, 100000)) {
+      toast.error("La cuota de adopción debe ser un monto válido");
       return;
     }
 
     const redesSociales: Shelter["redesSociales"] = {};
     for (const link of form.socialLinks) {
-      if (link.url.trim()) redesSociales[link.platform] = link.url.trim();
+      const url = link.url.trim();
+      if (!url) continue;
+      if (!isValidOptionalUrl(url)) {
+        toast.error(`La URL de ${link.platform} no es válida`);
+        return;
+      }
+      redesSociales[link.platform] = url;
     }
+
+    if (form.aceptaDonaciones) {
+      if (form.cuentaClabe.trim() && !isValidClabe(form.cuentaClabe)) {
+        toast.error("La CLABE debe tener 18 dígitos");
+        return;
+      }
+      if (form.paypalLink.trim() && !isValidOptionalUrl(form.paypalLink)) {
+        toast.error("El enlace de PayPal no es válido");
+        return;
+      }
+      if (
+        form.mercadoPagoLink.trim() &&
+        !isValidOptionalUrl(form.mercadoPagoLink)
+      ) {
+        toast.error("El enlace de Mercado Pago no es válido");
+        return;
+      }
+    }
+
     const payload: Partial<Shelter> = {
-      nombre: form.nombre.trim(),
-      descripcion: form.descripcion.trim(),
-      correo: form.correo.trim(),
-      telefono: form.telefono.trim(),
-      ubicacion: form.ubicacion.trim(),
+      nombre,
+      descripcion,
+      correo,
+      telefono: normalizeMxPhone(telefono),
+      ubicacion,
       alcaldia: form.alcaldia.trim() || null,
-      direccionCompleta: form.direccionCompleta.trim() || null,
-      schedule: form.schedule.trim() || null,
+      direccionCompleta,
+      schedule: schedule || null,
       redesSociales,
       cuotaAdopcion: form.cuotaAdopcion ? Number(form.cuotaAdopcion) : 0,
       mapIframe: form.mapIframe.trim() || null,
       donationConfig: {
         aceptaDonaciones: form.aceptaDonaciones,
         descripcionCausa: form.descripcionCausa.trim() || undefined,
-        cuentaClabe: form.cuentaClabe.trim() || undefined,
+        cuentaClabe: form.cuentaClabe.replace(/\s/g, "") || undefined,
         banco: form.banco.trim() || undefined,
         titularCuenta: form.titularCuenta.trim() || undefined,
         paypalLink: form.paypalLink.trim() || undefined,

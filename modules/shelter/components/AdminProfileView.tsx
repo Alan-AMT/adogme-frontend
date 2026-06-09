@@ -3,16 +3,17 @@
 //   Mis datos · Seguridad · Preferencias ML · Notificaciones
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar } from "../../shared/components/ui/Avatar";
 import { Input } from "../../shared/components/ui/Input";
 import { Button } from "../../shared/components/ui/Button";
 import { Alert } from "../../shared/components/ui/Alert";
-// import { useProfile } from "../application/hooks/useProfile";
-import type { Adoptante } from "../../shared/domain/User";
-import { useAuthStore } from "@/modules/shared/infrastructure/store/authStore";
 import "../../profile/styles/profile.css";
 import { useProfile } from "@/modules/profile/application/hooks/useProfile";
+import {
+  isStrongPassword,
+  isValidPersonName,
+} from "@/modules/shared/utils/validators";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -64,12 +65,25 @@ function TabData() {
   } = useProfile();
 
   const [nombre, setNombre] = useState(user?.name ?? "");
+  const [localErr, setLocalErr] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setLocalErr(null);
     clearStatus("data");
+
+    const nextNombre = nombre.trim();
+    if (!nextNombre) {
+      setLocalErr("El nombre completo es obligatorio.");
+      return;
+    }
+    if (!isValidPersonName(nextNombre)) {
+      setLocalErr("Ingresa nombre y apellido válidos.");
+      return;
+    }
+
     await updateProfile({
-      nombre: nombre !== user?.name ? nombre : undefined,
+      nombre: nextNombre !== user?.name ? nextNombre : undefined,
     });
   }
 
@@ -103,9 +117,9 @@ function TabData() {
 
         </div>
 
-        {saveError && (
+        {(localErr ?? saveError) && (
           <div style={{ marginTop: "1rem" }}>
-            <Alert type="error" message={saveError} closable />
+            <Alert type="error" message={localErr ?? saveError ?? ""} closable />
           </div>
         )}
         {saveOk && (
@@ -158,8 +172,10 @@ function TabSecurity() {
     setLocalErr(null);
     clearStatus("password");
 
-    if (newPwd.length < 8) {
-      setLocalErr("La nueva contraseña debe tener al menos 8 caracteres.");
+    if (!isStrongPassword(newPwd)) {
+      setLocalErr(
+        "La nueva contraseña debe tener mínimo 8 caracteres, mayúscula, minúscula, número y carácter especial.",
+      );
       return;
     }
     if (newPwd !== confirm) {
