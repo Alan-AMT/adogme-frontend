@@ -231,7 +231,7 @@ function Slide1({ allDogs, loading }: { allDogs: DogLite[]; loading: boolean }) 
       <div className={styles["hero-copy"]}>
         <div className={styles["hero-eyebrow"]}>
           <span className={styles["hero-eyebrow__dot"]} />
-          Adopción canina · Gustavo A. Madero
+          Adopción canina · CDMX y área metropolitana.
         </div>
 
         <h1 className={styles["hero-title"]}>
@@ -407,11 +407,37 @@ function PolaroidStack({ dogs, loading }: { dogs: DogLite[]; loading: boolean })
     <div className={styles["polaroid-stack"]} ref={ref}>
       {loading
         ? layers.map((l, i) => (
+          <div
+            key={i}
+            className={cx(styles["polaroid"], styles["polaroid--skeleton"])}
+            style={
+              {
+                ["--rotate" as any]: l.rotate,
+                ["--scale" as any]: l.scale,
+                ["--blur" as any]: `${l.blur}px`,
+                ["--z" as any]: l.z,
+                ["--ox" as any]: l.offsetX,
+                ["--oy" as any]: l.offsetY,
+              } as any
+            }
+          />
+        ))
+        : layers.map((l, i) => {
+          const dog = dogs[i % Math.max(dogs.length, 1)];
+          if (!dog) return null;
+
+          const tx = mouse.x * 18 * l.depth;
+          const ty = mouse.y * 14 * l.depth;
+
+          return (
             <div
               key={i}
-              className={cx(styles["polaroid"], styles["polaroid--skeleton"])}
+              className={styles["polaroid"]}
               style={
                 {
+                  transform: `translate(calc(${l.offsetX} + ${tx}px), calc(${l.offsetY} + ${ty}px)) rotate(${l.rotate}) scale(${l.scale})`,
+                  filter: l.blur ? `blur(${l.blur}px)` : "none",
+                  zIndex: l.z + 1,
                   ["--rotate" as any]: l.rotate,
                   ["--scale" as any]: l.scale,
                   ["--blur" as any]: `${l.blur}px`,
@@ -420,56 +446,30 @@ function PolaroidStack({ dogs, loading }: { dogs: DogLite[]; loading: boolean })
                   ["--oy" as any]: l.offsetY,
                 } as any
               }
-            />
-          ))
-        : layers.map((l, i) => {
-            const dog = dogs[i % Math.max(dogs.length, 1)];
-            if (!dog) return null;
-
-            const tx = mouse.x * 18 * l.depth;
-            const ty = mouse.y * 14 * l.depth;
-
-            return (
-              <div
-                key={i}
-                className={styles["polaroid"]}
-                style={
-                  {
-                    transform: `translate(calc(${l.offsetX} + ${tx}px), calc(${l.offsetY} + ${ty}px)) rotate(${l.rotate}) scale(${l.scale})`,
-                    filter: l.blur ? `blur(${l.blur}px)` : "none",
-                    zIndex: l.z + 1,
-                    ["--rotate" as any]: l.rotate,
-                    ["--scale" as any]: l.scale,
-                    ["--blur" as any]: `${l.blur}px`,
-                    ["--z" as any]: l.z,
-                    ["--ox" as any]: l.offsetX,
-                    ["--oy" as any]: l.offsetY,
-                  } as any
-                }
-              >
-                <div className={styles["polaroid__photo"]}>
-                  <Image
-                    src={dog.imageUrl}
-                    alt={dog.nombre}
-                    fill
-                    className={styles["polaroid__img"]}
-                    sizes="260px"
-                  />
-                </div>
-
-                <div className={styles["polaroid__caption"]}>
-                  <span className={styles["polaroid__name"]}>{dog.nombre}</span>
-                  <span className={styles["polaroid__breed"]}>{dog.raza}</span>
-                  <span
-                    className={styles["polaroid__status"]}
-                    style={{ background: STATUS_COLORS[dog.estado ?? ""] ?? "#9ca3af" }}
-                  >
-                    {dog.estado ?? "Disponible"}
-                  </span>
-                </div>
+            >
+              <div className={styles["polaroid__photo"]}>
+                <Image
+                  src={dog.imageUrl}
+                  alt={dog.nombre}
+                  fill
+                  className={styles["polaroid__img"]}
+                  sizes="260px"
+                />
               </div>
-            );
-          })}
+
+              <div className={styles["polaroid__caption"]}>
+                <span className={styles["polaroid__name"]}>{dog.nombre}</span>
+                <span className={styles["polaroid__breed"]}>{dog.raza}</span>
+                <span
+                  className={styles["polaroid__status"]}
+                  style={{ background: STATUS_COLORS[dog.estado ?? ""] ?? "#9ca3af" }}
+                >
+                  {dog.estado ?? "Disponible"}
+                </span>
+              </div>
+            </div>
+          );
+        })}
     </div>
   );
 }

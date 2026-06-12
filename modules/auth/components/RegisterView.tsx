@@ -120,8 +120,47 @@ function BackBtn({ onClick }: { onClick: () => void }) {
   );
 }
 
+function TermsCheckbox({
+  id,
+  checked,
+  onChange,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label
+      htmlFor={id}
+      className="flex items-start gap-2.5 px-3 py-3 rounded-[14px] cursor-pointer"
+      style={{ background: "#fff7f7", border: "1px solid #ffd0d0" }}
+    >
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-4 w-4 accent-[#ff6b6b] shrink-0"
+        required
+      />
+      <span className="text-[12px] font-[700] leading-relaxed text-[#52525b]">
+        Acepto los{" "}
+        <a
+          href="https://adogme.org/terminos"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-[950] text-[#ff6b6b] hover:underline"
+        >
+          términos y condiciones
+        </a>{" "}
+        de aDOGme.
+      </span>
+    </label>
+  );
+}
+
 // ── Pantalla de éxito — adoptante ─────────────────────────────────────────────
-function AdoptanteSuccessScreen({ email: _email }: { email: string }) {
+function AdoptanteSuccessScreen() {
   return (
     <div className="flex flex-col items-center text-center gap-4 py-4">
       <div
@@ -308,7 +347,7 @@ export default function RegisterView() {
           <div className="auth-header">
             <AuthBrand />
           </div>
-          <AdoptanteSuccessScreen email={data.correo} />
+          <AdoptanteSuccessScreen />
         </AuthCard>
       </AuthLayout>
     );
@@ -574,6 +613,12 @@ export default function RegisterView() {
                 required
               />
 
+              <TermsCheckbox
+                id="reg-terminos-adoptante"
+                checked={data.aceptaTerminos}
+                onChange={(checked) => update("aceptaTerminos", checked)}
+              />
+
               <div className="flex gap-3 mt-1">
                 <BackBtn onClick={handleBack} />
                 <Button
@@ -632,6 +677,7 @@ export default function RegisterView() {
                 <Button
                   type="submit"
                   loading={loading}
+                  disabled={!data.aceptaTerminos}
                   className="flex-[2] !font-[950] !text-[13px] !rounded-full"
                   style={
                     {
@@ -764,11 +810,18 @@ export default function RegisterView() {
                 </span>
               </div>
 
+              <TermsCheckbox
+                id="reg-terminos-refugio"
+                checked={data.aceptaTerminos}
+                onChange={(checked) => update("aceptaTerminos", checked)}
+              />
+
               <div className="flex gap-3 mt-1">
                 <BackBtn onClick={handleBack} />
                 <Button
                   type="submit"
                   loading={loading}
+                  disabled={!data.aceptaTerminos}
                   className="flex-[2] !font-[950] !text-[13px] !rounded-full"
                   style={
                     {

@@ -43,7 +43,7 @@ const RESPUESTAS: { keywords: string[]; respuesta: string }[] = [
   {
     keywords: ["gam", "gustavo", "madero", "refugio", "donde", "dónde"],
     respuesta:
-      "Trabajamos con refugios en Gustavo A. Madero, Coyoacán e Iztapalapa 📍. Puedes ver todos los refugios disponibles en la sección 'Refugios' de nuestra plataforma. ¿Hay algún refugio cercano a tu colonia?",
+      "Trabajamos con refugios en CDMX y área metropolitana. 📍. Puedes ver todos los refugios disponibles en la sección 'Refugios' de nuestra plataforma. ¿Hay algún refugio cercano a tu colonia?",
   },
   {
     keywords: ["hola", "hi", "buenas", "buenos", "saludos"],

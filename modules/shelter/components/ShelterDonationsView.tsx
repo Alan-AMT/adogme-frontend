@@ -210,7 +210,7 @@ export default function ShelterDonationsView() {
         <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#71717a', flexShrink: 0, fontVariationSettings: "'FILL' 1" }}>support_agent</span>
         <p style={{ fontSize: '0.78rem', color: '#52525b', fontWeight: 500, lineHeight: 1.5, margin: 0 }}>
           Para actualizar tu CLABE, link de PayPal o MercadoPago contacta al equipo de aDOGme en{' '}
-          <strong>soporte@adogme.mx</strong>
+          <strong>contacto@adogme.org</strong>
         </p>
       </div>
     </>

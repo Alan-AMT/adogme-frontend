@@ -9,7 +9,7 @@ const ADOPTION_STEPS = [
     id: 1, step: 1, icon: "search",
     title: "Explora los perfiles",
     subtitle: "Conoce a los perritos disponibles",
-    description: "Navega el catálogo de perros en refugios de Gustavo A. Madero. Filtra por tamaño, energía o compatibilidad con tu estilo de vida para encontrar a tu compañero ideal.",
+    description: "Navega el catálogo de perros en refugios en CDMX y área metropolitana. Filtra por tamaño, energía o compatibilidad con tu estilo de vida para encontrar a tu compañero ideal.",
     tips: ["Usa los filtros de tamaño y nivel de energía", "Lee con calma la descripción de cada perfil", "Guarda tus favoritos con el ícono de corazón"],
     duration: "~10 min",
   },
